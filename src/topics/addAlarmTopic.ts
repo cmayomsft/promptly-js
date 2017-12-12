@@ -53,7 +53,7 @@ export class AddAlarmTopic extends Topic<AddAlarmTopicState> {
     
         // The active topic is done, so clear the active topic and the active prompt.
         //  TODO: Next would be to have the caller clean this up.
-        context.state.conversation.activeTopicState = undefined;
+        context.state.conversation.activeTopic = undefined;
         context.state.conversation.promptTurns = undefined;
         context.state.conversation.promptName = undefined;
 
