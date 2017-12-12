@@ -1,21 +1,6 @@
 import { titleValidator } from '../validators';
 import { Alarm } from '../alarms';
-import { Promiseable } from 'botbuilder-core';
-
-export abstract class Topic<S = any> {
-
-    private _state: S;
-    public get state(): S {
-        return this._state;
-    }
-    protected abstract getDefaultState(): S;
-    
-    constructor(state?: S) {
-        this._state = (!state) ? this.getDefaultState() : state;
-    }
-
-    abstract onReceive(context: BotContext): Promiseable<any>;
-}
+import { Topic } from './topic';
 
 export interface AddAlarmTopicState {
     alarm: Alarm;
@@ -53,7 +38,7 @@ export class AddAlarmTopic extends Topic<AddAlarmTopicState> {
     
         // The active topic is done, so clear the active topic and the active prompt.
         //  TODO: Next would be to have the caller clean this up.
-        context.state.conversation.activeTopicState = undefined;
+        context.state.conversation.activeTopic = undefined;
         context.state.conversation.promptTurns = undefined;
         context.state.conversation.promptName = undefined;
 
