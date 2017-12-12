@@ -1,0 +1,22 @@
+{
+  "name": "promptly",
+  "version": "1.0.0",
+  "description": "Prompt abstraction for bots.",
+  "main": "./lib/app.js",
+  "scripts": {
+    "start": "tsc && node ./lib/app.js",
+    "watch": "tsc -w"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^8.0.28",
+    "@types/restify": "^5.0.3",
+    "botbuilder-ai": "^4.0.0-h3.4",
+    "botbuilder-conversation": "^4.0.0-h3.3",
+    "botbuilder-core": "^4.0.0-h3.3",
+    "botbuilder-prompts": "^4.0.0-h3.3",
+    "botbuilder-services": "^4.0.0-h3.3",
+    "restify": "^6.0.0"
+  }
+}
