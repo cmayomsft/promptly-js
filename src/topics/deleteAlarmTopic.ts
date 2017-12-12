@@ -1,5 +1,5 @@
 import { Alarm, showAlarms, findAlarmIndex } from '../alarms';
-import { Topic } from '../topics/addAlarmTopic';
+import { Topic } from './topic';
 
 export interface DeleteAlarmTopicState {
     alarmIndex?: number;

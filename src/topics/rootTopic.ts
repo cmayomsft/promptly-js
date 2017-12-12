@@ -1,4 +1,5 @@
-import { Topic, AddAlarmTopic } from './addAlarmTopic';
+import { Topic } from './topic';
+import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 import { Alarm, showAlarms } from '../alarms';
 
