@@ -1,21 +1,20 @@
 import { Topic } from '../promptly/topic';
-import { ParentTopic, ActiveTopicState } from '../promptly/parentTopic';
+import { ParentTopic, ActiveTopicState, ParentTopicState } from '../promptly/parentTopic';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 import { Alarm, showAlarms } from '../alarms';
 
-export class RootTopic extends ParentTopic<ActiveTopicState> {
+export class RootTopic extends ParentTopic<ParentTopicState> {
 
-    constructor(state?: ActiveTopicState) {
+    constructor(state?: ParentTopicState) {
         super(state);
         this.childTopics = { AddAlarmTopic, DeleteAlarmTopic };
     }
 
-    protected getDefaultState(): ActiveTopicState {
+    protected getDefaultState(): ParentTopicState {
         return {
-            name: this.constructor.name,
-            state: undefined
-        }
+            activeTopic: undefined
+        } as ParentTopicState;
     }
 
     public onReceive(context: BotContext) {
@@ -34,10 +33,10 @@ export class RootTopic extends ParentTopic<ActiveTopicState> {
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);
-            } else if (context.state.conversation.activeTopic !== undefined) {    
+            } else if (this.state.activeTopic !== undefined) {    
 
                 this.setActiveTopic(context, 
-                    new this.childTopics[context.state.conversation.activeTopic.name](context.state.conversation.activeTopic.state));
+                    new this.childTopics[this.state.activeTopic.name](this.activeTopic.state));
                 return this.activeTopic.onReceive(context);    
             } else {
                 

@@ -21,6 +21,7 @@ const bot = new Bot(adapter)
     .use(new BotStateManager())
     //.use(new LuisRecognizer("5e013df5-f1df-40a7-9893-437bfdb1811d", "04e545e56dfd417daa44460a04f20ffd"))
     .onReceive((context) => {
-        const rootTopic = new RootTopic(context.state.conversation.activeTopic);
+        // St
+        const rootTopic = new RootTopic(context.state.conversation.rootParentTopic);
         return rootTopic.onReceive(context);
     });
