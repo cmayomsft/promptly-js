@@ -1,5 +1,5 @@
 import { Alarm, showAlarms, findAlarmIndex } from '../alarms';
-import { Topic } from './topic';
+import { Topic } from '../promptly/topic';
 
 export interface DeleteAlarmTopicState {
     alarmIndex?: number;

@@ -1,6 +1,6 @@
 import { titleValidator } from '../validators';
 import { Alarm } from '../alarms';
-import { Topic } from './topic';
+import { Topic } from '../promptly/topic';
 
 export interface AddAlarmTopicState {
     alarm: Alarm;

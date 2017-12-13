@@ -1,5 +1,5 @@
-import { Topic } from './topic';
-import { ParentTopic, ActiveTopicState } from './parentTopic';
+import { Topic } from '../promptly/topic';
+import { ParentTopic, ActiveTopicState } from '../promptly/parentTopic';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 import { Alarm, showAlarms } from '../alarms';
