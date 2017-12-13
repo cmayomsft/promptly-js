@@ -1,16 +1,5 @@
 import { Promiseable } from 'botbuilder-core';
 
-declare global {
-    export interface ConversationState {
-        activeTopic?: ActiveTopicState;
-    }
-}
-
-export interface ActiveTopicState {
-    name: string;
-    state?: any;
-}
-
 export abstract class Topic<S = any> {
     
     private _state: S;

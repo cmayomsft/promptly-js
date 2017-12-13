@@ -1,5 +1,5 @@
-import { Topic, ActiveTopicState } from './topic';
-import { ParentTopic } from './parentTopic';
+import { Topic } from './topic';
+import { ParentTopic, ActiveTopicState } from './parentTopic';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 import { Alarm, showAlarms } from '../alarms';

@@ -1,5 +1,16 @@
 import { Topic } from './topic';
 
+declare global {
+    export interface ConversationState {
+        activeTopic?: ActiveTopicState;
+    }
+}
+
+export interface ActiveTopicState {
+    name: string;
+    state?: any;
+}
+
 // TODO: Type inforce S to at least have ActiveTopicState or derive from it.
 export abstract class ParentTopic<S> extends Topic<S> {
     // TODO: Refactor and type.
