@@ -1,20 +1,15 @@
-import { Topic } from './topic';
+import { Topic } from '../promptly/topic';
+import { ParentTopic, ActiveTopicState } from '../promptly/parentTopic';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 import { Alarm, showAlarms } from '../alarms';
 
-export interface ActiveTopicState {
-    name: string;
-    state?: any;
-}
+export class RootTopic extends ParentTopic<ActiveTopicState> {
 
-declare global {
-    export interface ConversationState {
-        activeTopic?: ActiveTopicState;
+    constructor(state?: ActiveTopicState) {
+        super(state);
+        this.childTopics = { AddAlarmTopic, DeleteAlarmTopic };
     }
-}
-
-export class RootTopic extends Topic<ActiveTopicState> {
 
     protected getDefaultState(): ActiveTopicState {
         return {
@@ -42,8 +37,8 @@ export class RootTopic extends Topic<ActiveTopicState> {
             } else if (context.state.conversation.activeTopic !== undefined) {    
 
                 this.setActiveTopic(context, 
-                    new this._topics[context.state.conversation.activeTopic.name](context.state.conversation.activeTopic.state));
-                return this._activeTopic.onReceive(context);    
+                    new this.childTopics[context.state.conversation.activeTopic.name](context.state.conversation.activeTopic.state));
+                return this.activeTopic.onReceive(context);    
             } else {
                 
                 //no command or active topic
@@ -64,18 +59,5 @@ export class RootTopic extends Topic<ActiveTopicState> {
         message += "To see this again, say 'Help'.";
     
         context.reply(message);
-    }
-
-    private _topics = { AddAlarmTopic, DeleteAlarmTopic };
-    
-    private _activeTopic: Topic;
-    private setActiveTopic(context: BotContext, topic: Topic) {
-        context.state.conversation.promptName = undefined;
-
-        this._activeTopic = topic;
-        context.state.conversation.activeTopic = { name: topic.constructor.name, state: topic.state };
-    }
-    private get activeTopic(): Topic {
-        return this._activeTopic;
     }
 }
