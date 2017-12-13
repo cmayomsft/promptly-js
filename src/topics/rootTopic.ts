@@ -4,14 +4,14 @@ import { DeleteAlarmTopic } from './deleteAlarmTopic';
 import { Alarm, showAlarms } from '../alarms';
 
 // TODO: Type inforce S to at least have ActiveTopicState or derive from it.
-export abstract class TopicManager<S> extends Topic<S> {
+export abstract class ParentTopic<S> extends Topic<S> {
     // TODO: Refactor and type.
-    private _topics: any;
-    protected get topics(): any {
-        return this._topics;
+    private _childTopics: any;
+    protected get childTopics(): any {
+        return this._childTopics;
     }
-    protected set topics(topics: any) {
-        this._topics = topics;
+    protected set childTopics(topics: any) {
+        this._childTopics = topics;
     }
 
     private _activeTopic: Topic;
@@ -26,11 +26,11 @@ export abstract class TopicManager<S> extends Topic<S> {
     }
 }
 
-export class RootTopic extends TopicManager<ActiveTopicState> {
+export class RootTopic extends ParentTopic<ActiveTopicState> {
 
     constructor(state?: ActiveTopicState) {
         super(state);
-        this.topics = { AddAlarmTopic, DeleteAlarmTopic };
+        this.childTopics = { AddAlarmTopic, DeleteAlarmTopic };
     }
 
     protected getDefaultState(): ActiveTopicState {
@@ -59,7 +59,7 @@ export class RootTopic extends TopicManager<ActiveTopicState> {
             } else if (context.state.conversation.activeTopic !== undefined) {    
 
                 this.setActiveTopic(context, 
-                    new this.topics[context.state.conversation.activeTopic.name](context.state.conversation.activeTopic.state));
+                    new this.childTopics[context.state.conversation.activeTopic.name](context.state.conversation.activeTopic.state));
                 return this.activeTopic.onReceive(context);    
             } else {
                 
