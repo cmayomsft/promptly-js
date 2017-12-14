@@ -6,15 +6,9 @@ import { Alarm, showAlarms } from '../alarms';
 
 export class RootTopic extends ParentTopic<ParentTopicState> {
 
-    constructor(state?: ParentTopicState) {
+    constructor(state: ParentTopicState) {
         super(state);
         this.childTopics = { AddAlarmTopic, DeleteAlarmTopic };
-    }
-
-    protected getDefaultState(): ParentTopicState {
-        return {
-            activeTopic: undefined
-        } as ParentTopicState;
     }
 
     public onReceive(context: BotContext) {
@@ -24,12 +18,26 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 return showAlarms(context);
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                // TODO: Init Topic state and pass it so it's used at the ActiveTopicState.
-                this.setActiveTopic(context, new AddAlarmTopic({ alarm: {} as Alarm }));
+                // Init topic with default state.
+                this.setActiveTopic(context, 
+                    new AddAlarmTopic(
+                        { 
+                            alarm: {} as Alarm 
+                        }
+                    )
+                );
                 return this.activeTopic.onReceive(context);
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                this.setActiveTopic(context, new DeleteAlarmTopic());
+                this.setActiveTopic(context, 
+                    new DeleteAlarmTopic(
+                        { 
+                            alarmIndex: undefined, 
+                            alarm: {} as Alarm,
+                            deleteConfirmed: undefined
+                        }
+                    )
+                );
                 return this.activeTopic.onReceive(context);
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 

@@ -8,10 +8,6 @@ export interface AddAlarmTopicState {
 
 export class AddAlarmTopic extends Topic<AddAlarmTopicState> {
 
-    protected getDefaultState(): AddAlarmTopicState {
-        return { alarm: {} as Alarm };
-    }
-
     public onReceive(context: BotContext) {
         if (!this.state.alarm.title) {
             if (context.state.conversation.promptName !== "title") {

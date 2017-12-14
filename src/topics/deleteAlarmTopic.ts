@@ -9,14 +9,6 @@ export interface DeleteAlarmTopicState {
 
 export class DeleteAlarmTopic extends Topic<DeleteAlarmTopicState> {
     
-    protected getDefaultState(): DeleteAlarmTopicState {
-        return {
-            alarmIndex: undefined,
-            alarm: {} as Alarm,
-            deleteConfirmed: undefined
-        };
-    }
-    
     public onReceive(context: BotContext) {
         const alarms = context.state.user.alarms || [];
 

@@ -15,21 +15,6 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 const adapter = new BotFrameworkAdapter({ appId: process.env.MICROSOFT_APP_ID, appPassword: process.env.MICROSOFT_APP_PASSWORD });
 server.post('/api/messages', adapter.listen() as any);
 
-export interface ActiveTopicState {
-    name: string;
-    state?: any;
-}
-
-export interface ParentTopicState {
-    activeTopic?: ActiveTopicState;
-}
-
-declare global {
-    export interface ConversationState {
-        rootTopic?: ParentTopicState;
-    }
-}
-
 declare global {
     export interface ConversationState {
         rootTopic?: ParentTopicState;
@@ -46,7 +31,7 @@ const bot = new Bot(adapter)
         // State isn't fully initialized until the contact/conversation messages are sent, so have to require
         //  activity type is message.
         if(context.request.type === 'message') {
-            // Initialize the root topic state to facilitate the state reference chain to 
+            // Initialize the root topic state and pass that reference to facilitate the state reference chain to 
             //  context.state.conversation.
             if (!context.state.conversation.rootTopic) {
                 context.state.conversation.rootTopic = { activeTopic: undefined };

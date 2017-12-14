@@ -6,10 +6,9 @@ export abstract class Topic<S = any> {
     public get state(): S {
         return this._state;
     }
-    protected abstract getDefaultState(): S;
     
-    constructor(state?: S) {
-        this._state = (!state) ? this.getDefaultState() : state;
+    constructor(state: S) {
+        this._state = state;
     }
 
     abstract onReceive(context: BotContext): Promiseable<any>;
