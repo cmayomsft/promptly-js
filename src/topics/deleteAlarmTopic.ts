@@ -30,10 +30,6 @@ export class DeleteAlarmTopic extends Topic<DeleteAlarmTopicState> {
     
             } else if (alarms.length > 1) {
                 if(context.state.conversation.promptName !== "title") {
-                    // START HERE: Just keeps prompting for alarm. promptName is 
-                    //  getting set to undefined on each turn. Need to fix that.
-                    //  Is clearning promptTurns the right thing here?
-                    context.state.conversation.promptTurns = undefined;
                     context.state.conversation.promptName = "title";                    
                 }
                 return this.onDispatch(context);
@@ -44,7 +40,6 @@ export class DeleteAlarmTopic extends Topic<DeleteAlarmTopicState> {
     
         if (this.state.deleteConfirmed === undefined) {
             if(context.state.conversation.promptName !== "deleteConfirmed") {
-                context.state.conversation.promptTurns = undefined;
                 context.state.conversation.promptName = "deleteConfirmed";    
             }
             return this.onDispatch(context);
@@ -58,7 +53,7 @@ export class DeleteAlarmTopic extends Topic<DeleteAlarmTopicState> {
         }
 
         // The active topic is done, so clear the active topic and the active prompt.
-        context.state.conversation.activeTopic = undefined;
+        context.state.conversation.rootTopic.activeTopic = undefined;
         context.state.conversation.promptTurns = undefined;
         context.state.conversation.promptName = undefined;
         
@@ -73,6 +68,7 @@ export class DeleteAlarmTopic extends Topic<DeleteAlarmTopicState> {
                     context.reply(`Which alarm would you like to delete?`);
                     return;
                 } else {
+                    this.state.alarm.title = context.request.text;
                     const foundAlarmIndex = findAlarmIndex(context.state.user.alarms, this.state.alarm.title);
                     if (foundAlarmIndex < 0) {
                         context.state.conversation.promptTurns++;
