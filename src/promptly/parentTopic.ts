@@ -9,12 +9,6 @@ export interface ParentTopicState {
     activeTopic?: ActiveTopicState;
 }
 
-declare global {
-    export interface ConversationState {
-        rootParentTopic?: ParentTopicState;
-    }
-}
-
 export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
     // TODO: Refactor and type.
     private _childTopics: any;
