@@ -1,6 +1,6 @@
 import { Topic } from '../promptly/topic';
 import { ParentTopic, ActiveTopicState, ParentTopicState } from '../promptly/parentTopic';
-import { AddAlarmTopic } from './addAlarmTopic';
+import { AddAlarmTopic, AddAlarmTopicState } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 import { Alarm, showAlarms } from '../alarms';
 
@@ -24,7 +24,8 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 return showAlarms(context);
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                this.setActiveTopic(context, new AddAlarmTopic());
+                // TODO: Init Topic state and pass it so it's used at the ActiveTopicState.
+                this.setActiveTopic(context, new AddAlarmTopic({ alarm: {} as Alarm }));
                 return this.activeTopic.onReceive(context);
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
@@ -36,7 +37,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
             } else if (this.state.activeTopic !== undefined) {    
 
                 this.setActiveTopic(context, 
-                    new this.childTopics[this.state.activeTopic.name](this.activeTopic.state));
+                    new this.childTopics[this.state.activeTopic.name](this.state.activeTopic.state));
                 return this.activeTopic.onReceive(context);    
             } else {
                 

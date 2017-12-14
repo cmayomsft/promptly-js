@@ -15,6 +15,21 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 const adapter = new BotFrameworkAdapter({ appId: process.env.MICROSOFT_APP_ID, appPassword: process.env.MICROSOFT_APP_PASSWORD });
 server.post('/api/messages', adapter.listen() as any);
 
+export interface ActiveTopicState {
+    name: string;
+    state?: any;
+}
+
+export interface ParentTopicState {
+    activeTopic?: ActiveTopicState;
+}
+
+declare global {
+    export interface ConversationState {
+        rootTopic?: ParentTopicState;
+    }
+}
+
 declare global {
     export interface ConversationState {
         rootTopic?: ParentTopicState;
@@ -28,25 +43,16 @@ const bot = new Bot(adapter)
     .use(new BotStateManager())
     //.use(new LuisRecognizer("5e013df5-f1df-40a7-9893-437bfdb1811d", "04e545e56dfd417daa44460a04f20ffd"))
     .onReceive((context) => {
-        // If Root State is unDef, init it and set to conv.state.
-        // Pass it to Root.
-        if (!context.state.conversation.rootTopic) {
-            context.state.conversation.rootTopic = { activeTopic: undefined } as ParentTopicState;
+        // State isn't fully initialized until the contact/conversation messages are sent, so have to require
+        //  activity type is message.
+        if(context.request.type === 'message') {
+            // Initialize the root topic state to facilitate the state reference chain to 
+            //  context.state.conversation.
+            if (!context.state.conversation.rootTopic) {
+                context.state.conversation.rootTopic = { activeTopic: undefined };
+            }
+
+            const rootTopic = new RootTopic(context.state.conversation.rootTopic);
+            return rootTopic.onReceive(context);
         }
-
-        const rootTopic = new RootTopic(context.state.conversation.rootTopic);
-        return rootTopic.onReceive(context);
     });
-
-        /*// TODO: Need to pass RootTopic() a reference of where to put it's state.
-        //  context.state.conversation.rootTopic holds some that holds the state of the root topic.
-        //  Solution: You always pass the state, it's not optional, it's just initialzed/new or used.
-        //      Move to state objects vs. interfaces?
-        // Pass the root an initialized object that it can put it's state into.
-        //  Once that reference is set, the rest fo the bojects fit intot hat.
-
-        // 1. Change all Topics to require state in constructor.
-        // 2. Define state object to initialize themselves.
-        // 3. Set root state and use to construct root topic.
-            // Since root topic has state for all sub topics, chain is preserved.
-        // 4. Call onRec().*/
