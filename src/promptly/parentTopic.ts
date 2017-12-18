@@ -10,7 +10,7 @@ export interface ParentTopicState {
 }
 
 export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
-    // TODO: Refactor and type.
+    // TODO: Refactor to create topic instace from the name of the class.
     private _childTopics: any;
     protected get childTopics(): any {
         return this._childTopics;
@@ -25,7 +25,6 @@ export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
         context.state.conversation.promptName = undefined;
 
         this._activeTopic = topic;
-        // START HERE: State is getting set here, but never passed back to rootTopic in app.ts.
         this.state.activeTopic = { name: topic.constructor.name, state: topic.state } as ActiveTopicState;
     }
     protected get activeTopic(): Topic {
