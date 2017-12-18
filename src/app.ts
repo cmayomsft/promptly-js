@@ -35,10 +35,12 @@ const bot = new Bot(adapter)
         // TODO: State isn't fully initialized until the contact/conversation messages are sent, so have to require
         //  activity type is message. Will affect welcome message. Refactor after bug has been addressed.
         if(context.request.type === 'message') {
-            // Initialize the root topic state and pass that reference to root topic tofacilitate the state 
+            // Initialize the root topic state and pass that reference to root topic to facilitate the state 
             //  reference chain to context.state.conversation.
             if (!context.state.conversation.rootTopic) {
-                context.state.conversation.rootTopic.state = { activeTopic: undefined };
+                context.state.conversation.rootTopic = { 
+                    state: { activeTopic: undefined } 
+                };
             }
 
             const rootTopic = new RootTopic(context.state.conversation.rootTopic.state);
