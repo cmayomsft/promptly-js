@@ -53,7 +53,7 @@ export class DeleteAlarmTopic extends Topic<DeleteAlarmTopicState> {
         }
 
         // The active topic is done, so clear the active topic and the active prompt.
-        context.state.conversation.rootTopic.activeTopic = undefined;
+        context.state.conversation.rootTopic.state.activeTopic = undefined;
         context.state.conversation.promptTurns = undefined;
         context.state.conversation.promptName = undefined;
         
