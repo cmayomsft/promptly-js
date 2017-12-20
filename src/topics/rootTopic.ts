@@ -3,6 +3,7 @@ import { ParentTopic, ActiveTopicState, ParentTopicState } from '../promptly/par
 import { AddAlarmTopic, AddAlarmTopicState } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 import { Alarm, showAlarms } from '../alarms';
+import { AddAlarmTopicUsingPrompts } from './addAlarmTopicUsingPrompts';
 
 export class RootTopic extends ParentTopic<ParentTopicState> {
 
@@ -20,7 +21,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
 
                 // Init topic with default state.
                 this.setActiveTopic(context, 
-                    new AddAlarmTopic(
+                    new AddAlarmTopicUsingPrompts(
                         { 
                             alarm: {} as Alarm 
                         }
@@ -43,7 +44,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
 
                 return this.showHelp(context);
             } else if (this.state.activeTopic !== undefined) {    
-
+                // TODO: Refactor into getActiveTopic and remove context.
                 this.setActiveTopic(context, 
                     new this.childTopics[this.state.activeTopic.name](this.state.activeTopic.state));
                 return this.activeTopic.onReceive(context);    

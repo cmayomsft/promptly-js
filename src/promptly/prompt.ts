@@ -15,6 +15,16 @@ export abstract class Validator<V> {
 
 export class AlarmTitleValidator extends Validator<string> {
     public validate(context: BotContext) {
+        if(context.request.text.length > 20) {
+            return { reason: 'toomanyattempts' };
+        } else {
+            return { value: context.request.text };
+        }
+    }
+}
+
+export class AlarmTimeValidator extends Validator<string> {
+    public validate(context: BotContext) {
         return { value: context.request.text };
     }
 }
@@ -31,8 +41,8 @@ export class Prompt<V> extends Topic<PromptState> {
     }
 
     // onPrompt
-    protected _onPrompt?: (context: BotContext, lastTurnReason?: string) => void;
-    public onPrompt(prompt: (context: BotContext, lastTurnReason?: string) => void) {
+    protected _onPrompt?: (context: BotContext, lastTurnValidatorReason: string) => void;
+    public onPrompt(prompt: (context: BotContext, lastTurnValidatorReason: string) => void) {
         this._onPrompt = prompt;
         return this;
     }
@@ -59,8 +69,8 @@ export class Prompt<V> extends Topic<PromptState> {
     }
 
     // onFailure
-    protected _onFailure?: (context: BotContext, reason: string) => void;
-    public onFailure(failure: (context: BotContext, reason: string) => void) {
+    protected _onFailure?: (context: BotContext, failureReason: string) => void;
+    public onFailure(failure: (context: BotContext, failureReason: string) => void) {
         this._onFailure = failure;
         return this;
     }
@@ -72,7 +82,7 @@ export class Prompt<V> extends Topic<PromptState> {
         if(this.state.turns === undefined) {
             // Set/increase the turn count.
             this.state.turns = 0;
-            return this._onPrompt(context);
+            return this._onPrompt(context, undefined);
         }
 
         // For all subsequent turns...
@@ -89,8 +99,9 @@ export class Prompt<V> extends Topic<PromptState> {
                 // Prompt.
                 return this._onPrompt(context, validationResult.reason);
             } else {
+                validationResult.reason = 'toomanyattempts';
                 // Prompt failed, so call code to clean up after failure.
-                return this._onFailure(context, "toomanyattempts");
+                return this._onFailure(context, validationResult.reason);
             }
         }
         

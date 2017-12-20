@@ -1,37 +1,94 @@
 import { titleValidator } from '../validators';
 import { Alarm } from '../alarms';
 import { Topic } from '../promptly/topic';
-import { Prompt, AlarmTitleValidator } from '../promptly/prompt';
+import { Prompt, AlarmTitleValidator, AlarmTimeValidator } from '../promptly/prompt';
+import { ParentTopic, ParentTopicState } from '../promptly/parentTopic';
 
-export interface AddAlarmTopicState {
+export interface AddAlarmTopicState extends ParentTopicState {
     alarm: Alarm;
 }
 
-export class AddAlarmTopicUsingPrompts extends Topic<AddAlarmTopicState> {
+export class AddAlarmTopicUsingPrompts extends ParentTopic<AddAlarmTopicState> {
 
     public onReceive(context: BotContext) {
-        if (!this.state.alarm.title) {
-            if (context.state.conversation.promptName !== "title") {
-                context.state.conversation.promptName = "title";
-            }
-            return this.onDispatch(context);
 
-            const titlePrompt = new Prompt<string>({ turns: undefined })
-                .onPrompt((c, ltr) => {})
-                .maxTurns(3)
-                .validator(new AlarmTitleValidator())
-                .onSuccess((c, v) => {})
-                .onFailure((c, v) => {})
-                .onReceive(context);
+        const promptState = (!this.activeTopic) ? { turns: undefined } : this.activeTopic.state;
+
+        if (!this.state.alarm.title) {
+            this.setActiveTopic(context, 
+                new Prompt<string>(promptState)
+                    .onPrompt((c, ltvr) => {
+                        let msg = `What would you like to name your alarm?`;
+
+                        if(ltvr && ltvr === 'titletoolong') {
+                            msg = `Sorry, ${ c.request.value } is too long. `
+                                + `Alarm titles must be less that 20 characters. `
+                                + `Let's try again.` + msg;
+                        }
+
+                        c.reply(msg);
+                    })
+                    .validator(new AlarmTitleValidator())
+                    .maxTurns(2)
+                    .onSuccess((c, v) => {
+                        this.state.alarm.title = v;
+                        
+                        // TODO: Move this to base to clean up and (maybe) loop again.
+                        this.state.activeTopic = undefined;
+
+                        return this.onReceive(context);
+                    })
+                    .onFailure((c, fr) => {
+                        if(fr && fr === 'toomanyattempts') {
+                            c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                        }
+
+                        // TODO: Move this to base to clean up and (maybe) loop again.
+                        this.state.activeTopic = undefined;
+
+                        return;
+                    }
+                )
+            );
+
+            return this.activeTopic.onReceive(context);
         }
     
         if (!this.state.alarm.time) {
-            if (context.state.conversation.promptName !== "time") {
-                context.state.conversation.promptName = "time";
-            }
-            return this.onDispatch(context);
+            this.setActiveTopic(context, 
+                new Prompt<string>(promptState)
+                    .onPrompt((c, ltvr) => {
+
+                        c.reply(`What time would you like to set your alarm for?`);
+                    })
+                    .validator(new AlarmTimeValidator())
+                    .maxTurns(2)
+                    .onSuccess((c, v) => {
+                        this.state.alarm.time = v;
+                        
+                        // TODO: Move this to base to clean up and (maybe) loop again.
+                        this.state.activeTopic = undefined;
+
+                        return this.onReceive(context);
+                    })
+                    .onFailure((c, fr) => {
+                        // TODO: Refactor into single function, DRY.
+                        if(fr && fr === 'toomanyattempts') {
+                            c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                        }
+
+                        // TODO: Move this to base to clean up and (maybe) loop again.
+                        this.state.activeTopic = undefined;
+
+                        return;
+                    }
+                )
+            );
+
+            return this.activeTopic.onReceive(context);
         }
     
+        // TODO: Refactor into onSuccess/onFailure of Topic.
         if (!context.state.user.alarms) {
             context.state.user.alarms = [];
         }
@@ -40,73 +97,7 @@ export class AddAlarmTopicUsingPrompts extends Topic<AddAlarmTopicState> {
             title: this.state.alarm.title,
             time: this.state.alarm.time
         });
-    
-        // The active topic is done, so clear the active topic and the active prompt.
-        //  TODO: Next would be to have the caller clean this up.
-        context.state.conversation.rootTopic.state.activeTopic = undefined;
-        context.state.conversation.promptTurns = undefined;
-        context.state.conversation.promptName = undefined;
 
         return context.reply(`Added alarm named '${this.state.alarm.title}' set for '${this.state.alarm.time}'.`);
-    }
-    
-    private onDispatch(context: BotContext) {
-        switch (context.state.conversation.promptName) {
-            case "title": {
-                //initial prompt
-                if (context.state.conversation.promptTurns === undefined) {
-                    context.state.conversation.promptTurns = 1;
-                    context.reply(`What would you like to name your alarm?`);
-                    return;
-                    //handling prompt response
-                } else {
-                    let titleValidation = titleValidator(context);
-                    //If we got what we needed
-                    if (titleValidation.value) {
-                        //Set value and clear prompt state
-                        this.state.alarm.title = titleValidation.value;
-                        context.state.conversation.promptTurns = undefined;
-                        context.state.conversation.promptName = undefined;
-                        return this.onReceive(context);
-    
-                        //If we didn't get what we needed
-                    } else {
-                        //if we're under our reprompt threshold
-                        if (context.state.conversation.promptTurns <= 2) {
-                            context.state.conversation.promptTurns++;
-                            //repromt. Here we would use a language generation template to map invalidation reason => reply
-                            context.reply(titleValidation.error);
-                            return;
-                        }
-                        //if we're above our prompt threshold
-                        context.reply("You're really bad at this. We're taking you back to the main dispatcher");
-                        //clear prompt and topic state
-                        context.state.conversation.promptTurns = undefined;
-                        context.state.conversation.promptName = undefined;
-                        context.state.conversation.topicName = undefined;
-                        //return to dispatcher
-                        return;
-                    }
-                }
-            }
-            case "time": {
-                //initial prompt
-                if (context.state.conversation.promptTurns === undefined) {
-                    context.state.conversation.promptTurns = 1;
-                    context.reply(`What time would you like to set your alarm for?`);
-                    return;
-                    //handling prompt response
-                } else {
-                    //Set value and clear prompt state
-                    this.state.alarm.time = context.request.text;
-                    context.state.conversation.promptTurns = undefined;
-                    context.state.conversation.promptName = undefined;
-                    return this.onReceive(context);
-                }
-            }
-            default: {
-                console.warn("Prompt was not handled.");
-            }
-        }
     }
 }
