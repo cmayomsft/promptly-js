@@ -3,7 +3,7 @@ import { Topic } from '../promptly/topic';
 import { Prompt } from '../promptly/prompt';
 import { ParentTopic, ParentTopicState } from '../promptly/parentTopic';
 import { PromptState } from 'botbuilder-prompts';
-import { AlarmTitleValidator, AlarmTimeValidator } from "../validators/addAlarmValidators";
+import { Validator } from '../validator/validator';
 
 export interface AddAlarmTopicState extends ParentTopicState {
     alarm: Alarm;
@@ -104,5 +104,21 @@ export class AddAlarmTopicUsingPrompts extends ParentTopic<AddAlarmTopicState> {
         });
 
         return context.reply(`Added alarm named '${this.state.alarm.title}' set for '${this.state.alarm.time}'.`);
+    }
+}
+
+class AlarmTitleValidator extends Validator<string> {
+    public validate(context: BotContext) {
+        if(context.request.text.length > 20) {
+            return { reason: 'titletoolong' };
+        } else {
+            return { value: context.request.text };
+        }
+    }
+}
+
+class AlarmTimeValidator extends Validator<string> {
+    public validate(context: BotContext) {
+        return { value: context.request.text };
     }
 }
