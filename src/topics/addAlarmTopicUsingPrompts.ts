@@ -1,8 +1,9 @@
-import { titleValidator } from '../validators';
 import { Alarm } from '../alarms';
 import { Topic } from '../promptly/topic';
-import { Prompt, AlarmTitleValidator, AlarmTimeValidator } from '../promptly/prompt';
+import { Prompt } from '../promptly/prompt';
 import { ParentTopic, ParentTopicState } from '../promptly/parentTopic';
+import { PromptState } from 'botbuilder-prompts';
+import { AlarmTitleValidator, AlarmTimeValidator } from "../validators/addAlarmValidators";
 
 export interface AddAlarmTopicState extends ParentTopicState {
     alarm: Alarm;
@@ -12,7 +13,7 @@ export class AddAlarmTopicUsingPrompts extends ParentTopic<AddAlarmTopicState> {
 
     public onReceive(context: BotContext) {
 
-        const promptState = (!this.activeTopic) ? { turns: undefined } : this.activeTopic.state;
+        const promptState = (!this.state.activeTopic) ? { turns: undefined } : this.state.activeTopic.state;
 
         if (!this.state.alarm.title) {
             this.setActiveTopic(context, 
@@ -21,19 +22,18 @@ export class AddAlarmTopicUsingPrompts extends ParentTopic<AddAlarmTopicState> {
                         let msg = `What would you like to name your alarm?`;
 
                         if(ltvr && ltvr === 'titletoolong') {
-                            msg = `Sorry, ${ c.request.value } is too long. `
-                                + `Alarm titles must be less that 20 characters. `
-                                + `Let's try again.` + msg;
+                            c.reply(`Sorry, alarm titles must be less that 20 characters.`)
+                                .reply(`Let's try again.`);
                         }
 
-                        c.reply(msg);
+                        return c.reply(msg);
                     })
                     .validator(new AlarmTitleValidator())
                     .maxTurns(2)
                     .onSuccess((c, v) => {
                         this.state.alarm.title = v;
                         
-                        // TODO: Move this to base to clean up and (maybe) loop again.
+                        // TODO: Move this to base class to clean up and (maybe) loop again.
                         this.state.activeTopic = undefined;
 
                         return this.onReceive(context);
@@ -43,8 +43,11 @@ export class AddAlarmTopicUsingPrompts extends ParentTopic<AddAlarmTopicState> {
                             c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
                         }
 
-                        // TODO: Move this to base to clean up and (maybe) loop again.
+                        // TODO: Move this to base class to clean up and (maybe) loop again.
                         this.state.activeTopic = undefined;
+
+                        // TODO: Remove active topic. Move this to onSuccess/onFailure of calling Topic.
+                        context.state.conversation.rootTopic.state.activeTopic = undefined;
 
                         return;
                     }
@@ -59,7 +62,7 @@ export class AddAlarmTopicUsingPrompts extends ParentTopic<AddAlarmTopicState> {
                 new Prompt<string>(promptState)
                     .onPrompt((c, ltvr) => {
 
-                        c.reply(`What time would you like to set your alarm for?`);
+                        return c.reply(`What time would you like to set your alarm for?`);
                     })
                     .validator(new AlarmTimeValidator())
                     .maxTurns(2)
@@ -72,13 +75,15 @@ export class AddAlarmTopicUsingPrompts extends ParentTopic<AddAlarmTopicState> {
                         return this.onReceive(context);
                     })
                     .onFailure((c, fr) => {
-                        // TODO: Refactor into single function, DRY.
                         if(fr && fr === 'toomanyattempts') {
                             c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
                         }
 
-                        // TODO: Move this to base to clean up and (maybe) loop again.
+                        // TODO: Move this to base class to clean up and (maybe) loop again.
                         this.state.activeTopic = undefined;
+
+                        // TODO: Remove active topic. Move this to onSuccess/onFailure of calling Topic.
+                        context.state.conversation.rootTopic.state.activeTopic = undefined;
 
                         return;
                     }

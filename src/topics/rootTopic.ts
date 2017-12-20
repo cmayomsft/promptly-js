@@ -9,7 +9,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
 
     constructor(state: ParentTopicState) {
         super(state);
-        this.childTopics = { AddAlarmTopic, DeleteAlarmTopic };
+        this.childTopics = { AddAlarmTopicUsingPrompts, DeleteAlarmTopic };
     }
 
     public onReceive(context: BotContext) {
@@ -23,7 +23,8 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 this.setActiveTopic(context, 
                     new AddAlarmTopicUsingPrompts(
                         { 
-                            alarm: {} as Alarm 
+                            alarm: {} as Alarm,
+                            activeTopic: undefined
                         }
                     )
                 );
@@ -43,8 +44,9 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);
+                // TODO: Refactor this check into hasActiveTopic property.
             } else if (this.state.activeTopic !== undefined) {    
-                // TODO: Refactor into getActiveTopic and remove context.
+                // TODO: Refactor into rehydrateActiveTopic (needs better name) and remove context from setActiveTopic.
                 this.setActiveTopic(context, 
                     new this.childTopics[this.state.activeTopic.name](this.state.activeTopic.state));
                 return this.activeTopic.onReceive(context);    

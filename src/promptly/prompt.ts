@@ -1,33 +1,7 @@
 import { Promiseable } from 'botbuilder-core';
 
 import { Topic } from "./topic";
-
-// ValidatorResult
-export interface ValidatorResult<V> {
-    value?: V;
-    reason?: string;
-}
-
-// Validator
-export abstract class Validator<V> {
-    abstract validate(context: BotContext): ValidatorResult<V>;
-}
-
-export class AlarmTitleValidator extends Validator<string> {
-    public validate(context: BotContext) {
-        if(context.request.text.length > 20) {
-            return { reason: 'toomanyattempts' };
-        } else {
-            return { value: context.request.text };
-        }
-    }
-}
-
-export class AlarmTimeValidator extends Validator<string> {
-    public validate(context: BotContext) {
-        return { value: context.request.text };
-    }
-}
+import { Validator } from "../validator/validator";
 
 export interface PromptState {
     turns?: number;
