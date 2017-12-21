@@ -21,7 +21,7 @@ export class DeleteAlarmTopicUsingPrompts extends ParentTopic<DeleteAlarmTopicSt
             return context.reply(`There are no alarms to delete.`);
         }
 
-        if (!this.state.alarmIndex) {
+        if (this.state.alarmIndex === undefined) {
             // If there is only one alarm to delete, use that index. No need to prompt.
             if (alarms.length === 1) {
                 showAlarms(context);
@@ -77,7 +77,7 @@ export class DeleteAlarmTopicUsingPrompts extends ParentTopic<DeleteAlarmTopicSt
 
         this.state.alarm.title = alarms[this.state.alarmIndex].title;
     
-        if (!this.state.deleteConfirmed) {
+        if (this.state.deleteConfirmed === undefined) {
 
             const promptState = (!this.state.activeTopic) ? { turns: undefined } : this.state.activeTopic.state;
             
