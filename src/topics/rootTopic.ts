@@ -1,16 +1,14 @@
 import { Topic } from '../promptly/topic';
 import { ParentTopic, ActiveTopicState, ParentTopicState } from '../promptly/parentTopic';
-import { AddAlarmTopic, AddAlarmTopicState } from './addAlarmTopic';
-import { DeleteAlarmTopic } from './deleteAlarmTopic';
 import { Alarm, showAlarms } from '../alarms';
-import { AddAlarmTopicUsingPrompts } from './addAlarmTopicUsingPrompts';
-import { DeleteAlarmTopicUsingPrompts } from './deleteAlarmTopicUsingPrompts';
+import { AddAlarmTopic } from './addAlarmTopic';
+import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
 export class RootTopic extends ParentTopic<ParentTopicState> {
 
     constructor(state: ParentTopicState) {
         super(state);
-        this.childTopics = { AddAlarmTopicUsingPrompts, DeleteAlarmTopicUsingPrompts };
+        this.childTopics = { AddAlarmTopic, DeleteAlarmTopic };
     }
 
     public onReceive(context: BotContext) {
@@ -21,27 +19,11 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
                 // Init topic with default state.
-                this.setActiveTopic(context, 
-                    new AddAlarmTopicUsingPrompts(
-                        { 
-                            alarm: {} as Alarm,
-                            activeTopic: undefined
-                        }
-                    )
-                );
+                this.setActiveTopic(context, new AddAlarmTopic({ alarm: {} as Alarm, activeTopic: undefined }));
                 return this.activeTopic.onReceive(context);
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                this.setActiveTopic(context, 
-                    new DeleteAlarmTopicUsingPrompts(
-                        { 
-                            alarmIndex: undefined, 
-                            alarm: {} as Alarm,
-                            deleteConfirmed: undefined,
-                            activeTopic: undefined
-                        }
-                    )
-                );
+                this.setActiveTopic(context, new DeleteAlarmTopic({ alarmIndex: undefined, alarm: {} as Alarm, deleteConfirmed: undefined, activeTopic: undefined }));
                 return this.activeTopic.onReceive(context);
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 

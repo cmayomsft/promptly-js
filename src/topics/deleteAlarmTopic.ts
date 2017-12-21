@@ -1,109 +1,168 @@
-import { Alarm, showAlarms, findAlarmIndex } from '../alarms';
+import { Alarm, showAlarms } from '../alarms';
 import { Topic } from '../promptly/topic';
+import { ParentTopic, ParentTopicState } from '../promptly/parentTopic';
+import { Prompt } from '../promptly/prompt';
+import { Validator } from '../validator/validator';
 
-export interface DeleteAlarmTopicState {
+export interface DeleteAlarmTopicState extends ParentTopicState {
     alarmIndex?: number;
     alarm?: Partial<Alarm>;
     deleteConfirmed?: boolean;
 }
 
-export class DeleteAlarmTopic extends Topic<DeleteAlarmTopicState> {
+export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
     
     public onReceive(context: BotContext) {
+
         const alarms = context.state.user.alarms || [];
 
-        // This undefined check is needed in case the user asks to delete alarm before the user has alarms.
-        //  The default in DeleteAlarmTopicState will be overwritten by the user state of an empty array.
+        // If there are no alarms to delete...
         if (alarms.length === 0) {
-            context.reply(`There are no alarms to delete.`);
-            return;
+            return context.reply(`There are no alarms to delete.`);
         }
 
         if (this.state.alarmIndex === undefined) {
-            //Basically the prompt in a choice prompt, so show the alarms.
-            showAlarms(context);
-    
+            // If there is only one alarm to delete, use that index. No need to prompt.
             if (alarms.length === 1) {
-                // There is only one alarm, so get the title so you can use it to just confirm whether the user
-                //  wants to delete the alarm.
+                showAlarms(context);
+
                 this.state.alarmIndex = 0;
+            } else {
+                const promptState = (!this.state.activeTopic) ? { turns: undefined } : this.state.activeTopic.state;
+
+                this.setActiveTopic(context, 
+                    new Prompt<number>(promptState)
+                        .onPrompt((c, ltvr) => {                           
+                            let msg = `Which alarm would you like to delete?`
+        
+                            if(ltvr && ltvr === 'indexnotfound') {
+                                c.reply(`Sorry, I coulnd't find an alarm named '${context.request.text}'.`)
+                                    .reply(`Let's try again.`);
+                            }
+                            
+                            // Basically the prompt is a choice prompt, so show the alarms.
+                            showAlarms(context);
     
-            } else if (alarms.length > 1) {
-                if(context.state.conversation.promptName !== "title") {
-                    context.state.conversation.promptName = "title";                    
-                }
-                return this.onDispatch(context);
+                            return c.reply(msg);
+                        })
+                        .validator(new AlarmIndexValidator(alarms))
+                        .maxTurns(2)
+                        .onSuccess((c, v) => {
+                            this.state.alarmIndex = v;
+                            
+                            // TODO: Move this to base class to clean up and (maybe) loop again.
+                            this.state.activeTopic = undefined;
+    
+                            return this.onReceive(context);
+                        })
+                        .onFailure((c, fr) => {
+                            if(fr && fr === 'toomanyattempts') {
+                                c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                            }
+    
+                            // TODO: Move this to base class to clean up and (maybe) loop again.
+                            this.state.activeTopic = undefined;
+    
+                            // TODO: Remove active topic. Move this to onSuccess/onFailure of calling Topic.
+                            context.state.conversation.rootTopic.state.activeTopic = undefined;
+    
+                            return;
+                        }
+                    )
+                );
+        
+                return this.activeTopic.onReceive(context);
             }
         }
 
         this.state.alarm.title = alarms[this.state.alarmIndex].title;
     
         if (this.state.deleteConfirmed === undefined) {
-            if(context.state.conversation.promptName !== "deleteConfirmed") {
-                context.state.conversation.promptName = "deleteConfirmed";    
-            }
-            return this.onDispatch(context);
+
+            const promptState = (!this.state.activeTopic) ? { turns: undefined } : this.state.activeTopic.state;
+            
+            this.setActiveTopic(context, 
+                new Prompt<boolean>(promptState)
+                    .onPrompt((c, ltvr) => {
+                        let msg = `Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`;
+
+                        if(ltvr && ltvr === 'notyesorno') {
+                            c.reply(`Sorry, I was expecting 'yes' or 'no'.`)
+                                .reply(`Let's try again.`);
+                        }
+
+                        return c.reply(msg);
+                    })
+                    .validator(new YesOrNoValidator())
+                    .maxTurns(2)
+                    .onSuccess((c, v) => {
+                        this.state.deleteConfirmed = v;
+                        
+                        // TODO: Move this to base class to clean up and (maybe) loop again.
+                        this.state.activeTopic = undefined;
+
+                        return this.onReceive(context);
+                    })
+                    .onFailure((c, fr) => {
+                        if(fr && fr === 'toomanyattempts') {
+                            c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                        }
+
+                        // TODO: Move this to base class to clean up and (maybe) loop again.
+                        this.state.activeTopic = undefined;
+
+                        // TODO: Remove active topic. Move this to onSuccess/onFailure of calling Topic.
+                        context.state.conversation.rootTopic.state.activeTopic = undefined;
+
+                        return;
+                    }
+                )
+            );
+
+            return this.activeTopic.onReceive(context);
         }
 
-        if (this.state.deleteConfirmed === false) {
-            context.reply(`Ok, I won't delete alarm ${this.state.alarm.title} then.`);
-        } else {
+        if (this.state.deleteConfirmed) {
+            // TODO: Refactor into onSuccess/onFailure of Topic.
             alarms.splice(this.state.alarmIndex, 1);
             return context.reply(`Done. I've deleted alarm '${this.state.alarm.title}'.`);
+        } else {
+            return context.reply(`Ok, I won't delete alarm ${this.state.alarm.title}.`);
         }
-
-        // The active topic is done, so clear the active topic and the active prompt.
-        context.state.conversation.rootTopic.state.activeTopic = undefined;
-        context.state.conversation.promptTurns = undefined;
-        context.state.conversation.promptName = undefined;
-        
-        return;
     }
-    
-    private onDispatch(context: BotContext) {
-        switch (context.state.conversation.promptName) {
-            case "title": {
-                if (context.state.conversation.promptTurns === undefined) {
-                    context.state.conversation.promptTurns = 1;
-                    context.reply(`Which alarm would you like to delete?`);
-                    return;
-                } else {
-                    this.state.alarm.title = context.request.text;
-                    const foundAlarmIndex = findAlarmIndex(context.state.user.alarms, this.state.alarm.title);
-                    if (foundAlarmIndex < 0) {
-                        context.state.conversation.promptTurns++;
-                        context.reply(`I couldn't find an alarm named '${this.state.alarm.title}'`);
-                    } else {
-                        this.state.alarmIndex = foundAlarmIndex;
-                        context.state.conversation.promptTurns = undefined;
-                        context.state.conversation.promptName = undefined;
-                    }
-                    return this.onReceive(context);
-                }
-            }
-            case "deleteConfirmed": {
-                if(context.state.conversation.promptTurns === undefined) {
-                    context.state.conversation.promptTurns = 1;
-                    context.reply(`Are you sure you want to delete alarm '${this.state.alarm.title}' ('yes' or 'no')?`);
-                    return;
-                } else {
-                    //we could use a validator here like we do when choosing alarms
-                    let response = context.request.text.toLowerCase();
-                    if (response !== "yes" && response !== "no") {
-                        context.state.conversation.promptTurns++;
-                        context.reply(`I didn't understand... Let's try again.`);
-                    } else {
-                        //Translate yes | no into a boolean
-                        this.state.deleteConfirmed = (response === "yes") ? true : false;
-                        context.state.conversation.promptTurns = undefined;
-                        context.state.conversation.promptName = undefined;
-                    }
-                    return this.onReceive(context);
-                }
-            }
-            default: {
-                console.warn("Prompt was not handled.");
-            }
+}
+
+class AlarmIndexValidator extends Validator<number> {
+
+    private _alarms: Alarm[] = [];
+
+    constructor(alarms: Alarm[]) {
+        super();
+        this._alarms = alarms;
+    }
+
+    public validate(context: BotContext) {
+        const index = this._alarms.findIndex((alarm) => {
+            return alarm.title.toLowerCase() === context.request.text.toLowerCase();
+        });
+
+        if(index > -1) {
+            return { value: index };
+        } else {
+            return { reason: 'indexnotfound' };
+        }
+    }
+}
+
+// TODO: Refactor into a confirm prompt with yes, y, yup, etc. validator.
+class YesOrNoValidator extends Validator<boolean> {
+    public validate(context: BotContext) {
+        if(context.request.text === 'yes') {
+            return { value: true };
+        } else if(context.request.text === 'no') {
+            return { value: false };
+        } else {
+            return { reason: 'notyesorno' };
         }
     }
 }
