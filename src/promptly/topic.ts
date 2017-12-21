@@ -11,6 +11,5 @@ export abstract class Topic<S = any> {
         this._state = state;
     }
 
-    // TODO: Make this typed as S/state.
     abstract onReceive(context: BotContext): Promiseable<any>;
 }
