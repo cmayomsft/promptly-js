@@ -28,7 +28,6 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);
-                // TODO: Refactor this check into hasActiveTopic property.
             } else if (this.hasActiveTopic) {    
 
                 return this.activeTopic.onReceive(context);    
