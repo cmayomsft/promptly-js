@@ -4,12 +4,13 @@ import { AddAlarmTopic, AddAlarmTopicState } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 import { Alarm, showAlarms } from '../alarms';
 import { AddAlarmTopicUsingPrompts } from './addAlarmTopicUsingPrompts';
+import { DeleteAlarmTopicUsingPrompts } from './deleteAlarmTopicUsingPrompts';
 
 export class RootTopic extends ParentTopic<ParentTopicState> {
 
     constructor(state: ParentTopicState) {
         super(state);
-        this.childTopics = { AddAlarmTopicUsingPrompts, DeleteAlarmTopic };
+        this.childTopics = { AddAlarmTopicUsingPrompts, DeleteAlarmTopicUsingPrompts };
     }
 
     public onReceive(context: BotContext) {
@@ -32,11 +33,12 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
                 this.setActiveTopic(context, 
-                    new DeleteAlarmTopic(
+                    new DeleteAlarmTopicUsingPrompts(
                         { 
                             alarmIndex: undefined, 
                             alarm: {} as Alarm,
-                            deleteConfirmed: undefined
+                            deleteConfirmed: undefined,
+                            activeTopic: undefined
                         }
                     )
                 );

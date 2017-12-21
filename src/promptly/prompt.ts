@@ -28,6 +28,7 @@ export class Prompt<V> extends Topic<PromptState> {
         return this;
     }
 
+    // TODO: Refactor to accept a Validator<V> or a function that returns type V.
     // validator
     protected _validator: Validator<V>;
     public validator(validator: Validator<V>) {
