@@ -11,8 +11,11 @@ export interface ParentTopicState {
 }
 
 export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
-    // TODO: Refactor to create topic instace from the name of the class.
-    private _childTopics: any;
+
+    private _childTopics: Map<string, Topic>;
+    protected addChildTopic(child: Topic) {
+
+    }
     protected get childTopics(): any {
         return this._childTopics;
     }
@@ -36,6 +39,7 @@ export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
         this._activeTopic = new this.childTopics[this.state.activeTopic.name](this.state.activeTopic.state);
         return this._activeTopic;
     }
+    // TODO: This changes to getting object from child map (by object instance name) and setting the active topic after setting state.
     public set activeTopic(childTopic: Topic) {
         this._activeTopic = childTopic;
         this.state.activeTopic = { name: childTopic.constructor.name, state: childTopic.state } as ActiveTopicState;

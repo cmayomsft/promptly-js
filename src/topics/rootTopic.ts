@@ -8,10 +8,37 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
 
     constructor(state: ParentTopicState) {
         super(state);
+        // TODO: Change childTopics to be map of name of topic object, topic object.
         this.childTopics = { AddAlarmTopic, DeleteAlarmTopic };
     }
 
-    public onReceive(context: BotContext) {
+    // TODO: 
+    private addAlarmTopic = new AddAlarmTopic({ alarm: {} as Alarm, activeTopic: undefined })
+        .onSuccess((c, s) => {
+            if (!c.state.user.alarms) {
+                c.state.user.alarms = [];
+            }
+        
+            c.state.user.alarms.push({
+                title: s.alarm.title,
+                time: s.alarm.time
+            });
+
+            this.activeTopic = undefined;
+
+            return c.reply(`Added alarm named '${s.alarm.title}' set for '${s.alarm.time}'.`);
+        })
+        .onFailure((c, fr) => {
+            if(fr && fr === 'toomanyattempts') {
+                c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+            }
+
+            this.state.activeTopic = undefined;
+
+            return this.showDefaultMessage(c);
+        });
+
+    public onReceive(context: BotContext) { 
         if (context.request.type === 'message' && context.request.text.length > 0) {
             if (/show alarms/i.test(context.request.text) || context.ifIntent('showAlarms')) {
 
@@ -19,7 +46,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
                 // Init topic with default state.
-                this.activeTopic = new AddAlarmTopic({ alarm: {} as Alarm, activeTopic: undefined });
+                this.activeTopic = this.addAlarmTopic;
                 return this.activeTopic.onReceive(context);
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 

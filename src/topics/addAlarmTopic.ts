@@ -39,17 +39,11 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
                         return this.onReceive(context);
                     })
                     .onFailure((c, fr) => {
-                        if(fr && fr === 'toomanyattempts') {
-                            c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
-                        }
 
                         // TODO: Move this to base class to clean up and (maybe) loop again.
                         this.state.activeTopic = undefined;
 
-                        // TODO: Remove active topic. Move this to onSuccess/onFailure of calling Topic.
-                        context.state.conversation.rootTopic.state.activeTopic = undefined;
-
-                        return;
+                        return this._onFailure(context, fr);
                     }
                 );
 
@@ -91,17 +85,7 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
             return this.activeTopic.onReceive(context);
         }
     
-        // TODO: Refactor into onSuccess/onFailure of Topic.
-        if (!context.state.user.alarms) {
-            context.state.user.alarms = [];
-        }
-    
-        context.state.user.alarms.push({
-            title: this.state.alarm.title,
-            time: this.state.alarm.time
-        });
-
-        return context.reply(`Added alarm named '${this.state.alarm.title}' set for '${this.state.alarm.time}'.`);
+        return this._onSuccess(context, this.state);
     }
 }
 
