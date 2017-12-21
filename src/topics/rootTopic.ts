@@ -19,11 +19,11 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
                 // Init topic with default state.
-                this.setActiveTopic(context, new AddAlarmTopic({ alarm: {} as Alarm, activeTopic: undefined }));
+                this.setActiveTopic(new AddAlarmTopic({ alarm: {} as Alarm, activeTopic: undefined }));
                 return this.activeTopic.onReceive(context);
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                this.setActiveTopic(context, new DeleteAlarmTopic({ alarmIndex: undefined, alarm: {} as Alarm, deleteConfirmed: undefined, activeTopic: undefined }));
+                this.setActiveTopic(new DeleteAlarmTopic({ alarmIndex: undefined, alarm: {} as Alarm, deleteConfirmed: undefined, activeTopic: undefined }));
                 return this.activeTopic.onReceive(context);
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
@@ -31,8 +31,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 // TODO: Refactor this check into hasActiveTopic property.
             } else if (this.state.activeTopic !== undefined) {    
                 // TODO: Refactor into rehydrateActiveTopic (needs better name) and remove context from setActiveTopic.
-                this.setActiveTopic(context, 
-                    new this.childTopics[this.state.activeTopic.name](this.state.activeTopic.state));
+                this.setActiveTopic(new this.childTopics[this.state.activeTopic.name](this.state.activeTopic.state));
                 return this.activeTopic.onReceive(context);    
             } else {
                 

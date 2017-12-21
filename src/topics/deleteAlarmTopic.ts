@@ -30,7 +30,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
             } else {
                 const promptState = (!this.state.activeTopic) ? { turns: undefined } : this.state.activeTopic.state;
 
-                this.setActiveTopic(context, 
+                this.setActiveTopic( 
                     new Prompt<number>(promptState)
                         .onPrompt((c, ltvr) => {                           
                             let msg = `Which alarm would you like to delete?`
@@ -81,7 +81,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
 
             const promptState = (!this.state.activeTopic) ? { turns: undefined } : this.state.activeTopic.state;
             
-            this.setActiveTopic(context, 
+            this.setActiveTopic( 
                 new Prompt<boolean>(promptState)
                     .onPrompt((c, ltvr) => {
                         let msg = `Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`;
