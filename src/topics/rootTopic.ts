@@ -1,8 +1,8 @@
 import { Topic } from '../promptly/topic';
 import { ParentTopic, ActiveTopicState, ParentTopicState } from '../promptly/parentTopic';
-import { AddAlarmTopic, AddAlarmTopicState } from './addAlarmTopic';
-import { DeleteAlarmTopic } from './deleteAlarmTopic';
 import { Alarm, showAlarms } from '../alarms';
+import { AddAlarmTopic } from './addAlarmTopic';
+import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
 export class RootTopic extends ParentTopic<ParentTopicState> {
 
@@ -19,33 +19,18 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
                 // Init topic with default state.
-                this.setActiveTopic(context, 
-                    new AddAlarmTopic(
-                        { 
-                            alarm: {} as Alarm 
-                        }
-                    )
-                );
+                this.activeTopic = new AddAlarmTopic({ alarm: {} as Alarm, activeTopic: undefined });
                 return this.activeTopic.onReceive(context);
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                this.setActiveTopic(context, 
-                    new DeleteAlarmTopic(
-                        { 
-                            alarmIndex: undefined, 
-                            alarm: {} as Alarm,
-                            deleteConfirmed: undefined
-                        }
-                    )
-                );
+                this.activeTopic = new DeleteAlarmTopic({ alarmIndex: undefined, alarm: {} as Alarm, deleteConfirmed: undefined, activeTopic: undefined });
                 return this.activeTopic.onReceive(context);
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);
-            } else if (this.state.activeTopic !== undefined) {    
+                // TODO: Refactor this check into hasActiveTopic property.
+            } else if (this.hasActiveTopic) {    
 
-                this.setActiveTopic(context, 
-                    new this.childTopics[this.state.activeTopic.name](this.state.activeTopic.state));
                 return this.activeTopic.onReceive(context);    
             } else {
                 
