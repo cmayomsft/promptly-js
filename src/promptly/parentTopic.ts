@@ -21,11 +21,27 @@ export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
     }
 
     private _activeTopic: Topic;
-    protected setActiveTopic(childTopic: Topic) {
+    public get activeTopic(): Topic {
+        // If there is no active topic state, there is no active child topic being managed.
+        if(!this.state.activeTopic) {
+            return undefined;
+        } 
+        
+        // If there is an active child topic object reference, return that.
+        if(this._activeTopic) {
+            return this._activeTopic;
+        }
+
+        // Create the active child topic object reference and return that.
+        this._activeTopic = new this.childTopics[this.state.activeTopic.name](this.state.activeTopic.state);
+        return this._activeTopic;
+    }
+    public set activeTopic(childTopic: Topic) {
         this._activeTopic = childTopic;
         this.state.activeTopic = { name: childTopic.constructor.name, state: childTopic.state } as ActiveTopicState;
     }
-    protected get activeTopic(): Topic {
-        return this._activeTopic;
+
+    public get hasActiveTopic(): boolean {
+        return this.state.activeTopic !== undefined;
     }
 }

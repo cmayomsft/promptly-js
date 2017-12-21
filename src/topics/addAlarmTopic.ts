@@ -16,7 +16,7 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
         const promptState = (!this.state.activeTopic) ? { turns: undefined } : this.state.activeTopic.state;
 
         if (!this.state.alarm.title) {
-            this.setActiveTopic( 
+            this.activeTopic = 
                 new Prompt<string>(promptState)
                     .onPrompt((c, ltvr) => {
                         let msg = `What would you like to name your alarm?`;
@@ -51,14 +51,13 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
 
                         return;
                     }
-                )
-            );
+                );
 
             return this.activeTopic.onReceive(context);
         }
     
         if (!this.state.alarm.time) {
-            this.setActiveTopic( 
+            this.activeTopic =  
                 new Prompt<string>(promptState)
                     .onPrompt((c, ltvr) => {
 
@@ -87,8 +86,7 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
 
                         return;
                     }
-                )
-            );
+                );
 
             return this.activeTopic.onReceive(context);
         }
