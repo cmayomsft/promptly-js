@@ -11,18 +11,6 @@ export interface ParentTopicState {
 }
 
 export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
-
-    private _childTopics: Map<string, Topic>;
-    protected addChildTopic(child: Topic) {
-
-    }
-    protected get childTopics(): any {
-        return this._childTopics;
-    }
-    protected set childTopics(topics: any) {
-        this._childTopics = topics;
-    }
-
     private _activeTopic: Topic;
     public get activeTopic(): Topic {
         // If there is no active topic state, there is no active child topic being managed.
@@ -36,13 +24,13 @@ export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
         }
 
         // Create the active child topic object reference and return that.
-        this._activeTopic = new this.childTopics[this.state.activeTopic.name](this.state.activeTopic.state);
+        this._activeTopic = new this[this.state.activeTopic.name](this.state.activeTopic.state);
         return this._activeTopic;
     }
     // TODO: This changes to getting object from child map (by object instance name) and setting the active topic after setting state.
     public set activeTopic(childTopic: Topic) {
         this._activeTopic = childTopic;
-        this.state.activeTopic = { name: childTopic.constructor.name, state: childTopic.state } as ActiveTopicState;
+        this.state.activeTopic = { name: childTopic.name, state: childTopic.state } as ActiveTopicState;
     }
 
     public get hasActiveTopic(): boolean {

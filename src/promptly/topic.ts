@@ -2,7 +2,13 @@ import { Promiseable } from 'botbuilder-core';
 
 export abstract class Topic<S = any> {
     
-    constructor(state?: S) {
+    private _name: string;
+    public get name(): string {
+        return this._name;
+    }
+
+    constructor(name: string, state?: S) {
+        this._name = name;
         this._state = state;
         return this;
     }
@@ -11,9 +17,9 @@ export abstract class Topic<S = any> {
     public get state(): S {
         return this._state;
     }
-    public set state(state: S) {
+    /*public set state(state: S) {
         this._state = state;
-    }
+    }*/
 
     // onSuccess
     protected _onSuccess?: (context: BotContext, state: S) => void;
