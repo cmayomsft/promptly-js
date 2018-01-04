@@ -12,6 +12,10 @@ export interface AddAlarmTopicState extends ParentTopicState {
 
 export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
 
+    public constructor(name: string, state: AddAlarmTopicState = { alarm: {} as Alarm, activeTopic: undefined }) {
+        super(name, state);
+    }
+
     private titlePrompt = new Prompt<string>('titlePrompt')
         .onPrompt((c, ltvr) => {
             let msg = `What would you like to name your alarm?`;
@@ -74,18 +78,20 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
 
     public onReceive(context: BotContext) {
 
-        if (!this.state.alarm.title) {
-            this.activeTopic = this.titlePrompt;
-        }
-    
-        if (!this.state.alarm.time) {
-            this.activeTopic = this.timePrompt;
-        }
-
-        if(this.hasActiveTopic) {
+        if(this.hasActiveTopic) { 
             return this.activeTopic.onReceive(context);
         }
-    
+
+        if (!this.state.alarm.title) {
+            this.activeTopic = this.titlePrompt;
+            return this.activeTopic.onReceive(context);
+        } 
+        
+        if (!this.state.alarm.time) {
+            this.activeTopic = this.timePrompt;
+            return this.activeTopic.onReceive(context);
+        }
+        
         return this._onSuccess(context, this.state);
     }
 }

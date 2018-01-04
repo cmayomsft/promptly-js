@@ -7,7 +7,7 @@ export abstract class Topic<S = any> {
         return this._name;
     }
 
-    constructor(name: string, state?: S) {
+    constructor(name: string, state: S) {
         this._name = name;
         this._state = state;
         return this;
@@ -17,9 +17,9 @@ export abstract class Topic<S = any> {
     public get state(): S {
         return this._state;
     }
-    /*public set state(state: S) {
+    public set state(state: S) {
         this._state = state;
-    }*/
+    }
 
     // onSuccess
     protected _onSuccess?: (context: BotContext, state: S) => void;

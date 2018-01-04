@@ -23,8 +23,9 @@ export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
             return this._activeTopic;
         }
 
-        // Create the active child topic object reference and return that.
-        this._activeTopic = new this[this.state.activeTopic.name](this.state.activeTopic.state);
+        this._activeTopic = this[this.state.activeTopic.name];
+        this._activeTopic.state = this.state.activeTopic.state;
+
         return this._activeTopic;
     }
     // TODO: This changes to getting object from child map (by object instance name) and setting the active topic after setting state.
