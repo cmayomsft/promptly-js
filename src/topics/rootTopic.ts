@@ -6,49 +6,51 @@ import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
 export class RootTopic extends ParentTopic<ParentTopicState> {
 
-    private addAlarmTopic = new AddAlarmTopic('addAlarmTopic')
-        .onSuccess((c, s) => {
-            if (!c.state.user.alarms) {
-                c.state.user.alarms = [];
-            }
-        
-            c.state.user.alarms.push({
-                title: s.alarm.title,
-                time: s.alarm.time
-            });
+    protected subTopics = { 
+        addAlarmTopic: new AddAlarmTopic('addAlarmTopic')
+            .onSuccess((c, s) => {
+                if (!c.state.user.alarms) {
+                    c.state.user.alarms = [];
+                }
+            
+                c.state.user.alarms.push({
+                    title: s.alarm.title,
+                    time: s.alarm.time
+                });
 
-            this.state.activeTopic = undefined;
+                this.state.activeTopic = undefined;
 
-            return c.reply(`Added alarm named '${s.alarm.title}' set for '${s.alarm.time}'.`);
-        })
-        .onFailure((c, fr) => {
-            if(fr && fr === 'toomanyattempts') {
-                c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
-            }
+                return c.reply(`Added alarm named '${s.alarm.title}' set for '${s.alarm.time}'.`);
+            })
+            .onFailure((c, fr) => {
+                if(fr && fr === 'toomanyattempts') {
+                    c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+                }
 
-            this.state.activeTopic = undefined;
+                this.state.activeTopic = undefined;
 
-            return this.showDefaultMessage(c);
-        });
+                return this.showDefaultMessage(c);
+            }), 
+            
+        deleteAlarmTopic: new DeleteAlarmTopic('deleteAlarmTopic')
+            .onSuccess((c, s) => {
+                if (s.deleteConfirmed) {
+                    c.state.user.alarms.splice(s.alarmIndex, 1);
+                    return c.reply(`Done. I've deleted alarm '${s.alarm.title}'.`);
+                } else {
+                    return c.reply(`Ok, I won't delete alarm ${s.alarm.title}.`);
+                }
+            })
+            .onFailure((c, fr) => {
+                if(fr && fr === 'toomanyattempts') {
+                    c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+                }
 
-    private deleteAlarmTopic = new DeleteAlarmTopic('deleteAlarmTopic')
-        .onSuccess((c, s) => {
-            if (s.deleteConfirmed) {
-                c.state.user.alarms.splice(s.alarmIndex, 1);
-                return c.reply(`Done. I've deleted alarm '${s.alarm.title}'.`);
-            } else {
-                return c.reply(`Ok, I won't delete alarm ${s.alarm.title}.`);
-            }
-        })
-        .onFailure((c, fr) => {
-            if(fr && fr === 'toomanyattempts') {
-                c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
-            }
+                this.state.activeTopic = undefined;
 
-            this.state.activeTopic = undefined;
-
-            return this.showDefaultMessage(c);
-        });
+                return this.showDefaultMessage(c);
+            })
+        };
 
     public onReceive(context: BotContext) { 
 
@@ -58,10 +60,10 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 return showAlarms(context);
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                this.activeTopic = this.addAlarmTopic;
+                this.activeTopic = this.subTopics.addAlarmTopic;
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                this.activeTopic = this.deleteAlarmTopic;
+                this.activeTopic = this.subTopics.deleteAlarmTopic;
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);

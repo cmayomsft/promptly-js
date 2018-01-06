@@ -11,116 +11,121 @@ export interface DeleteAlarmTopicState extends ParentTopicState {
 }
 
 export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
-    // TODO: Refactor this out to be state of the DeleteAlarmTopic.
-    private alarms: Alarm[] = [];
+    
+    private _alarms: Alarm[] = [];
+
+    protected subTopics = {
+        whichAlarmPrompt: new Prompt<number>('whichAlarmPrompt')
+            .onPrompt((c, ltvr) => {                           
+                let msg = `Which alarm would you like to delete?`
+
+                if(ltvr && ltvr === 'indexnotfound') {
+                    c.reply(`Sorry, I coulnd't find an alarm named '${c.request.text}'.`)
+                        .reply(`Let's try again.`);
+                }
+                
+                // Basically the prompt is a choice prompt, so show the alarms.
+                showAlarms(c);
+
+                return c.reply(msg);
+            })
+            .validator(new AlarmIndexValidator(this._alarms))
+            .maxTurns(2)
+            .onSuccess((c, v) => {
+                this.state.alarmIndex = v;
+                
+                // TODO: Move this to base class to clean up and (maybe) loop again.
+                this.state.activeTopic = undefined;
+
+                return this.onReceive(c);
+            })
+            .onFailure((c, fr) => {
+                if(fr && fr === 'toomanyattempts') {
+                    c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                }
+
+                // TODO: Move this to base class to clean up and (maybe) loop again.
+                this.state.activeTopic = undefined;
+
+                // TODO: Remove active topic. Move this to onSuccess/onFailure of calling Topic.
+                c.state.conversation.rootTopic.state.activeTopic = undefined;
+
+                return;
+            }),
+
+        confirmDeletePrompt: new Prompt<boolean>('confirmDeletePrompt')
+            .onPrompt((c, ltvr) => {
+                let msg = `Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`;
+
+                if(ltvr && ltvr === 'notyesorno') {
+                    c.reply(`Sorry, I was expecting 'yes' or 'no'.`)
+                        .reply(`Let's try again.`);
+                }
+
+                return c.reply(msg);
+            })
+            .validator(new YesOrNoValidator())
+            .maxTurns(2)
+            .onSuccess((c, v) => {
+                this.state.deleteConfirmed = v;
+                
+                // TODO: Move this to base class to clean up and (maybe) loop again.
+                this.state.activeTopic = undefined;
+
+                return this.onReceive(c);
+            })
+            .onFailure((c, fr) => {
+                if(fr && fr === 'toomanyattempts') {
+                    c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                }
+
+                // TODO: Move this to base class to clean up and (maybe) loop again.
+                this.state.activeTopic = undefined;
+
+                // TODO: Remove active topic. Move this to onSuccess/onFailure of calling Topic.
+                c.state.conversation.rootTopic.state.activeTopic = undefined;
+
+                return;
+            })
+    }
 
     public constructor(name: string, state: DeleteAlarmTopicState = { alarm: {} as Alarm, activeTopic: undefined }) {
         super(name, state);
     }
 
-    private whichAlarmPrompt = new Prompt<number>('whichAlarmPrompt')
-        .onPrompt((c, ltvr) => {                           
-            let msg = `Which alarm would you like to delete?`
-
-            if(ltvr && ltvr === 'indexnotfound') {
-                c.reply(`Sorry, I coulnd't find an alarm named '${c.request.text}'.`)
-                    .reply(`Let's try again.`);
-            }
-            
-            // Basically the prompt is a choice prompt, so show the alarms.
-            showAlarms(c);
-
-            return c.reply(msg);
-        })
-        .validator(new AlarmIndexValidator(this.alarms))
-        .maxTurns(2)
-        .onSuccess((c, v) => {
-            this.state.alarmIndex = v;
-            
-            // TODO: Move this to base class to clean up and (maybe) loop again.
-            this.state.activeTopic = undefined;
-
-            return this.onReceive(c);
-        })
-        .onFailure((c, fr) => {
-            if(fr && fr === 'toomanyattempts') {
-                c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
-            }
-
-            // TODO: Move this to base class to clean up and (maybe) loop again.
-            this.state.activeTopic = undefined;
-
-            // TODO: Remove active topic. Move this to onSuccess/onFailure of calling Topic.
-            c.state.conversation.rootTopic.state.activeTopic = undefined;
-
-            return;
-        }
-    );
-
-    private confirmDeletePrompt = new Prompt<boolean>('confirmDeletePrompt')
-        .onPrompt((c, ltvr) => {
-            let msg = `Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`;
-
-            if(ltvr && ltvr === 'notyesorno') {
-                c.reply(`Sorry, I was expecting 'yes' or 'no'.`)
-                    .reply(`Let's try again.`);
-            }
-
-            return c.reply(msg);
-        })
-        .validator(new YesOrNoValidator())
-        .maxTurns(2)
-        .onSuccess((c, v) => {
-            this.state.deleteConfirmed = v;
-            
-            // TODO: Move this to base class to clean up and (maybe) loop again.
-            this.state.activeTopic = undefined;
-
-            return this.onReceive(c);
-        })
-        .onFailure((c, fr) => {
-            if(fr && fr === 'toomanyattempts') {
-                c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
-            }
-
-            // TODO: Move this to base class to clean up and (maybe) loop again.
-            this.state.activeTopic = undefined;
-
-            // TODO: Remove active topic. Move this to onSuccess/onFailure of calling Topic.
-            c.state.conversation.rootTopic.state.activeTopic = undefined;
-
-            return;
-        }
-    );
-
     public onReceive(context: BotContext) {
+        // TODO: Refactor this out to be state of the DeleteAlarmTopic.
+        this._alarms = context.state.user.alarms || [];
 
-        this.alarms = context.state.user.alarms || [];
+        if(this.hasActiveTopic) { 
+            return this.activeTopic.onReceive(context);
+        }
 
+        // TODO: Refactor this to be a validation reason.
         // If there are no alarms to delete...
-        if (this.alarms.length === 0) {
+        if (this._alarms.length === 0) {
             return context.reply(`There are no alarms to delete.`);
         }
 
         if (this.state.alarmIndex === undefined) {
             // If there is only one alarm to delete, use that index. No need to prompt.
-            if (this.alarms.length === 1) {
+            if (this._alarms.length === 1) {
                 showAlarms(context);
 
                 this.state.alarmIndex = 0;
             } else {
-                this.activeTopic = this.whichAlarmPrompt;
+                this.activeTopic = this.subTopics.whichAlarmPrompt;
                     
                 return this.activeTopic.onReceive(context);
             }
         }
 
         // TODO: Refactor this out to make it on success of the which title prompt.
-        this.state.alarm.title = this.alarms[this.state.alarmIndex].title;
+        this.state.alarm.title = this._alarms[this.state.alarmIndex].title;
     
         if (this.state.deleteConfirmed === undefined) {
             
-            this.activeTopic = this.confirmDeletePrompt;
+            this.activeTopic = this.subTopics.confirmDeletePrompt;
 
             return this.activeTopic.onReceive(context);
         }
