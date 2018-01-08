@@ -5,14 +5,13 @@ import { Prompt } from '../promptly/prompt';
 import { Validator } from '../validator/validator';
 
 export interface DeleteAlarmTopicState extends ParentTopicState {
+    alarms?: Alarm[];
     alarmIndex?: number;
     alarm?: Partial<Alarm>;
     deleteConfirmed?: boolean;
 }
 
 export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
-    
-    private _alarms: Alarm[] = [];
 
     protected subTopics = {
         whichAlarmPrompt: new Prompt<number>('whichAlarmPrompt')
@@ -29,7 +28,9 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
 
                 return c.reply(msg);
             })
-            .validator(new AlarmIndexValidator(this._alarms))
+            // START HERE: When AlarmIndexValidator is instantiated, it is before onRec(), so this._alarms is [].
+            //  Move instantiatioin of _alarms to constructor to fix it, then refactor to make a patter that works for passing info to validator?
+            .validator(new AlarmIndexValidator(this.state.alarms))
             .maxTurns(2)
             .onSuccess((c, v) => {
                 this.state.alarmIndex = v;
@@ -89,13 +90,17 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
             })
     }
 
-    public constructor(name: string, state: DeleteAlarmTopicState = { alarm: {} as Alarm, activeTopic: undefined }) {
+    // TODO: alarms is optional. Pass it on first turn to initialize it in state. Only use it if it's passed.
+    // TODO: Turn state into class that initializes itself if not passed.
+    public constructor(alarms: Alarm[], name: string, state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
         super(name, state);
+
+        if(alarms) {
+            this.state.alarms = alarms;
+        }
     }
 
     public onReceive(context: BotContext) {
-        // TODO: Refactor this out to be state of the DeleteAlarmTopic.
-        this._alarms = context.state.user.alarms || [];
 
         if(this.hasActiveTopic) { 
             return this.activeTopic.onReceive(context);
@@ -103,13 +108,13 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
 
         // TODO: Refactor this to be a validation reason.
         // If there are no alarms to delete...
-        if (this._alarms.length === 0) {
+        if (this.state.alarms.length === 0) {
             return context.reply(`There are no alarms to delete.`);
         }
 
         if (this.state.alarmIndex === undefined) {
             // If there is only one alarm to delete, use that index. No need to prompt.
-            if (this._alarms.length === 1) {
+            if (this.state.alarms.length === 1) {
                 showAlarms(context);
 
                 this.state.alarmIndex = 0;
@@ -121,7 +126,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
         }
 
         // TODO: Refactor this out to make it on success of the which title prompt.
-        this.state.alarm.title = this._alarms[this.state.alarmIndex].title;
+        this.state.alarm.title = this.state.alarms[this.state.alarmIndex].title;
     
         if (this.state.deleteConfirmed === undefined) {
             
