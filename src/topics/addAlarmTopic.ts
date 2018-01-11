@@ -27,6 +27,7 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
             .validator(new AlarmTitleValidator())
             .maxTurns(2)
             .onSuccess((c, v) => {
+                // NOTE: Prompts can't be static since they use instance prop/methods.
                 this.state.alarm.title = v;
                 
                 // TODO: Move this to base class to clean up and (maybe) loop again.
