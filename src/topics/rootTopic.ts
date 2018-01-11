@@ -63,15 +63,13 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 this.activeTopic = this.subTopics.addAlarmTopic;
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                // TODO: Alarms isn't known until here, it's now known when prompts are created.
+                // TODO: Alarms isn't known until here, it's not known when prompts are created.
                 //  Can't be provied to onRec(), since that is "generic" when the prompt is rehydrated.
                 //  It would be awesome to be able to call the constructor again with that state here,
                 //  like this.subTopics.deleteAlarmTopic(alarms);
-                // TODO: Conslusion: Let's keep state to be internal to the class, like any other class.
-                //  Create property for alarms?
-                //  Create initialize fluent method?
-                //  Just access in the state? NO, this violates encapsilation.
-                this.activeTopic = this.subTopics.deleteAlarmTopic;
+                // TODO: Conclusion: Let's keep state to be internal to the class, like any other class 
+                //  and create with a fluent API.
+                this.activeTopic = this.subTopics.deleteAlarmTopic.initialize(context.state.user.alarms);
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);

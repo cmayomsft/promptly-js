@@ -28,8 +28,8 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
 
                 return c.reply(msg);
             })
-            // START HERE: When AlarmIndexValidator is instantiated, it is before onRec(), so this._alarms is [].
-            //  Move instantiatioin of _alarms to constructor to fix it, then refactor to make a patter that works for passing info to validator?
+            // START HERE: AlarmIndexValidator is instantiated when DeleteAlarmTopic is constructed,
+            //  so this.state.alarms is empty, so this prompt never works.
             .validator(new AlarmIndexValidator(this.state.alarms))
             .maxTurns(2)
             .onSuccess((c, v) => {
@@ -90,14 +90,23 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
             })
     }
 
-    // TODO: alarms is optional. Pass it on first turn to initialize it in state. Only use it if it's passed.
     // TODO: Turn state into class that initializes itself if not passed.
-    public constructor(alarms: Alarm[], name: string, state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
+    public constructor(name: string, state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
         super(name, state);
+    }
 
-        if(alarms) {
-            this.state.alarms = alarms;
-        }
+    // State is used to manage the internal state of the Topic between turns, but there might be some state used to initialize the pre-created fluent
+    //  prompt to be used in this instance.
+    public initialize(alarms: Alarm[] = []) {
+        this.state.alarms = alarms;
+
+        // TODO: I have to do this since the reference to alarms passed in the initialization 
+        //  of validator is by value, not by reference.
+        // NOTE: This DOES NOT work, since on the next turn the AlarmIndexValidator is created
+        //  with empty array during the construction/instantiation of this class.
+        this.subTopics.whichAlarmPrompt.validator(new AlarmIndexValidator(this.state.alarms));
+
+        return this;
     }
 
     public onReceive(context: BotContext) {

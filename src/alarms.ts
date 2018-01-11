@@ -23,6 +23,7 @@ export function findAlarmIndex(alarms: Alarm[], title: string): number {
     });
 }
 
+// TODO: Refactor to accept array of alarms to show.
 export function showAlarms(context: BotContext) {
     const alarms = context.state.user.alarms || [];
 
