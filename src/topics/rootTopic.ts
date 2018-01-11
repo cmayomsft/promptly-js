@@ -6,6 +6,11 @@ import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
 export class RootTopic extends ParentTopic<ParentTopicState> {
 
+    // NOTE: Abandoning fluent API. 
+    //  Pros: Reads nicely, don't have create new class for each prompt.
+    //  Cons: SubTopics collection of prompts is ugly. State doesn't work when you have something
+    //      you have to pass to prompt on instantiation since it gets lost on next turn.
+    //      Creating all prompts, even if not used, on each turn.
     protected subTopics = { 
         addAlarmTopic: new AddAlarmTopic('addAlarmTopic')
             .onSuccess((c, s) => {
