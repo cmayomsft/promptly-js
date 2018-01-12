@@ -6,56 +6,60 @@ import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
 export class RootTopic extends ParentTopic<ParentTopicState> {
 
-    // NOTE: Abandoning fluent API. 
-    //  Pros: Reads nicely, don't have create new class for each prompt.
-    //  Cons: SubTopics collection of prompts is ugly. State doesn't work when you have something
-    //      you have to pass to prompt on instantiation since it gets lost on next turn.
-    //      Creating all prompts, even if not used, on each turn.
-    protected subTopics = { 
-        addAlarmTopic: new AddAlarmTopic()
-            .onSuccess((c, s) => {
-                if (!c.state.user.alarms) {
-                    c.state.user.alarms = [];
-                }
-            
-                c.state.user.alarms.push({
-                    title: s.alarm.title,
-                    time: s.alarm.time
-                });
+    public constructor(context: BotContext, state: ParentTopicState = { activeTopic: undefined }) {
+        super(state);
 
-                this.state.activeTopic = undefined;
+        // NOTE: Abandoning fluent API. 
+        //  Pros: Reads nicely, don't have create new class for each prompt.
+        //  Cons: SubTopics collection of prompts is ugly. State doesn't work when you have something
+        //      you have to pass to prompt on instantiation since it gets lost on next turn.
+        //      Creating all prompts, even if not used, on each turn.
+        this.subTopics = { 
+            addAlarmTopic: new AddAlarmTopic()
+                .onSuccess((c, s) => {
+                    if (!c.state.user.alarms) {
+                        c.state.user.alarms = [];
+                    }
+                
+                    c.state.user.alarms.push({
+                        title: s.alarm.title,
+                        time: s.alarm.time
+                    });
 
-                return c.reply(`Added alarm named '${s.alarm.title}' set for '${s.alarm.time}'.`);
-            })
-            .onFailure((c, fr) => {
-                if(fr && fr === 'toomanyattempts') {
-                    c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
-                }
+                    this.state.activeTopic = undefined;
 
-                this.state.activeTopic = undefined;
+                    return c.reply(`Added alarm named '${s.alarm.title}' set for '${s.alarm.time}'.`);
+                })
+                .onFailure((c, fr) => {
+                    if(fr && fr === 'toomanyattempts') {
+                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+                    }
 
-                return this.showDefaultMessage(c);
-            }), 
-            
-        deleteAlarmTopic: new DeleteAlarmTopic()
-            .onSuccess((c, s) => {
-                if (s.deleteConfirmed) {
-                    c.state.user.alarms.splice(s.alarmIndex, 1);
-                    return c.reply(`Done. I've deleted alarm '${s.alarm.title}'.`);
-                } else {
-                    return c.reply(`Ok, I won't delete alarm ${s.alarm.title}.`);
-                }
-            })
-            .onFailure((c, fr) => {
-                if(fr && fr === 'toomanyattempts') {
-                    c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
-                }
+                    this.state.activeTopic = undefined;
 
-                this.state.activeTopic = undefined;
+                    return this.showDefaultMessage(c);
+                }), 
+                
+            deleteAlarmTopic: new DeleteAlarmTopic(context.state.user.alarms)
+                .onSuccess((c, s) => {
+                    if (s.deleteConfirmed) {
+                        c.state.user.alarms.splice(s.alarmIndex, 1);
+                        return c.reply(`Done. I've deleted alarm '${s.alarm.title}'.`);
+                    } else {
+                        return c.reply(`Ok, I won't delete alarm ${s.alarm.title}.`);
+                    }
+                })
+                .onFailure((c, fr) => {
+                    if(fr && fr === 'toomanyattempts') {
+                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+                    }
 
-                return this.showDefaultMessage(c);
-            })
-        };
+                    this.state.activeTopic = undefined;
+
+                    return this.showDefaultMessage(c);
+                })
+            };
+    }
 
     public onReceive(context: BotContext) { 
 
@@ -74,7 +78,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 //  like this.subTopics.deleteAlarmTopic(alarms);
                 // TODO: Conclusion: Let's keep state to be internal to the class, like any other class 
                 //  and create with a fluent API.
-                this.activeTopic = this.subTopics.deleteAlarmTopic.initialize(context.state.user.alarms);
+                this.activeTopic = this.subTopics.deleteAlarmTopic;
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);

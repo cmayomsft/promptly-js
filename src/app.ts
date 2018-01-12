@@ -43,7 +43,7 @@ const bot = new Bot(adapter)
                 };
             }
 
-            const rootTopic = new RootTopic('rootTopic', context.state.conversation.rootTopic.state);
+            const rootTopic = new RootTopic(context, context.state.conversation.rootTopic.state);
             return rootTopic.onReceive(context);
         }
     });

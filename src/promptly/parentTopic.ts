@@ -13,7 +13,10 @@ export interface ParentTopicState {
 export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
 
     // TODO: Refactor this to be a map of topics.
-    protected abstract subTopics: any;
+    private _subTopics: any = {};
+    protected set subTopics(subTopics: any) {
+        this._subTopics = subTopics;
+    }
 
     private _activeTopic: Topic;
     public get activeTopic(): Topic {
