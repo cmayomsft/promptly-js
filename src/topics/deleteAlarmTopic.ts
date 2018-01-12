@@ -14,7 +14,7 @@ export interface DeleteAlarmTopicState extends ParentTopicState {
 export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
 
     protected subTopics = {
-        whichAlarmPrompt: new Prompt<number>('whichAlarmPrompt')
+        whichAlarmPrompt: new Prompt<number>()
             .onPrompt((c, ltvr) => {                           
                 let msg = `Which alarm would you like to delete?`
 
@@ -54,7 +54,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                 return;
             }),
 
-        confirmDeletePrompt: new Prompt<boolean>('confirmDeletePrompt')
+        confirmDeletePrompt: new Prompt<boolean>()
             .onPrompt((c, ltvr) => {
                 let msg = `Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`;
 
@@ -91,8 +91,8 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
     }
 
     // TODO: Turn state into class that initializes itself if not passed.
-    public constructor(name: string, state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
-        super(name, state);
+    public constructor(state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
+        super(state);
     }
 
     // State is used to manage the internal state of the Topic between turns, but there might be some state used to initialize the pre-created fluent

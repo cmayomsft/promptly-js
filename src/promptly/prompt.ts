@@ -11,8 +11,8 @@ export interface PromptState {
 //  Scour for ToDo's to clean them up.
 export class Prompt<V> extends Topic<PromptState> {
     
-    constructor(name: string, state: PromptState = { turns: undefined }) {
-        super(name, state);
+    constructor(state: PromptState = { turns: undefined }) {
+        super(state);
         return this;
     }
 

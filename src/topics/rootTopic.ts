@@ -12,7 +12,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
     //      you have to pass to prompt on instantiation since it gets lost on next turn.
     //      Creating all prompts, even if not used, on each turn.
     protected subTopics = { 
-        addAlarmTopic: new AddAlarmTopic('addAlarmTopic')
+        addAlarmTopic: new AddAlarmTopic()
             .onSuccess((c, s) => {
                 if (!c.state.user.alarms) {
                     c.state.user.alarms = [];
@@ -37,7 +37,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 return this.showDefaultMessage(c);
             }), 
             
-        deleteAlarmTopic: new DeleteAlarmTopic('deleteAlarmTopic')
+        deleteAlarmTopic: new DeleteAlarmTopic()
             .onSuccess((c, s) => {
                 if (s.deleteConfirmed) {
                     c.state.user.alarms.splice(s.alarmIndex, 1);
