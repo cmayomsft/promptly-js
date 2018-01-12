@@ -9,11 +9,6 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
     public constructor(context: BotContext, state: ParentTopicState = { activeTopic: undefined }) {
         super(state);
 
-        // NOTE: Abandoning fluent API. 
-        //  Pros: Reads nicely, don't have create new class for each prompt.
-        //  Cons: SubTopics collection of prompts is ugly. State doesn't work when you have something
-        //      you have to pass to prompt on instantiation since it gets lost on next turn.
-        //      Creating all prompts, even if not used, on each turn.
         this.subTopics = { 
             addAlarmTopic: new AddAlarmTopic()
                 .onSuccess((c, s) => {
@@ -72,12 +67,6 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 this.activeTopic = this.subTopics.addAlarmTopic;
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                // TODO: Alarms isn't known until here, it's not known when prompts are created.
-                //  Can't be provied to onRec(), since that is "generic" when the prompt is rehydrated.
-                //  It would be awesome to be able to call the constructor again with that state here,
-                //  like this.subTopics.deleteAlarmTopic(alarms);
-                // TODO: Conclusion: Let's keep state to be internal to the class, like any other class 
-                //  and create with a fluent API.
                 this.activeTopic = this.subTopics.deleteAlarmTopic;
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
@@ -92,10 +81,12 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
         }
     }
 
+    // TODO: Refactor to a card with buttons.
     public showDefaultMessage(context: BotContext) {
         context.reply("'Show Alarms', 'Add Alarm', 'Delete Alarm', 'Help'.");
     }
         
+    // TODO: Refactor to a card w/ buttons.
     private showHelp(context: BotContext) {
         let message = "Here's what I can do:\n\n";
         message += "To see your alarms, say 'Show Alarms'.\n\n";

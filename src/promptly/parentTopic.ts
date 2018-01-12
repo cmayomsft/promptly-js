@@ -2,7 +2,8 @@ import { Topic } from './topic';
 
 export interface ActiveTopicState {
     name: string;
-    // state must by any (vs. generic) becuase child topic state will vary.
+    // State must by any (vs. generic) becuase child topic state will vary amoung all the possible active topics
+    //  for a ParentTopic.
     state?: any;
 }
 

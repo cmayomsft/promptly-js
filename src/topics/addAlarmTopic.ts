@@ -31,7 +31,6 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
                 .validator(new AlarmTitleValidator())
                 .maxTurns(2)
                 .onSuccess((c, v) => {
-                    // NOTE: Prompts can't be static since they use instance prop/methods.
                     this.state.alarm.title = v;
                     
                     // TODO: Move this to base class to clean up and (maybe) loop again.
@@ -40,7 +39,10 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
                     return this.onReceive(c);
                 })
                 .onFailure((c, fr) => {
-    
+                    if(fr && fr === 'toomanyattempts') {
+                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                    }
+                    
                     // TODO: Move this to base class to clean up and (maybe) loop again.
                     this.state.activeTopic = undefined;
     
@@ -69,9 +71,6 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
     
                     // TODO: Move this to base class to clean up and (maybe) loop again.
                     this.state.activeTopic = undefined;
-    
-                    // TODO: Remove active topic. Move this to onSuccess/onFailure of calling Topic.
-                    c.state.conversation.rootTopic.state.activeTopic = undefined;
     
                     return;
                 })

@@ -31,13 +31,11 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                             .reply(`Let's try again.`);
                     }
                     
-                    // Basically the prompt is a choice prompt, so show the alarms.
+                    // TODO: Turn into a card w/ delete buttons, then choice prompt.
                     showAlarms(c);
     
                     return c.reply(msg);
                 })
-                // START HERE: AlarmIndexValidator is instantiated when DeleteAlarmTopic is constructed,
-                //  so this.state.alarms is empty, so this prompt never works.
                 .validator(new AlarmIndexValidator(this.state.alarms))
                 .maxTurns(2)
                 .onSuccess((c, v) => {
@@ -90,9 +88,6 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
     
                     // TODO: Move this to base class to clean up and (maybe) loop again.
                     this.state.activeTopic = undefined;
-    
-                    // TODO: Remove active topic. Move this to onSuccess/onFailure of calling Topic.
-                    c.state.conversation.rootTopic.state.activeTopic = undefined;
     
                     return;
                 })

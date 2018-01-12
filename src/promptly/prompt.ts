@@ -7,8 +7,7 @@ export interface PromptState {
     turns?: number;
 }
 
-// START HERE: Make Prompt non-fluent, but keep subTopics to provide code to run after prompt completes.
-//  Scour for ToDo's to clean them up.
+// TODO: Provide defaults to simplify objects to only include what they need.
 export class Prompt<V> extends Topic<PromptState> {
     
     constructor(state: PromptState = { turns: undefined }) {
