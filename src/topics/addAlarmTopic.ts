@@ -2,9 +2,7 @@ import { Alarm } from '../alarms';
 import { Topic } from '../promptly/topic';
 import { Prompt } from '../promptly/prompt';
 import { ParentTopic, ParentTopicState } from '../promptly/parentTopic';
-import { PromptState } from 'botbuilder-prompts';
 import { Validator } from '../validator/validator';
-import { clearInterval } from 'timers';
 
 export interface AddAlarmTopicState extends ParentTopicState {
     alarm: Alarm;
