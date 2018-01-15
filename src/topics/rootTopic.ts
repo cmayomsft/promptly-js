@@ -61,7 +61,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
         if (context.request.type === 'message' && context.request.text.length > 0) {
             if (/show alarms/i.test(context.request.text) || context.ifIntent('showAlarms')) {
 
-                return showAlarms(context);
+                return showAlarms(context, context.state.user.alarms);
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
                 this.activeTopic = this.subTopics.addAlarmTopic;

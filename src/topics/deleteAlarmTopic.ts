@@ -32,7 +32,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                     }
                     
                     // TODO: Turn into a card w/ delete buttons, then choice prompt.
-                    showAlarms(c);
+                    showAlarms(c, this.state.alarms);
     
                     return c.reply(msg);
                 })
@@ -109,7 +109,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
         if (this.state.alarmIndex === undefined) {
             // If there is only one alarm to delete, use that index. No need to prompt.
             if (this.state.alarms.length === 1) {
-                showAlarms(context);
+                showAlarms(context, this.state.alarms);
 
                 this.state.alarmIndex = 0;
             } else {

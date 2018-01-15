@@ -23,11 +23,9 @@ export function findAlarmIndex(alarms: Alarm[], title: string): number {
     });
 }
 
-// TODO: Refactor to accept array of alarms to show.
-export function showAlarms(context: BotContext) {
-    const alarms = context.state.user.alarms || [];
+export function showAlarms(context: BotContext, alarms: Alarm[]) {
 
-    if (alarms.length === 0) {
+    if (!alarms || (alarms.length === 0)) {
         context.reply(`You have no alarms.`);
         return;
     }
