@@ -1,6 +1,3 @@
-//---------------------------------------------------------
-// Interfaces
-//---------------------------------------------------------
 export interface Alarm {
     title: string;
     time: string;
@@ -13,20 +10,15 @@ declare global {
     }
 }
 
-//---------------------------------------------------------
-// Helpers
-//---------------------------------------------------------
-
 export function findAlarmIndex(alarms: Alarm[], title: string): number {
     return alarms.findIndex((alarm) => {
         return alarm.title.toLowerCase() === title.toLowerCase();
     });
 }
 
-export function showAlarms(context: BotContext) {
-    const alarms = context.state.user.alarms || [];
+export function showAlarms(context: BotContext, alarms: Alarm[]) {
 
-    if (alarms.length === 0) {
+    if (!alarms || (alarms.length === 0)) {
         context.reply(`You have no alarms.`);
         return;
     }

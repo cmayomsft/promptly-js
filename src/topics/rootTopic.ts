@@ -6,37 +6,82 @@ import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
 export class RootTopic extends ParentTopic<ParentTopicState> {
 
-    constructor(state: ParentTopicState) {
+    public constructor(context: BotContext, state: ParentTopicState = { activeTopic: undefined }) {
         super(state);
-        this.childTopics = { AddAlarmTopic, DeleteAlarmTopic };
+
+        this.subTopics = { 
+            addAlarmTopic: new AddAlarmTopic()
+                .onSuccess((c, s) => {
+                    if (!c.state.user.alarms) {
+                        c.state.user.alarms = [];
+                    }
+                
+                    c.state.user.alarms.push({
+                        title: s.alarm.title,
+                        time: s.alarm.time
+                    });
+
+                    this.state.activeTopic = undefined;
+
+                    return c.reply(`Added alarm named '${s.alarm.title}' set for '${s.alarm.time}'.`);
+                })
+                .onFailure((c, fr) => {
+                    if(fr && fr === 'toomanyattempts') {
+                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+                    }
+
+                    this.state.activeTopic = undefined;
+
+                    return this.showDefaultMessage(c);
+                }), 
+                
+            deleteAlarmTopic: new DeleteAlarmTopic(context.state.user.alarms)
+                .onSuccess((c, s) => {
+
+                    this.state.activeTopic = undefined;
+
+                    if(!s.deleteConfirmed) {
+                        return c.reply(`Ok, I won't delete alarm ${s.alarm.title}.`);
+                    }
+
+                    c.state.user.alarms.splice(s.alarmIndex, 1);
+
+                    return c.reply(`Done. I've deleted alarm '${s.alarm.title}'.`);
+                })
+                .onFailure((c, fr) => {
+                    if(fr && fr === 'toomanyattempts') {
+                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+                    }
+
+                    this.state.activeTopic = undefined;
+
+                    return this.showDefaultMessage(c);
+                })
+            };
     }
 
-    public onReceive(context: BotContext) {
+    public onReceive(context: BotContext) { 
+
         if (context.request.type === 'message' && context.request.text.length > 0) {
             if (/show alarms/i.test(context.request.text) || context.ifIntent('showAlarms')) {
 
-                return showAlarms(context);
+                return showAlarms(context, context.state.user.alarms);
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                // Init topic with default state.
-                this.activeTopic = new AddAlarmTopic({ alarm: {} as Alarm, activeTopic: undefined });
-                return this.activeTopic.onReceive(context);
-            } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
+                this.activeTopic = this.subTopics.addAlarmTopic;
+            } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('deleteAlarm')) {
 
-                this.activeTopic = new DeleteAlarmTopic({ alarmIndex: undefined, alarm: {} as Alarm, deleteConfirmed: undefined, activeTopic: undefined });
-                return this.activeTopic.onReceive(context);
+                this.activeTopic = this.subTopics.deleteAlarmTopic;
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);
-                // TODO: Refactor this check into hasActiveTopic property.
-            } else if (this.hasActiveTopic) {    
-
-                return this.activeTopic.onReceive(context);    
-            } else {
-                
-                //no command or active topic
-                return this.showDefaultMessage(context);
             }
+
+            if (this.hasActiveTopic) {    
+                return this.activeTopic.onReceive(context);    
+            }
+
+            return this.showDefaultMessage(context);
         }
     }
 
