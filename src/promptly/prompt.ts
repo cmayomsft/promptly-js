@@ -68,17 +68,18 @@ export class Prompt<V> extends Topic<PromptState> {
 
         // If the response wasn't a valid response to the prompt...
         if(validationResult.reason !== undefined) {
-            // If still have turns before hitting the max...
-            if(this.state.turns < this._maxTurns) {
-                // Increase the turn count.
-                this.state.turns += 1;
-                // Prompt.
-                return this._onPrompt(context, validationResult.reason);
-            } else {
+            // Increase the turn count.
+            this.state.turns += 1;
+
+            // If max turns has been reached, the prompt has failed with too many attempts.
+            if(this.state.turns === this._maxTurns) {
                 validationResult.reason = 'toomanyattempts';
-                // Prompt failed, so call code to clean up after failure.
+    
                 return this._onFailure(context, validationResult.reason);
             }
+
+            // Prompt using validation reason from last turn.
+            return this._onPrompt(context, validationResult.reason);
         }
         
         // Prompt was successful, so call code to process value and clean up.
