@@ -2,7 +2,8 @@ import { Topic } from './topic';
 
 export interface ActiveTopicState {
     name: string;
-    // state must by any (vs. generic) becuase child topic state will vary.
+    // State must by any (vs. generic) becuase child topic state will vary amoung all the possible active topics
+    //  for a ParentTopic.
     state?: any;
 }
 
@@ -12,8 +13,13 @@ export interface ParentTopicState {
 
 export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
 
-    // TODO: Refactor this to be a map of topics.
-    protected abstract subTopics: any;
+    private _subTopics: any;
+    protected set subTopics(subTopics: any) {
+        this._subTopics = subTopics;
+    }
+    protected get subTopics(): any {
+        return this._subTopics;
+    }
 
     private _activeTopic: Topic;
     public get activeTopic(): Topic {
@@ -33,7 +39,6 @@ export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
         return this._activeTopic;
     }
 
-    // TODO: This changes to getting object from child map (by object instance name) and setting the active topic after setting state.
     public set activeTopic(childTopic: Topic) {
         this._activeTopic = childTopic;
 
