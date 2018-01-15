@@ -69,7 +69,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
                 this.activeTopic = this.subTopics.addAlarmTopic;
-            } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
+            } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('deleteAlarm')) {
 
                 this.activeTopic = this.subTopics.deleteAlarmTopic;
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
