@@ -37,12 +37,16 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 
             deleteAlarmTopic: new DeleteAlarmTopic(context.state.user.alarms)
                 .onSuccess((c, s) => {
-                    if (s.deleteConfirmed) {
-                        c.state.user.alarms.splice(s.alarmIndex, 1);
-                        return c.reply(`Done. I've deleted alarm '${s.alarm.title}'.`);
-                    } else {
+
+                    this.state.activeTopic = undefined;
+
+                    if(!s.deleteConfirmed) {
                         return c.reply(`Ok, I won't delete alarm ${s.alarm.title}.`);
                     }
+
+                    c.state.user.alarms.splice(s.alarmIndex, 1);
+
+                    return c.reply(`Done. I've deleted alarm '${s.alarm.title}'.`);
                 })
                 .onFailure((c, fr) => {
                     if(fr && fr === 'toomanyattempts') {

@@ -54,9 +54,6 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                     // TODO: Move this to base class to clean up and (maybe) loop again.
                     this.state.activeTopic = undefined;
     
-                    // TODO: Remove active topic. Move this to onSuccess/onFailure of calling Topic.
-                    c.state.conversation.rootTopic.state.activeTopic = undefined;
-    
                     return;
                 }),
     
