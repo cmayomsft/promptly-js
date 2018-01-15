@@ -1,6 +1,3 @@
-//---------------------------------------------------------
-// Interfaces
-//---------------------------------------------------------
 export interface Alarm {
     title: string;
     time: string;
@@ -12,10 +9,6 @@ declare global {
         alarms?: Alarm[];
     }
 }
-
-//---------------------------------------------------------
-// Helpers
-//---------------------------------------------------------
 
 export function findAlarmIndex(alarms: Alarm[], title: string): number {
     return alarms.findIndex((alarm) => {

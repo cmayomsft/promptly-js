@@ -33,7 +33,6 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
                 .onSuccess((c, v) => {
                     this.state.alarm.title = v;
                     
-                    // TODO: Move this to base class to clean up and (maybe) loop again.
                     this.state.activeTopic = undefined;
     
                     return this.onReceive(c);
@@ -43,7 +42,6 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
                         c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
                     }
                     
-                    // TODO: Move this to base class to clean up and (maybe) loop again.
                     this.state.activeTopic = undefined;
     
                     return this._onFailure(c, fr);
@@ -59,7 +57,6 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
                 .onSuccess((c, v) => {
                     this.state.alarm.time = v;
                     
-                    // TODO: Move this to base to clean up and (maybe) loop again.
                     this.state.activeTopic = undefined;
     
                     return this.onReceive(c);
@@ -69,7 +66,6 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
                         c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
                     }
     
-                    // TODO: Move this to base class to clean up and (maybe) loop again.
                     this.state.activeTopic = undefined;
     
                     return;

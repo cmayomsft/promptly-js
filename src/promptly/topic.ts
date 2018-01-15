@@ -15,7 +15,6 @@ export abstract class Topic<S = any> {
         this._state = state;
     }
 
-    // TODO: Provide defaults to simplify objects.
     // onSuccess
     protected _onSuccess?: (context: BotContext, state: S) => void;
     public onSuccess(success: (context: BotContext, state: S) => void) {

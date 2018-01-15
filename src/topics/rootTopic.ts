@@ -85,12 +85,10 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
         }
     }
 
-    // TODO: Refactor to a card with buttons.
     public showDefaultMessage(context: BotContext) {
         context.reply("'Show Alarms', 'Add Alarm', 'Delete Alarm', 'Help'.");
     }
         
-    // TODO: Refactor to a card w/ buttons.
     private showHelp(context: BotContext) {
         let message = "Here's what I can do:\n\n";
         message += "To see your alarms, say 'Show Alarms'.\n\n";

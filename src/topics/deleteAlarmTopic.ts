@@ -13,7 +13,6 @@ export interface DeleteAlarmTopicState extends ParentTopicState {
 
 export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
 
-    // TODO: Turn state into class that initializes itself if not passed.
     public constructor(alarms: Alarm[], state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
         super(state);
 
@@ -31,7 +30,6 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                             .reply(`Let's try again.`);
                     }
                     
-                    // TODO: Turn into a card w/ delete buttons, then choice prompt.
                     showAlarms(c, this.state.alarms);
     
                     return c.reply(msg);
@@ -41,7 +39,6 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                 .onSuccess((c, v) => {
                     this.state.alarmIndex = v;
                     
-                    // TODO: Move this to base class to clean up and (maybe) loop again.
                     this.state.activeTopic = undefined;
     
                     return this.onReceive(c);
@@ -51,7 +48,6 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                         c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
                     }
     
-                    // TODO: Move this to base class to clean up and (maybe) loop again.
                     this.state.activeTopic = undefined;
     
                     return;
@@ -73,7 +69,6 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                 .onSuccess((c, v) => {
                     this.state.deleteConfirmed = v;
                     
-                    // TODO: Move this to base class to clean up and (maybe) loop again.
                     this.state.activeTopic = undefined;
     
                     return this.onReceive(c);
@@ -83,7 +78,6 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                         c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
                     }
     
-                    // TODO: Move this to base class to clean up and (maybe) loop again.
                     this.state.activeTopic = undefined;
     
                     return;
@@ -97,7 +91,6 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
             return this.activeTopic.onReceive(context);
         }
 
-        // TODO: Refactor this to be a validation reason.
         // If there are no alarms to delete...
         if (this.state.alarms.length === 0) {
             return context.reply(`There are no alarms to delete.`);
@@ -116,7 +109,6 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
             }
         }
 
-        // TODO: Refactor this out to make it on success of the which title prompt.
         this.state.alarm.title = this.state.alarms[this.state.alarmIndex].title;
     
         if (this.state.deleteConfirmed === undefined) {
@@ -152,7 +144,6 @@ class AlarmIndexValidator extends Validator<number> {
     }
 }
 
-// TODO: Refactor into a confirm prompt with yes, y, yup, etc. validator.
 class YesOrNoValidator extends Validator<boolean> {
     public validate(context: BotContext) {
         if(context.request.text === 'yes') {

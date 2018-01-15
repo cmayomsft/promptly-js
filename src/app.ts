@@ -32,7 +32,7 @@ const bot = new Bot(adapter)
     .use(new BotStateManager())
     //.use(new LuisRecognizer("5e013df5-f1df-40a7-9893-437bfdb1811d", "04e545e56dfd417daa44460a04f20ffd"))
     .onReceive((context) => {
-        // TODO: State isn't fully initialized until the contact/conversation messages are sent, so have to require
+        // State isn't fully initialized until the contact/conversation messages are sent, so have to require
         //  activity type is message. Will affect welcome message. Refactor after bug has been addressed.
         if(context.request.type === 'message') {
             // Initialize the root topic state and pass that reference to root topic to facilitate the state 

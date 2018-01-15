@@ -7,7 +7,6 @@ export interface PromptState {
     turns?: number;
 }
 
-// TODO: Provide defaults to simplify objects to only include what they need.
 export class Prompt<V> extends Topic<PromptState> {
     
     constructor(state: PromptState = { turns: undefined }) {
@@ -29,7 +28,6 @@ export class Prompt<V> extends Topic<PromptState> {
         return this;
     }
 
-    // TODO: Refactor to accept a Validator<V> or a function that returns type V.
     // validator
     protected _validator: Validator<V>;
     public validator(validator: Validator<V>) {
