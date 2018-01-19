@@ -10,7 +10,8 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
         super(state);
 
         this.subTopics = { 
-            addAlarmTopic: new AddAlarmTopic()
+            AddAlarmTopic: () => {
+                return new AddAlarmTopic()
                 .onSuccess((c, s) => {
                     if (!c.state.user.alarms) {
                         c.state.user.alarms = [];
@@ -33,9 +34,11 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                     this.state.activeTopic = undefined;
 
                     return this.showDefaultMessage(c);
-                }), 
+                })
+            }, 
                 
-            deleteAlarmTopic: new DeleteAlarmTopic(context.state.user.alarms)
+            DeleteAlarmTopic: (alarms: Alarm[]) => {
+                new DeleteAlarmTopic(alarms)
                 .onSuccess((c, s) => {
 
                     this.state.activeTopic = undefined;
@@ -57,7 +60,8 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
 
                     return this.showDefaultMessage(c);
                 })
-            };
+            }
+        };
     }
 
     public onReceive(context: BotContext) { 
@@ -68,10 +72,10 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 return showAlarms(context, context.state.user.alarms);
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                this.activeTopic = this.subTopics.addAlarmTopic;
+                this.activeTopic = this.subTopics.AddAlarmTopic();
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('deleteAlarm')) {
 
-                this.activeTopic = this.subTopics.deleteAlarmTopic;
+                this.activeTopic = this.subTopics.DeleteAlarmTopic(context.state.user.alarms);
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);

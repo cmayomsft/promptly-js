@@ -33,7 +33,8 @@ export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
             return this._activeTopic;
         }
 
-        this._activeTopic = this.subTopics[this.state.activeTopic.name];
+        // TODO: This should be constructing the Topic w/ it's state rather than requiring state property.
+        this._activeTopic = this.subTopics[this.state.activeTopic.name]();
         this._activeTopic.state = this.state.activeTopic.state;
 
         return this._activeTopic;
@@ -42,9 +43,10 @@ export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
     public set activeTopic(childTopic: Topic) {
         this._activeTopic = childTopic;
 
-        const subTopicName = Object.keys(this.subTopics).find((e) => { return this.subTopics[e] === childTopic});
-        
-        this.state.activeTopic = { name: subTopicName, state: childTopic.state } as ActiveTopicState;
+        // TODO: Remove this.
+        //const subTopicName = Object.keys(this.subTopics).find((e) => { return this.subTopics[e] === childTopic});
+        // START HERE: Got this working, now refactor down into object tree and confirm objects are JIT.
+        this.state.activeTopic = { name: childTopic.constructor.name, state: childTopic.state };
     }
 
     public get hasActiveTopic(): boolean {
