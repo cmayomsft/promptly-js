@@ -11,6 +11,9 @@ export interface DeleteAlarmTopicState extends ParentTopicState {
     deleteConfirmed?: boolean;
 }
 
+export class WhichAlarmPrompt extends Prompt<number> {};
+export class ConfirmDeletePrompt extends Prompt<boolean> {};
+
 export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
 
     public constructor(alarms: Alarm[], state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
@@ -21,7 +24,8 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
         }
 
         this.subTopics = {
-            whichAlarmPrompt: new Prompt<number>()
+            WhichAlarmPrompt: () => {
+                return new WhichAlarmPrompt()
                 .onPrompt((c, ltvr) => {                           
                     let msg = `Which alarm would you like to delete?`
     
@@ -51,37 +55,40 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                     this.state.activeTopic = undefined;
     
                     return;
-                }),
-    
-            confirmDeletePrompt: new Prompt<boolean>()
-                .onPrompt((c, ltvr) => {
-                    let msg = `Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`;
-    
-                    if(ltvr && ltvr === 'notyesorno') {
-                        c.reply(`Sorry, I was expecting 'yes' or 'no'.`)
-                            .reply(`Let's try again.`);
-                    }
-    
-                    return c.reply(msg);
                 })
-                .validator(new YesOrNoValidator())
-                .maxTurns(2)
-                .onSuccess((c, v) => {
-                    this.state.deleteConfirmed = v;
-                    
-                    this.state.activeTopic = undefined;
-    
-                    return this.onReceive(c);
-                })
-                .onFailure((c, fr) => {
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
-                    }
-    
-                    this.state.activeTopic = undefined;
-    
-                    return;
-                })
+            },
+
+            ConfirmDeletePrompt: () => {
+                return new ConfirmDeletePrompt()
+                    .onPrompt((c, ltvr) => {
+                        let msg = `Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`;
+        
+                        if(ltvr && ltvr === 'notyesorno') {
+                            c.reply(`Sorry, I was expecting 'yes' or 'no'.`)
+                                .reply(`Let's try again.`);
+                        }
+        
+                        return c.reply(msg);
+                    })
+                    .validator(new YesOrNoValidator())
+                    .maxTurns(2)
+                    .onSuccess((c, v) => {
+                        this.state.deleteConfirmed = v;
+                        
+                        this.state.activeTopic = undefined;
+        
+                        return this.onReceive(c);
+                    })
+                    .onFailure((c, fr) => {
+                        if(fr && fr === 'toomanyattempts') {
+                            c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                        }
+        
+                        this.state.activeTopic = undefined;
+        
+                        return;
+                    })
+            }
         }
     }
 
@@ -103,7 +110,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
 
                 this.state.alarmIndex = 0;
             } else {
-                this.activeTopic = this.subTopics.whichAlarmPrompt;
+                this.activeTopic = this.subTopics.WhichAlarmPrompt();
                     
                 return this.activeTopic.onReceive(context);
             }
@@ -113,7 +120,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
     
         if (this.state.deleteConfirmed === undefined) {
             
-            this.activeTopic = this.subTopics.confirmDeletePrompt;
+            this.activeTopic = this.subTopics.ConfirmDeletePrompt();
 
             return this.activeTopic.onReceive(context);
         }
