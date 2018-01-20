@@ -37,8 +37,8 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 })
             }, 
                 
-            DeleteAlarmTopic: (alarms: Alarm[]) => {
-                new DeleteAlarmTopic(alarms)
+            DeleteAlarmTopic: () => {
+                return new DeleteAlarmTopic(context.state.user.alarms)
                 .onSuccess((c, s) => {
 
                     this.state.activeTopic = undefined;
@@ -75,7 +75,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 this.activeTopic = this.subTopics.AddAlarmTopic();
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('deleteAlarm')) {
 
-                this.activeTopic = this.subTopics.DeleteAlarmTopic(context.state.user.alarms);
+                this.activeTopic = this.subTopics.DeleteAlarmTopic();
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);
