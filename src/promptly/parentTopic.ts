@@ -43,10 +43,7 @@ export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
     public set activeTopic(childTopic: Topic) {
         this._activeTopic = childTopic;
 
-        // TODO: Remove this.
-        //const subTopicName = Object.keys(this.subTopics).find((e) => { return this.subTopics[e] === childTopic});
-        // START HERE: Got this working, now refactor down into object tree and confirm objects are JIT.
-        this.state.activeTopic = { name: childTopic.constructor.name, state: childTopic.state };
+        this.state.activeTopic = { name: childTopic.name, state: childTopic.state };
     }
 
     public get hasActiveTopic(): boolean {

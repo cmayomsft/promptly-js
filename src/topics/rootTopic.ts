@@ -6,12 +6,12 @@ import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
 export class RootTopic extends ParentTopic<ParentTopicState> {
 
-    public constructor(context: BotContext, state: ParentTopicState = { activeTopic: undefined }) {
-        super(state);
+    public constructor(name: string, context: BotContext, state: ParentTopicState = { activeTopic: undefined }) {
+        super(name, state);
 
         this.subTopics = { 
-            AddAlarmTopic: () => {
-                return new AddAlarmTopic()
+            addAlarmTopic: () => {
+                return new AddAlarmTopic("addAlarmTopic")
                 .onSuccess((context, state) => {
                     if (!context.state.user.alarms) {
                         context.state.user.alarms = [];
@@ -37,8 +37,8 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 })
             }, 
                 
-            DeleteAlarmTopic: (alarms: Alarm[]) => {
-                return new DeleteAlarmTopic(alarms)
+            deleteAlarmTopic: (alarms: Alarm[]) => {
+                return new DeleteAlarmTopic("deleteAlarmTopic", alarms)
                 .onSuccess((context, state) => {
 
                     this.state.activeTopic = undefined;
@@ -72,10 +72,10 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 return showAlarms(context, context.state.user.alarms);
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                this.activeTopic = this.subTopics.AddAlarmTopic();
+                this.activeTopic = this.subTopics.addAlarmTopic();
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('deleteAlarm')) {
 
-                this.activeTopic = this.subTopics.DeleteAlarmTopic(context.state.user.alarms);
+                this.activeTopic = this.subTopics.deleteAlarmTopic(context.state.user.alarms);
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);
