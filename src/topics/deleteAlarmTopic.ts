@@ -26,30 +26,30 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
         this.subTopics = {
             WhichAlarmPrompt: () => {
                 return new WhichAlarmPrompt()
-                .onPrompt((c, ltvr) => {                           
+                .onPrompt((context, lastTurnReason) => {                           
                     let msg = `Which alarm would you like to delete?`
     
-                    if(ltvr && ltvr === 'indexnotfound') {
-                        c.reply(`Sorry, I coulnd't find an alarm named '${c.request.text}'.`)
+                    if(lastTurnReason && lastTurnReason === 'indexnotfound') {
+                        context.reply(`Sorry, I coulnd't find an alarm named '${context.request.text}'.`)
                             .reply(`Let's try again.`);
                     }
                     
-                    showAlarms(c, this.state.alarms);
+                    showAlarms(context, this.state.alarms);
     
-                    return c.reply(msg);
+                    return context.reply(msg);
                 })
                 .validator(new AlarmIndexValidator(this.state.alarms))
                 .maxTurns(2)
-                .onSuccess((c, v) => {
-                    this.state.alarmIndex = v;
+                .onSuccess((context, value) => {
+                    this.state.alarmIndex = value;
                     
                     this.state.activeTopic = undefined;
     
-                    return this.onReceive(c);
+                    return this.onReceive(context);
                 })
-                .onFailure((c, fr) => {
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                .onFailure((context, reason) => {
+                    if(reason && reason === 'toomanyattempts') {
+                        context.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
                     }
     
                     this.state.activeTopic = undefined;
@@ -60,24 +60,24 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
 
             ConfirmDeletePrompt: () => {
                 return new ConfirmDeletePrompt()
-                    .onPrompt((c, ltvr) => {
+                    .onPrompt((context, lastTurnReason) => {
                         let msg = `Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`;
         
-                        if(ltvr && ltvr === 'notyesorno') {
-                            c.reply(`Sorry, I was expecting 'yes' or 'no'.`)
+                        if(lastTurnReason && lastTurnReason === 'notyesorno') {
+                            context.reply(`Sorry, I was expecting 'yes' or 'no'.`)
                                 .reply(`Let's try again.`);
                         }
         
-                        return c.reply(msg);
+                        return context.reply(msg);
                     })
                     .validator(new YesOrNoValidator())
                     .maxTurns(2)
-                    .onSuccess((c, v) => {
-                        this.state.deleteConfirmed = v;
+                    .onSuccess((context, value) => {
+                        this.state.deleteConfirmed = value;
                         
                         this.state.activeTopic = undefined;
         
-                        return this.onReceive(c);
+                        return this.onReceive(context);
                     })
                     .onFailure((c, fr) => {
                         if(fr && fr === 'toomanyattempts') {

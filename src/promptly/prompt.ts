@@ -15,8 +15,8 @@ export abstract class Prompt<V> extends Topic<PromptState> {
     }
 
     // onPrompt
-    protected _onPrompt?: (context: BotContext, lastTurnValidatorReason: string) => void;
-    public onPrompt(prompt: (context: BotContext, lastTurnValidatorReason: string) => void) {
+    protected _onPrompt?: (context: BotContext, lastTurnReason: string) => void;
+    public onPrompt(prompt: (context: BotContext, lastTurnReason: string) => void) {
         this._onPrompt = prompt;
         return this;
     }
@@ -43,8 +43,8 @@ export abstract class Prompt<V> extends Topic<PromptState> {
     }
 
     // onFailure
-    protected _onFailure?: (context: BotContext, failureReason: string) => void;
-    public onFailure(failure: (context: BotContext, failureReason: string) => void) {
+    protected _onFailure?: (context: BotContext, reason: string) => void;
+    public onFailure(failure: (context: BotContext, reason: string) => void) {
         this._onFailure = failure;
         return this;
     }

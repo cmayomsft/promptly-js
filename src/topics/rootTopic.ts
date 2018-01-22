@@ -12,53 +12,53 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
         this.subTopics = { 
             AddAlarmTopic: () => {
                 return new AddAlarmTopic()
-                .onSuccess((c, s) => {
-                    if (!c.state.user.alarms) {
-                        c.state.user.alarms = [];
+                .onSuccess((context, state) => {
+                    if (!context.state.user.alarms) {
+                        context.state.user.alarms = [];
                     }
                 
-                    c.state.user.alarms.push({
-                        title: s.alarm.title,
-                        time: s.alarm.time
+                    context.state.user.alarms.push({
+                        title: state.alarm.title,
+                        time: state.alarm.time
                     });
 
                     this.state.activeTopic = undefined;
 
-                    return c.reply(`Added alarm named '${s.alarm.title}' set for '${s.alarm.time}'.`);
+                    return context.reply(`Added alarm named '${state.alarm.title}' set for '${state.alarm.time}'.`);
                 })
-                .onFailure((c, fr) => {
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+                .onFailure((context, reason) => {
+                    if(reason && reason === 'toomanyattempts') {
+                        context.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
                     }
 
                     this.state.activeTopic = undefined;
 
-                    return this.showDefaultMessage(c);
+                    return this.showDefaultMessage(context);
                 })
             }, 
                 
             DeleteAlarmTopic: (alarms: Alarm[]) => {
                 return new DeleteAlarmTopic(alarms)
-                .onSuccess((c, s) => {
+                .onSuccess((context, state) => {
 
                     this.state.activeTopic = undefined;
 
-                    if(!s.deleteConfirmed) {
-                        return c.reply(`Ok, I won't delete alarm ${s.alarm.title}.`);
+                    if(!state.deleteConfirmed) {
+                        return context.reply(`Ok, I won't delete alarm ${state.alarm.title}.`);
                     }
 
-                    c.state.user.alarms.splice(s.alarmIndex, 1);
+                    context.state.user.alarms.splice(state.alarmIndex, 1);
 
-                    return c.reply(`Done. I've deleted alarm '${s.alarm.title}'.`);
+                    return context.reply(`Done. I've deleted alarm '${state.alarm.title}'.`);
                 })
-                .onFailure((c, fr) => {
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+                .onFailure((context, reason) => {
+                    if(reason && reason === 'toomanyattempts') {
+                        context.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
                     }
 
                     this.state.activeTopic = undefined;
 
-                    return this.showDefaultMessage(c);
+                    return this.showDefaultMessage(context);
                 })
             }
         };

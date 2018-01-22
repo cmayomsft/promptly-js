@@ -19,54 +19,54 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
         this.subTopics = { 
             TitlePrompt: () => {
                 return new TitlePrompt()
-                .onPrompt((c, ltvr) => {
+                .onPrompt((context, lastTurnReason) => {
                     let msg = `What would you like to name your alarm?`;
     
-                    if(ltvr && ltvr === 'titletoolong') {
-                        c.reply(`Sorry, alarm titles must be less that 20 characters.`)
+                    if(lastTurnReason && lastTurnReason === 'titletoolong') {
+                        context.reply(`Sorry, alarm titles must be less that 20 characters.`)
                             .reply(`Let's try again.`);
                     }
     
-                    return c.reply(msg);
+                    return context.reply(msg);
                 })
                 .validator(new AlarmTitleValidator())
                 .maxTurns(2)
-                .onSuccess((c, v) => {
-                    this.state.alarm.title = v;
+                .onSuccess((context, value) => {
+                    this.state.alarm.title = value;
                     
                     this.state.activeTopic = undefined;
     
-                    return this.onReceive(c);
+                    return this.onReceive(context);
                 })
-                .onFailure((c, fr) => {
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                .onFailure((context, reason) => {
+                    if(reason && reason === 'toomanyattempts') {
+                        context.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
                     }
                     
                     this.state.activeTopic = undefined;
     
-                    return this._onFailure(c, fr);
+                    return this._onFailure(context, reason);
                 })
             }, 
     
             TimePrompt: () => {
                 return new TimePrompt()
-                .onPrompt((c, ltvr) => {
+                .onPrompt((context, lastTurnReason) => {
     
-                    return c.reply(`What time would you like to set your alarm for?`);
+                    return context.reply(`What time would you like to set your alarm for?`);
                 })
                 .validator(new AlarmTimeValidator())
                 .maxTurns(2)
-                .onSuccess((c, v) => {
-                    this.state.alarm.time = v;
+                .onSuccess((context, value) => {
+                    this.state.alarm.time = value;
                     
                     this.state.activeTopic = undefined;
     
-                    return this.onReceive(c);
+                    return this.onReceive(context);
                 })
-                .onFailure((c, fr) => {
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                .onFailure((context, reason) => {
+                    if(reason && reason === 'toomanyattempts') {
+                        context.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
                     }
     
                     this.state.activeTopic = undefined;

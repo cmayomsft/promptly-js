@@ -23,8 +23,8 @@ export abstract class Topic<S = any> {
     }
 
     // onFailure
-    protected _onFailure?: (context: BotContext, failureReason: string) => void;
-    public onFailure(failure: (context: BotContext, failureReason: string) => void) {
+    protected _onFailure?: (context: BotContext, reason: string) => void;
+    public onFailure(failure: (context: BotContext, reason: string) => void) {
         this._onFailure = failure;
         return this;
     }
