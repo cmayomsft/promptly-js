@@ -10,8 +10,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
         super(name, state);
 
         this.subTopics = { 
-            addAlarmTopic: () => {
-                return new AddAlarmTopic("addAlarmTopic")
+            addAlarmTopic: () => new AddAlarmTopic("addAlarmTopic")
                 .onSuccess((context, state) => {
                     if (!context.state.user.alarms) {
                         context.state.user.alarms = [];
@@ -34,11 +33,9 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                     this.state.activeTopic = undefined;
 
                     return this.showDefaultMessage(context);
-                })
-            }, 
+                }), 
                 
-            deleteAlarmTopic: (alarms: Alarm[]) => {
-                return new DeleteAlarmTopic("deleteAlarmTopic", alarms)
+            deleteAlarmTopic: (alarms: Alarm[]) => new DeleteAlarmTopic("deleteAlarmTopic", alarms)
                 .onSuccess((context, state) => {
 
                     this.state.activeTopic = undefined;
@@ -60,7 +57,6 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
 
                     return this.showDefaultMessage(context);
                 })
-            }
         };
     }
 

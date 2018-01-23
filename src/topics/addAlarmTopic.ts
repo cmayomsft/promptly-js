@@ -14,8 +14,7 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
         super(name, state);    
         
         this.subTopics = { 
-            titlePrompt: () => {
-                return new Prompt<string>("titlePrompt")
+            titlePrompt: () => new Prompt<string>("titlePrompt")
                 .onPrompt((context, lastTurnReason) => {
                     let msg = `What would you like to name your alarm?`;
     
@@ -43,11 +42,9 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
                     this.state.activeTopic = undefined;
     
                     return this._onFailure(context, reason);
-                })
-            }, 
+                }), 
     
-            timePrompt: () => {
-                return new Prompt<string>("timePrompt")
+            timePrompt: () => new Prompt<string>("timePrompt")
                 .onPrompt((context, lastTurnReason) => {
     
                     return context.reply(`What time would you like to set your alarm for?`);
@@ -70,7 +67,6 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
     
                     return;
                 })
-            }
         };
     
     };

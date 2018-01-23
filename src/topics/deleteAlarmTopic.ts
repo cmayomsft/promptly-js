@@ -21,8 +21,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
         }
 
         this.subTopics = {
-            whichAlarmPrompt: () => {
-                return new Prompt<number>("whichAlarmPrompt")
+            whichAlarmPrompt: () => new Prompt<number>("whichAlarmPrompt")
                 .onPrompt((context, lastTurnReason) => {                           
                     let msg = `Which alarm would you like to delete?`
     
@@ -52,11 +51,9 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                     this.state.activeTopic = undefined;
     
                     return;
-                })
-            },
+                }),
 
-            confirmDeletePrompt: () => {
-                return new Prompt<boolean>("confirmDeletePrompt")
+            confirmDeletePrompt: () => new Prompt<boolean>("confirmDeletePrompt")
                     .onPrompt((context, lastTurnReason) => {
                         let msg = `Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`;
         
@@ -85,7 +82,6 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
         
                         return;
                     })
-            }
         }
     }
 
