@@ -12,6 +12,8 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
         this.subTopics = { 
             addAlarmTopic: () => new AddAlarmTopic("addAlarmTopic")
                 .onSuccess((context, state) => {
+                    this.state.activeTopic = undefined;
+
                     if (!context.state.user.alarms) {
                         context.state.user.alarms = [];
                     }
@@ -21,23 +23,20 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                         time: state.alarm.time
                     });
 
-                    this.state.activeTopic = undefined;
-
                     return context.reply(`Added alarm named '${state.alarm.title}' set for '${state.alarm.time}'.`);
                 })
                 .onFailure((context, reason) => {
+                    this.state.activeTopic = undefined;
+
                     if(reason && reason === 'toomanyattempts') {
                         context.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
                     }
-
-                    this.state.activeTopic = undefined;
 
                     return this.showDefaultMessage(context);
                 }), 
                 
             deleteAlarmTopic: (alarms: Alarm[]) => new DeleteAlarmTopic("deleteAlarmTopic", alarms)
                 .onSuccess((context, state) => {
-
                     this.state.activeTopic = undefined;
 
                     if(!state.deleteConfirmed) {
@@ -49,11 +48,11 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                     return context.reply(`Done. I've deleted alarm '${state.alarm.title}'.`);
                 })
                 .onFailure((context, reason) => {
+                    this.state.activeTopic = undefined;
+                    
                     if(reason && reason === 'toomanyattempts') {
                         context.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
                     }
-
-                    this.state.activeTopic = undefined;
 
                     return this.showDefaultMessage(context);
                 })

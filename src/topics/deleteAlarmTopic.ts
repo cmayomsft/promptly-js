@@ -37,18 +37,18 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                 .validator(new AlarmIndexValidator(this.state.alarms))
                 .maxTurns(2)
                 .onSuccess((context, value) => {
-                    this.state.alarmIndex = value;
-                    
                     this.state.activeTopic = undefined;
+
+                    this.state.alarmIndex = value;
     
                     return this.onReceive(context);
                 })
                 .onFailure((context, reason) => {
+                    this.state.activeTopic = undefined;
+
                     if(reason && reason === 'toomanyattempts') {
                         context.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
                     }
-    
-                    this.state.activeTopic = undefined;
     
                     return;
                 }),
@@ -67,18 +67,18 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
                     .validator(new YesOrNoValidator())
                     .maxTurns(2)
                     .onSuccess((context, value) => {
-                        this.state.deleteConfirmed = value;
-                        
                         this.state.activeTopic = undefined;
+
+                        this.state.deleteConfirmed = value;
         
                         return this.onReceive(context);
                     })
                     .onFailure((c, fr) => {
+                        this.state.activeTopic = undefined;
+                        
                         if(fr && fr === 'toomanyattempts') {
                             c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
                         }
-        
-                        this.state.activeTopic = undefined;
         
                         return;
                     })
