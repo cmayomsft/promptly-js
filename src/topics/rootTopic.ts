@@ -11,7 +11,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
 
         this.subTopics = { 
             addAlarmTopic: () => new AddAlarmTopic("addAlarmTopic")
-                .onSuccess((context, state) => {
+                .onSuccess((context, value) => {
                     this.state.activeTopic = undefined;
 
                     if (!context.state.user.alarms) {
@@ -19,11 +19,11 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                     }
                 
                     context.state.user.alarms.push({
-                        title: state.alarm.title,
-                        time: state.alarm.time
+                        title: value.title,
+                        time: value.time
                     });
 
-                    return context.reply(`Added alarm named '${state.alarm.title}' set for '${state.alarm.time}'.`);
+                    return context.reply(`Added alarm named '${ value.title }' set for '${ value.time }'.`);
                 })
                 .onFailure((context, reason) => {
                     this.state.activeTopic = undefined;
@@ -36,16 +36,16 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 }), 
                 
             deleteAlarmTopic: (alarms: Alarm[]) => new DeleteAlarmTopic("deleteAlarmTopic", alarms)
-                .onSuccess((context, state) => {
+                .onSuccess((context, value) => {
                     this.state.activeTopic = undefined;
 
-                    if(!state.deleteConfirmed) {
-                        return context.reply(`Ok, I won't delete alarm ${state.alarm.title}.`);
+                    if(!value.deleteConfirmed) {
+                        return context.reply(`Ok, I won't delete alarm ${value.alarm.title}.`);
                     }
 
-                    context.state.user.alarms.splice(state.alarmIndex, 1);
+                    context.state.user.alarms.splice(value.alarmIndex, 1);
 
-                    return context.reply(`Done. I've deleted alarm '${state.alarm.title}'.`);
+                    return context.reply(`Done. I've deleted alarm '${value.alarm.title}'.`);
                 })
                 .onFailure((context, reason) => {
                     this.state.activeTopic = undefined;

@@ -11,7 +11,13 @@ export interface DeleteAlarmTopicState extends ParentTopicState {
     deleteConfirmed?: boolean;
 }
 
-export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
+export interface DeleteAlarmTopicValue {
+    alarm: Partial<Alarm>;
+    alarmIndex: number;
+    deleteConfirmed: boolean;
+}
+
+export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteAlarmTopicValue> {
 
     public constructor(name: string, alarms: Alarm[], state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
         super(name, state);
@@ -118,7 +124,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
             return this.activeTopic.onReceive(context);
         }
 
-        return this._onSuccess(context, this.state);
+        return this._onSuccess(context, { alarm: this.state.alarm, alarmIndex: this.state.alarmIndex, deleteConfirmed: this.state.deleteConfirmed });
     }
 }
 

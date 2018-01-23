@@ -11,7 +11,7 @@ export interface ParentTopicState {
     activeTopic?: ActiveTopicState;
 }
 
-export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
+export abstract class ParentTopic<S extends ParentTopicState, V = any> extends Topic<S, V> {
 
     private _subTopics: any;
     protected set subTopics(subTopics: any) {

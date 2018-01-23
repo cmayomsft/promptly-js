@@ -8,7 +8,7 @@ export interface AddAlarmTopicState extends ParentTopicState {
     alarm: Alarm;
 }
 
-export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
+export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
 
     public constructor(name: string, state: AddAlarmTopicState = { alarm: {} as Alarm, activeTopic: undefined }) {
         super(name, state);    
@@ -87,7 +87,7 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
             return this.activeTopic.onReceive(context);
         }
         
-        return this._onSuccess(context, this.state);
+        return this._onSuccess(context, this.state.alarm);
     }
 }
 

@@ -1,6 +1,6 @@
 import { Promiseable } from 'botbuilder-core';
 
-export abstract class Topic<S = any> {
+export abstract class Topic<S = any, V = any> {
 
     private _name: string;
     public get name(): string {
@@ -22,8 +22,8 @@ export abstract class Topic<S = any> {
     }
 
     // onSuccess
-    protected _onSuccess?: (context: BotContext, state: S) => void;
-    public onSuccess(success: (context: BotContext, state: S) => void) {
+    protected _onSuccess?: (context: BotContext, value: V) => void;
+    public onSuccess(success: (context: BotContext, value: V) => void) {
         this._onSuccess = success;
         return this;
     }
