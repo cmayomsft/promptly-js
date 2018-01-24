@@ -77,12 +77,12 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
         }
 
         if (!this.state.alarm.title) {
-            this.activeTopic = this.subTopics.get("titlePrompt")();
+            this.setActiveTopic("titlePrompt");
             return this.activeTopic.onReceive(context);
         } 
         
         if (!this.state.alarm.time) {
-            this.activeTopic = this.subTopics.get("timePrompt")();
+            this.setActiveTopic("timePrompt");
             return this.activeTopic.onReceive(context);
         }
         

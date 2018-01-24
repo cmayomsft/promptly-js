@@ -109,7 +109,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteA
 
                 this.state.alarmIndex = 0;
             } else {
-                this.activeTopic = this.subTopics.get("whichAlarmPrompt")();
+                this.setActiveTopic("whichAlarmPrompt");
                     
                 return this.activeTopic.onReceive(context);
             }
@@ -118,8 +118,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteA
         this.state.alarm.title = this.state.alarms[this.state.alarmIndex].title;
     
         if (this.state.deleteConfirmed === undefined) {
-            
-            this.activeTopic = this.subTopics.get("confirmDeletePrompt")();
+            this.setActiveTopic("confirmDeletePrompt");
 
             return this.activeTopic.onReceive(context);
         }

@@ -67,10 +67,10 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 return showAlarms(context, context.state.user.alarms);
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                this.activeTopic = this.subTopics.get("addAlarmTopic")();
+                this.setActiveTopic("addAlarmTopic");
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('deleteAlarm')) {
 
-                this.activeTopic = this.subTopics.get("deleteAlarmTopic")(context.state.user.alarms);
+                this.setActiveTopic("deleteAlarmTopic", context.state.user.alarms);
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);
