@@ -20,14 +20,14 @@ export interface DeleteAlarmTopicValue {
 export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteAlarmTopicValue> {
 
     public constructor(name: string, alarms: Alarm[], state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
-        super(name, state);
+        super(state);
 
         if(alarms) {
             this.state.alarms = alarms;
         }
 
         this.subTopics
-            .set("whichAlarmPrompt", () => new Prompt<number>("whichAlarmPrompt")
+            .set("whichAlarmPrompt", () => new Prompt<number>()
                 .onPrompt((context, lastTurnReason) => {                           
                     let msg = `Which alarm would you like to delete?`
     
@@ -59,7 +59,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteA
                     return;
                 })
             )
-            .set("confirmDeletePrompt", () => new Prompt<boolean>("confirmDeletePrompt")
+            .set("confirmDeletePrompt", () => new Prompt<boolean>()
                 .onPrompt((context, lastTurnReason) => {
                     let msg = `Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`;
     

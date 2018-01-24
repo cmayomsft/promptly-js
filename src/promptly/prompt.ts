@@ -9,8 +9,8 @@ export interface PromptState {
 
 export class Prompt<V> extends Topic<PromptState, V> {
     
-    constructor(name: string, state: PromptState = { turns: undefined }) {
-        super(name, state);
+    constructor(state: PromptState = { turns: undefined }) {
+        super(state);
         return this;
     }
 

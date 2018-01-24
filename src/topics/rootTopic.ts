@@ -6,11 +6,11 @@ import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
 export class RootTopic extends ParentTopic<ParentTopicState> {
 
-    public constructor(name: string, context: BotContext, state: ParentTopicState = { activeTopic: undefined }) {
-        super(name, state);
+    public constructor(context: BotContext, state: ParentTopicState = { activeTopic: undefined }) {
+        super(state);
 
         this.subTopics
-            .set("addAlarmTopic", () => new AddAlarmTopic("addAlarmTopic")
+            .set("addAlarmTopic", () => new AddAlarmTopic()
                 .onSuccess((context, value) => {
                     this.state.activeTopic = undefined;
 

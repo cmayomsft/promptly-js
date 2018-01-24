@@ -10,11 +10,11 @@ export interface AddAlarmTopicState extends ParentTopicState {
 
 export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
 
-    public constructor(name: string, state: AddAlarmTopicState = { alarm: {} as Alarm, activeTopic: undefined }) {
-        super(name, state);    
+    public constructor(state: AddAlarmTopicState = { alarm: {} as Alarm, activeTopic: undefined }) {
+        super(state);    
         
         this.subTopics
-            .set("titlePrompt", () => new Prompt<string>("titlePrompt")
+            .set("titlePrompt", () => new Prompt<string>()
                 .onPrompt((context, lastTurnReason) => {
                     let msg = `What would you like to name your alarm?`;
     
@@ -44,7 +44,7 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
                     return this._onFailure(context, reason);
                 })
             )
-            .set("timePrompt", () => new Prompt<string>("timePrompt")
+            .set("timePrompt", () => new Prompt<string>()
                 .onPrompt((context, lastTurnReason) => {
     
                     return context.reply(`What time would you like to set your alarm for?`);

@@ -2,13 +2,7 @@ import { Promiseable } from 'botbuilder-core';
 
 export abstract class Topic<S, V = any> {
 
-    private _name: string;
-    public get name(): string {
-        return this._name;
-    }
-
-    constructor(name: string, state: S) {
-        this._name = name;
+    constructor(state: S) {
         this._state = state;
         return this;
     }
