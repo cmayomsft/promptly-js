@@ -1,6 +1,6 @@
 import { Promiseable } from 'botbuilder-core';
 
-export abstract class Topic<S = any, V = any> {
+export abstract class Topic<S, V = any> {
 
     private _name: string;
     public get name(): string {
