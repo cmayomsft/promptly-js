@@ -16,14 +16,13 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
         this.subTopics
             .set("titlePrompt", () => new Prompt<string>()
                 .onPrompt((context, lastTurnReason) => {
-                    let msg = `What would you like to name your alarm?`;
-    
+   
                     if(lastTurnReason && lastTurnReason === 'titletoolong') {
                         context.reply(`Sorry, alarm titles must be less that 20 characters.`)
                             .reply(`Let's try again.`);
                     }
     
-                    return context.reply(msg);
+                    return context.reply(`What would you like to name your alarm?`);
                 })
                 .validator(new AlarmTitleValidator())
                 .maxTurns(2)
@@ -46,7 +45,6 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
             )
             .set("timePrompt", () => new Prompt<string>()
                 .onPrompt((context, lastTurnReason) => {
-    
                     return context.reply(`What time would you like to set your alarm for?`);
                 })
                 .validator(new AlarmTimeValidator())

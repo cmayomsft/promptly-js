@@ -29,8 +29,6 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteA
         this.subTopics
             .set("whichAlarmPrompt", () => new Prompt<number>()
                 .onPrompt((context, lastTurnReason) => {                           
-                    let msg = `Which alarm would you like to delete?`
-    
                     if(lastTurnReason && lastTurnReason === 'indexnotfound') {
                         context.reply(`Sorry, I coulnd't find an alarm named '${context.request.text}'.`)
                             .reply(`Let's try again.`);
@@ -38,7 +36,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteA
                     
                     showAlarms(context, this.state.alarms);
     
-                    return context.reply(msg);
+                    return context.reply(`Which alarm would you like to delete?`);
                 })
                 .validator(new AlarmIndexValidator(this.state.alarms))
                 .maxTurns(2)
@@ -61,14 +59,12 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteA
             )
             .set("confirmDeletePrompt", () => new Prompt<boolean>()
                 .onPrompt((context, lastTurnReason) => {
-                    let msg = `Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`;
-    
                     if(lastTurnReason && lastTurnReason === 'notyesorno') {
                         context.reply(`Sorry, I was expecting 'yes' or 'no'.`)
                             .reply(`Let's try again.`);
                     }
     
-                    return context.reply(msg);
+                    return context.reply(`Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`);
                 })
                 .validator(new YesOrNoValidator())
                 .maxTurns(2)
