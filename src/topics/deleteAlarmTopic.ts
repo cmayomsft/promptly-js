@@ -53,10 +53,10 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteA
                     this.clearActiveTopic();
 
                     if(reason && reason === 'toomanyattempts') {
-                        context.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                        context.reply(`I'm sorry I'm having issues understanding you.`);
                     }
     
-                    return;
+                    return this._onFailure(context, reason);
                 })
             )
             .set("confirmDeletePrompt", () => new Prompt<boolean>()
@@ -79,14 +79,14 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteA
     
                     return this.onReceive(context);
                 })
-                .onFailure((c, fr) => {
+                .onFailure((context, reason) => {
                     this.clearActiveTopic();
                     
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                    if(reason && reason === 'toomanyattempts') {
+                        context.reply(`I'm sorry I'm having issues understanding you.`);
                     }
     
-                    return;
+                    return this._onFailure(context, reason);;
                 })
             );
     }

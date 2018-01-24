@@ -38,7 +38,7 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
                     this.clearActiveTopic();
 
                     if(reason && reason === 'toomanyattempts') {
-                        context.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                        context.reply(`I'm sorry I'm having issues understanding you.`);
                     }
     
                     return this._onFailure(context, reason);
@@ -62,10 +62,10 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
                     this.clearActiveTopic();
 
                     if(reason && reason === 'toomanyattempts') {
-                        return context.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                        return context.reply(`I'm sorry I'm having issues understanding you.`);
                     }
     
-                    return;
+                    return this._onFailure(context, reason);;
                 })
             );
     };

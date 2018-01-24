@@ -29,7 +29,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                     this.clearActiveTopic();
 
                     if(reason && reason === 'toomanyattempts') {
-                        context.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+                        context.reply(`Let's try something else.`);
                     }
 
                     return this.showDefaultMessage(context);
@@ -51,7 +51,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                     this.clearActiveTopic();
                     
                     if(reason && reason === 'toomanyattempts') {
-                        context.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+                        context.reply(`Let's try something else.`);
                     }
 
                     return this.showDefaultMessage(context);
