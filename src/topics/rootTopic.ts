@@ -9,8 +9,8 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
     public constructor(name: string, context: BotContext, state: ParentTopicState = { activeTopic: undefined }) {
         super(name, state);
 
-        this.subTopics = { 
-            addAlarmTopic: () => new AddAlarmTopic("addAlarmTopic")
+        this.subTopics
+            .set("addAlarmTopic", () => new AddAlarmTopic("addAlarmTopic")
                 .onSuccess((context, value) => {
                     this.state.activeTopic = undefined;
 
@@ -33,9 +33,9 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                     }
 
                     return this.showDefaultMessage(context);
-                }), 
-                
-            deleteAlarmTopic: (alarms: Alarm[]) => new DeleteAlarmTopic("deleteAlarmTopic", alarms)
+                })
+            )
+            .set("deleteAlarmTopic", (alarms: Alarm[]) => new DeleteAlarmTopic("deleteAlarmTopic", alarms)
                 .onSuccess((context, value) => {
                     this.state.activeTopic = undefined;
 
@@ -56,7 +56,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
 
                     return this.showDefaultMessage(context);
                 })
-        };
+            );
     }
 
     public onReceive(context: BotContext) { 
@@ -67,10 +67,10 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                 return showAlarms(context, context.state.user.alarms);
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                this.activeTopic = this.subTopics.addAlarmTopic();
+                this.activeTopic = this.subTopics.get("addAlarmTopic")();
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('deleteAlarm')) {
 
-                this.activeTopic = this.subTopics.deleteAlarmTopic(context.state.user.alarms);
+                this.activeTopic = this.subTopics.get("deleteAlarmTopic")(context.state.user.alarms);
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
 
                 return this.showHelp(context);

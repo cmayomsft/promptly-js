@@ -13,8 +13,8 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
     public constructor(name: string, state: AddAlarmTopicState = { alarm: {} as Alarm, activeTopic: undefined }) {
         super(name, state);    
         
-        this.subTopics = { 
-            titlePrompt: () => new Prompt<string>("titlePrompt")
+        this.subTopics
+            .set("titlePrompt", () => new Prompt<string>("titlePrompt")
                 .onPrompt((context, lastTurnReason) => {
                     let msg = `What would you like to name your alarm?`;
     
@@ -42,9 +42,9 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
                     }
     
                     return this._onFailure(context, reason);
-                }), 
-    
-            timePrompt: () => new Prompt<string>("timePrompt")
+                })
+            )
+            .set("timePrompt", () => new Prompt<string>("timePrompt")
                 .onPrompt((context, lastTurnReason) => {
     
                     return context.reply(`What time would you like to set your alarm for?`);
@@ -67,8 +67,7 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
     
                     return;
                 })
-        };
-    
+            );
     };
 
     public onReceive(context: BotContext) {
@@ -78,12 +77,12 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
         }
 
         if (!this.state.alarm.title) {
-            this.activeTopic = this.subTopics.titlePrompt();
+            this.activeTopic = this.subTopics.get("titlePrompt")();
             return this.activeTopic.onReceive(context);
         } 
         
         if (!this.state.alarm.time) {
-            this.activeTopic = this.subTopics.timePrompt();
+            this.activeTopic = this.subTopics.get("timePrompt")();
             return this.activeTopic.onReceive(context);
         }
         

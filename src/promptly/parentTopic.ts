@@ -13,11 +13,8 @@ export interface ParentTopicState {
 
 export abstract class ParentTopic<S extends ParentTopicState, V = any> extends Topic<S, V> {
 
-    private _subTopics: any;
-    protected set subTopics(subTopics: any) {
-        this._subTopics = subTopics;
-    }
-    protected get subTopics(): any {
+    private _subTopics = new Map<string, (any?) => Topic<any>>();
+    protected get subTopics(): Map<string, (any?) => Topic<any>> {
         return this._subTopics;
     }
 
@@ -34,7 +31,7 @@ export abstract class ParentTopic<S extends ParentTopicState, V = any> extends T
         }
 
         // TODO: This should be constructing the Topic w/ it's state rather than requiring state property.
-        this._activeTopic = this.subTopics[this.state.activeTopic.name]();
+        this._activeTopic = this.subTopics.get(this.state.activeTopic.name)();
         this._activeTopic.state = this.state.activeTopic.state;
 
         return this._activeTopic;
