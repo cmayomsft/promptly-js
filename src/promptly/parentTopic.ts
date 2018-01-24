@@ -50,4 +50,8 @@ export abstract class ParentTopic<S extends ParentTopicState, V = any> extends T
     public get hasActiveTopic(): boolean {
         return this.state.activeTopic !== undefined;
     }
+
+    public clearActiveTopic() {
+        this.state.activeTopic = undefined;
+    }
 }

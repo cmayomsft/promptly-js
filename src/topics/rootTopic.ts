@@ -12,7 +12,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
         this.subTopics
             .set("addAlarmTopic", () => new AddAlarmTopic()
                 .onSuccess((context, value) => {
-                    this.state.activeTopic = undefined;
+                    this.clearActiveTopic();
 
                     if (!context.state.user.alarms) {
                         context.state.user.alarms = [];
@@ -26,7 +26,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                     return context.reply(`Added alarm named '${ value.title }' set for '${ value.time }'.`);
                 })
                 .onFailure((context, reason) => {
-                    this.state.activeTopic = undefined;
+                    this.clearActiveTopic();
 
                     if(reason && reason === 'toomanyattempts') {
                         context.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
@@ -37,7 +37,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
             )
             .set("deleteAlarmTopic", (alarms: Alarm[]) => new DeleteAlarmTopic("deleteAlarmTopic", alarms)
                 .onSuccess((context, value) => {
-                    this.state.activeTopic = undefined;
+                    this.clearActiveTopic();
 
                     if(!value.deleteConfirmed) {
                         return context.reply(`Ok, I won't delete alarm ${value.alarm.title}.`);
@@ -48,7 +48,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
                     return context.reply(`Done. I've deleted alarm '${value.alarm.title}'.`);
                 })
                 .onFailure((context, reason) => {
-                    this.state.activeTopic = undefined;
+                    this.clearActiveTopic();
                     
                     if(reason && reason === 'toomanyattempts') {
                         context.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
@@ -63,6 +63,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
 
         if (context.request.type === 'message' && context.request.text.length > 0) {
             if (/show alarms/i.test(context.request.text) || context.ifIntent('showAlarms')) {
+                this.clearActiveTopic();
 
                 return showAlarms(context, context.state.user.alarms);
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
@@ -72,6 +73,7 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
 
                 this.setActiveTopic("deleteAlarmTopic", context.state.user.alarms);
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
+                this.clearActiveTopic();
 
                 return this.showHelp(context);
             }

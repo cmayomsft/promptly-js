@@ -28,14 +28,14 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
                 .validator(new AlarmTitleValidator())
                 .maxTurns(2)
                 .onSuccess((context, value) => {
-                    this.state.activeTopic = undefined;
+                    this.clearActiveTopic();
 
                     this.state.alarm.title = value;
     
                     return this.onReceive(context);
                 })
                 .onFailure((context, reason) => {                    
-                    this.state.activeTopic = undefined;
+                    this.clearActiveTopic();
 
                     if(reason && reason === 'toomanyattempts') {
                         context.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
@@ -52,14 +52,14 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
                 .validator(new AlarmTimeValidator())
                 .maxTurns(2)
                 .onSuccess((context, value) => {
+                    this.clearActiveTopic();
+
                     this.state.alarm.time = value;
-                    
-                    this.state.activeTopic = undefined;
     
                     return this.onReceive(context);
                 })
                 .onFailure((context, reason) => {
-                    this.state.activeTopic = undefined;
+                    this.clearActiveTopic();
 
                     if(reason && reason === 'toomanyattempts') {
                         return context.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
