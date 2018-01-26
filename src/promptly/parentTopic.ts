@@ -11,18 +11,15 @@ export interface ParentTopicState {
     activeTopic?: ActiveTopicState;
 }
 
-export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
+export abstract class ParentTopic<S extends ParentTopicState, V = any> extends Topic<S, V> {
 
-    private _subTopics: any;
-    protected set subTopics(subTopics: any) {
-        this._subTopics = subTopics;
-    }
-    protected get subTopics(): any {
+    private _subTopics = new Map<string, (any?) => Topic<any>>();
+    protected get subTopics(): Map<string, (any?) => Topic<any>> {
         return this._subTopics;
     }
 
-    private _activeTopic: Topic;
-    public get activeTopic(): Topic {
+    private _activeTopic: Topic<any>;
+    public get activeTopic(): Topic<any> {
         // If there is no active topic state, there is no active child topic being managed.
         if(!this.state.activeTopic) {
             return undefined;
@@ -33,21 +30,28 @@ export abstract class ParentTopic<S extends ParentTopicState> extends Topic<S> {
             return this._activeTopic;
         }
 
-        this._activeTopic = this.subTopics[this.state.activeTopic.name];
+        // TODO: This should be constructing the Topic w/ it's state rather than requiring state property.
+        this._activeTopic = this.subTopics.get(this.state.activeTopic.name)();
         this._activeTopic.state = this.state.activeTopic.state;
 
         return this._activeTopic;
     }
 
-    public set activeTopic(childTopic: Topic) {
-        this._activeTopic = childTopic;
+    public setActiveTopic(subTopicKey: string, ...args) {
+        if(args.length > 0) {
+            this._activeTopic = this.subTopics.get(subTopicKey)(...args);;
+        } else {
+            this._activeTopic = this.subTopics.get(subTopicKey)();;
+        }
 
-        const subTopicName = Object.keys(this.subTopics).find((e) => { return this.subTopics[e] === childTopic});
-        
-        this.state.activeTopic = { name: subTopicName, state: childTopic.state } as ActiveTopicState;
+        this.state.activeTopic = { name: subTopicKey, state: this._activeTopic.state };
     }
 
     public get hasActiveTopic(): boolean {
         return this.state.activeTopic !== undefined;
+    }
+
+    public clearActiveTopic() {
+        this.state.activeTopic = undefined;
     }
 }

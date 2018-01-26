@@ -8,68 +8,64 @@ export interface AddAlarmTopicState extends ParentTopicState {
     alarm: Alarm;
 }
 
-export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
+export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
 
     public constructor(state: AddAlarmTopicState = { alarm: {} as Alarm, activeTopic: undefined }) {
         super(state);    
         
-        this.subTopics =
-        { 
-            titlePrompt: new Prompt<string>()
-                .onPrompt((c, ltvr) => {
-                    let msg = `What would you like to name your alarm?`;
-    
-                    if(ltvr && ltvr === 'titletoolong') {
-                        c.reply(`Sorry, alarm titles must be less that 20 characters.`)
+        this.subTopics
+            .set("titlePrompt", () => new Prompt<string>()
+                .onPrompt((context, lastTurnReason) => {
+   
+                    if(lastTurnReason && lastTurnReason === 'titletoolong') {
+                        context.reply(`Sorry, alarm titles must be less that 20 characters.`)
                             .reply(`Let's try again.`);
                     }
     
-                    return c.reply(msg);
+                    return context.reply(`What would you like to name your alarm?`);
                 })
                 .validator(new AlarmTitleValidator())
                 .maxTurns(2)
-                .onSuccess((c, v) => {
-                    this.state.alarm.title = v;
-                    
-                    this.state.activeTopic = undefined;
+                .onSuccess((context, value) => {
+                    this.clearActiveTopic();
+
+                    this.state.alarm.title = value;
     
-                    return this.onReceive(c);
+                    return this.onReceive(context);
                 })
-                .onFailure((c, fr) => {
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                .onFailure((context, reason) => {                    
+                    this.clearActiveTopic();
+
+                    if(reason && reason === 'toomanyattempts') {
+                        context.reply(`I'm sorry I'm having issues understanding you.`);
                     }
-                    
-                    this.state.activeTopic = undefined;
     
-                    return this._onFailure(c, fr);
-                }), 
-    
-            timePrompt: new Prompt<string>()
-                .onPrompt((c, ltvr) => {
-    
-                    return c.reply(`What time would you like to set your alarm for?`);
+                    return this._onFailure(context, reason);
+                })
+            )
+            .set("timePrompt", () => new Prompt<string>()
+                .onPrompt((context, lastTurnReason) => {
+                    return context.reply(`What time would you like to set your alarm for?`);
                 })
                 .validator(new AlarmTimeValidator())
                 .maxTurns(2)
-                .onSuccess((c, v) => {
-                    this.state.alarm.time = v;
-                    
-                    this.state.activeTopic = undefined;
+                .onSuccess((context, value) => {
+                    this.clearActiveTopic();
+
+                    this.state.alarm.time = value;
     
-                    return this.onReceive(c);
+                    return this.onReceive(context);
                 })
-                .onFailure((c, fr) => {
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                .onFailure((context, reason) => {
+                    this.clearActiveTopic();
+
+                    if(reason && reason === 'toomanyattempts') {
+                        return context.reply(`I'm sorry I'm having issues understanding you.`);
                     }
     
-                    this.state.activeTopic = undefined;
-    
-                    return;
+                    return this._onFailure(context, reason);;
                 })
-        };
-    
+            );
     };
 
     public onReceive(context: BotContext) {
@@ -79,16 +75,16 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState> {
         }
 
         if (!this.state.alarm.title) {
-            this.activeTopic = this.subTopics.titlePrompt;
+            this.setActiveTopic("titlePrompt");
             return this.activeTopic.onReceive(context);
         } 
         
         if (!this.state.alarm.time) {
-            this.activeTopic = this.subTopics.timePrompt;
+            this.setActiveTopic("timePrompt");
             return this.activeTopic.onReceive(context);
         }
         
-        return this._onSuccess(context, this.state);
+        return this._onSuccess(context, this.state.alarm);
     }
 }
 

@@ -11,78 +11,80 @@ export interface DeleteAlarmTopicState extends ParentTopicState {
     deleteConfirmed?: boolean;
 }
 
-export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
+export interface DeleteAlarmTopicValue {
+    alarm: Partial<Alarm>;
+    alarmIndex: number;
+    deleteConfirmed: boolean;
+}
 
-    public constructor(alarms: Alarm[], state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
+export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteAlarmTopicValue> {
+
+    public constructor(name: string, alarms: Alarm[], state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
         super(state);
 
         if(alarms) {
             this.state.alarms = alarms;
         }
 
-        this.subTopics = {
-            whichAlarmPrompt: new Prompt<number>()
-                .onPrompt((c, ltvr) => {                           
-                    let msg = `Which alarm would you like to delete?`
-    
-                    if(ltvr && ltvr === 'indexnotfound') {
-                        c.reply(`Sorry, I coulnd't find an alarm named '${c.request.text}'.`)
+        this.subTopics
+            .set("whichAlarmPrompt", () => new Prompt<number>()
+                .onPrompt((context, lastTurnReason) => {                           
+                    if(lastTurnReason && lastTurnReason === 'indexnotfound') {
+                        context.reply(`Sorry, I coulnd't find an alarm named '${context.request.text}'.`)
                             .reply(`Let's try again.`);
                     }
                     
-                    showAlarms(c, this.state.alarms);
+                    showAlarms(context, this.state.alarms);
     
-                    return c.reply(msg);
+                    return context.reply(`Which alarm would you like to delete?`);
                 })
                 .validator(new AlarmIndexValidator(this.state.alarms))
                 .maxTurns(2)
-                .onSuccess((c, v) => {
-                    this.state.alarmIndex = v;
-                    
-                    this.state.activeTopic = undefined;
+                .onSuccess((context, value) => {
+                    this.clearActiveTopic();
+
+                    this.state.alarmIndex = value;
     
-                    return this.onReceive(c);
+                    return this.onReceive(context);
                 })
-                .onFailure((c, fr) => {
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                .onFailure((context, reason) => {
+                    this.clearActiveTopic();
+
+                    if(reason && reason === 'toomanyattempts') {
+                        context.reply(`I'm sorry I'm having issues understanding you.`);
                     }
     
-                    this.state.activeTopic = undefined;
-    
-                    return;
-                }),
-    
-            confirmDeletePrompt: new Prompt<boolean>()
-                .onPrompt((c, ltvr) => {
-                    let msg = `Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`;
-    
-                    if(ltvr && ltvr === 'notyesorno') {
-                        c.reply(`Sorry, I was expecting 'yes' or 'no'.`)
+                    return this._onFailure(context, reason);
+                })
+            )
+            .set("confirmDeletePrompt", () => new Prompt<boolean>()
+                .onPrompt((context, lastTurnReason) => {
+                    if(lastTurnReason && lastTurnReason === 'notyesorno') {
+                        context.reply(`Sorry, I was expecting 'yes' or 'no'.`)
                             .reply(`Let's try again.`);
                     }
     
-                    return c.reply(msg);
+                    return context.reply(`Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`);
                 })
                 .validator(new YesOrNoValidator())
                 .maxTurns(2)
-                .onSuccess((c, v) => {
-                    this.state.deleteConfirmed = v;
-                    
-                    this.state.activeTopic = undefined;
+                .onSuccess((context, value) => {
+                    this.clearActiveTopic();
+
+                    this.state.deleteConfirmed = value;
     
-                    return this.onReceive(c);
+                    return this.onReceive(context);
                 })
-                .onFailure((c, fr) => {
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else. Say 'Help'.`);
+                .onFailure((context, reason) => {
+                    this.clearActiveTopic();
+                    
+                    if(reason && reason === 'toomanyattempts') {
+                        context.reply(`I'm sorry I'm having issues understanding you.`);
                     }
     
-                    this.state.activeTopic = undefined;
-    
-                    return;
+                    return this._onFailure(context, reason);;
                 })
-        }
+            );
     }
 
     public onReceive(context: BotContext) {
@@ -103,7 +105,7 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
 
                 this.state.alarmIndex = 0;
             } else {
-                this.activeTopic = this.subTopics.whichAlarmPrompt;
+                this.setActiveTopic("whichAlarmPrompt");
                     
                 return this.activeTopic.onReceive(context);
             }
@@ -112,13 +114,12 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState> {
         this.state.alarm.title = this.state.alarms[this.state.alarmIndex].title;
     
         if (this.state.deleteConfirmed === undefined) {
-            
-            this.activeTopic = this.subTopics.confirmDeletePrompt;
+            this.setActiveTopic("confirmDeletePrompt");
 
             return this.activeTopic.onReceive(context);
         }
 
-        return this._onSuccess(context, this.state);
+        return this._onSuccess(context, { alarm: this.state.alarm, alarmIndex: this.state.alarmIndex, deleteConfirmed: this.state.deleteConfirmed });
     }
 }
 

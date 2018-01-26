@@ -9,70 +9,71 @@ export class RootTopic extends ParentTopic<ParentTopicState> {
     public constructor(context: BotContext, state: ParentTopicState = { activeTopic: undefined }) {
         super(state);
 
-        this.subTopics = { 
-            addAlarmTopic: new AddAlarmTopic()
-                .onSuccess((c, s) => {
-                    if (!c.state.user.alarms) {
-                        c.state.user.alarms = [];
+        this.subTopics
+            .set("addAlarmTopic", () => new AddAlarmTopic()
+                .onSuccess((context, value) => {
+                    this.clearActiveTopic();
+
+                    if (!context.state.user.alarms) {
+                        context.state.user.alarms = [];
                     }
                 
-                    c.state.user.alarms.push({
-                        title: s.alarm.title,
-                        time: s.alarm.time
+                    context.state.user.alarms.push({
+                        title: value.title,
+                        time: value.time
                     });
 
-                    this.state.activeTopic = undefined;
-
-                    return c.reply(`Added alarm named '${s.alarm.title}' set for '${s.alarm.time}'.`);
+                    return context.reply(`Added alarm named '${ value.title }' set for '${ value.time }'.`);
                 })
-                .onFailure((c, fr) => {
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+                .onFailure((context, reason) => {
+                    this.clearActiveTopic();
+
+                    if(reason && reason === 'toomanyattempts') {
+                        context.reply(`Let's try something else.`);
                     }
 
-                    this.state.activeTopic = undefined;
+                    return this.showDefaultMessage(context);
+                })
+            )
+            .set("deleteAlarmTopic", (alarms: Alarm[]) => new DeleteAlarmTopic("deleteAlarmTopic", alarms)
+                .onSuccess((context, value) => {
+                    this.clearActiveTopic();
 
-                    return this.showDefaultMessage(c);
-                }), 
-                
-            deleteAlarmTopic: new DeleteAlarmTopic(context.state.user.alarms)
-                .onSuccess((c, s) => {
-
-                    this.state.activeTopic = undefined;
-
-                    if(!s.deleteConfirmed) {
-                        return c.reply(`Ok, I won't delete alarm ${s.alarm.title}.`);
+                    if(!value.deleteConfirmed) {
+                        return context.reply(`Ok, I won't delete alarm ${value.alarm.title}.`);
                     }
 
-                    c.state.user.alarms.splice(s.alarmIndex, 1);
+                    context.state.user.alarms.splice(value.alarmIndex, 1);
 
-                    return c.reply(`Done. I've deleted alarm '${s.alarm.title}'.`);
+                    return context.reply(`Done. I've deleted alarm '${value.alarm.title}'.`);
                 })
-                .onFailure((c, fr) => {
-                    if(fr && fr === 'toomanyattempts') {
-                        c.reply(`I'm sorry I'm having issues understanding you. Let's try something else.`);
+                .onFailure((context, reason) => {
+                    this.clearActiveTopic();
+                    
+                    if(reason && reason === 'toomanyattempts') {
+                        context.reply(`Let's try something else.`);
                     }
 
-                    this.state.activeTopic = undefined;
-
-                    return this.showDefaultMessage(c);
+                    return this.showDefaultMessage(context);
                 })
-            };
+            );
     }
 
     public onReceive(context: BotContext) { 
 
         if (context.request.type === 'message' && context.request.text.length > 0) {
             if (/show alarms/i.test(context.request.text) || context.ifIntent('showAlarms')) {
+                this.clearActiveTopic();
 
                 return showAlarms(context, context.state.user.alarms);
             } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
 
-                this.activeTopic = this.subTopics.addAlarmTopic;
+                this.setActiveTopic("addAlarmTopic");
             } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('deleteAlarm')) {
 
-                this.activeTopic = this.subTopics.deleteAlarmTopic;
+                this.setActiveTopic("deleteAlarmTopic", context.state.user.alarms);
             } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
+                this.clearActiveTopic();
 
                 return this.showHelp(context);
             }
