@@ -1,14 +1,10 @@
 {
-  "name": "promptly",
-  "version": "1.0.0",
-  "description": "Prompt abstraction for bots.",
+  "name": "promptly-bot-samples-sophisticated",
+  "version": "0.0.1",
   "main": "./lib/app.js",
   "scripts": {
-    "start": "tsc && node ./lib/app.js",
     "watch": "tsc -w"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@types/node": "^8.0.28",
     "@types/restify": "^5.0.3",
