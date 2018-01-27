@@ -1,16 +1,29 @@
 {
-  "name": "promptly",
-  "version": "1.0.0",
-  "description": "Prompt abstraction for bots.",
-  "main": "./lib/app.js",
+  "name": "promptly-bot",
+  "version": "0.0.1",
+  "description": "Conversation modeling library for bots.",
   "scripts": {
-    "start": "tsc && node ./lib/app.js",
     "watch": "tsc -w"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Chris Mayo",
+  "license": "MIT",
   "dependencies": {
     "@types/node": "^8.0.28",
     "botbuilder-core": "^4.0.0-h3.3"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cmayomsft/promptly.git"
+  },
+  "keywords": [
+    "bot",
+    "conversation",
+    "modeling",
+    "CUI"
+  ],
+  "bugs": {
+    "url": "https://github.com/cmayomsft/promptly/issues"
+  },
+  "homepage": "https://github.com/cmayomsft/promptly#readme"
 }
