@@ -1,8 +1,8 @@
 import { Alarm, showAlarms } from '../alarms';
-import { Topic } from '../promptly/topic';
-import { ParentTopic, ParentTopicState } from '../promptly/parentTopic';
-import { Prompt } from '../promptly/prompt';
-import { Validator } from '../validator/validator';
+import { Topic } from '../../../../source/src/topic';
+import { ParentTopic, ParentTopicState } from '../../../../source/src/parentTopic';
+import { Prompt } from '../../../../source/src/prompt';
+import { Validator } from '../../../../source/src/validator/validator';
 
 export interface DeleteAlarmTopicState extends ParentTopicState {
     alarms?: Alarm[];
