@@ -1,7 +1,6 @@
 import { Promiseable } from 'botbuilder-core';
-
 import { Topic } from "./topic";
-import { Validator } from "../validator/validator";
+import { Validator } from "./validator/validator";
 
 export interface PromptState {
     turns?: number;

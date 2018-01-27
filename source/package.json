@@ -1,0 +1,16 @@
+{
+  "name": "promptly",
+  "version": "1.0.0",
+  "description": "Prompt abstraction for bots.",
+  "main": "./lib/app.js",
+  "scripts": {
+    "start": "tsc && node ./lib/app.js",
+    "watch": "tsc -w"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^8.0.28",
+    "botbuilder-core": "^4.0.0-h3.3"
+  }
+}

@@ -1,9 +1,9 @@
 import { Bot, ConsoleLogger, MemoryStorage, BotStateManager } from 'botbuilder-core';
 import { BotFrameworkAdapter } from 'botbuilder-services';
 import * as restify from 'restify';
-import { RootTopic } from './topics/rootTopic';
 import { LuisRecognizer } from 'botbuilder-ai';
-import { ParentTopicState } from './promptly/parentTopic';
+import { ParentTopicState } from '../../../source/src/parentTopic';
+import { RootTopic } from './topics/rootTopic';
 
 // Create server
 let server = restify.createServer();
