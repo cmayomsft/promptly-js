@@ -2,7 +2,7 @@ import { Bot, ConsoleLogger, MemoryStorage, BotStateManager } from 'botbuilder-c
 import { BotFrameworkAdapter } from 'botbuilder-services';
 import * as restify from 'restify';
 import { LuisRecognizer } from 'botbuilder-ai';
-import { ParentTopicState } from '../../../source/src/parentTopic';
+import { ParentTopicState } from 'promptly-bot';
 import { RootTopic } from './topics/rootTopic';
 
 // Create server

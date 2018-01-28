@@ -11,6 +11,7 @@
     "botbuilder-ai": "^4.0.0-h3.4",
     "botbuilder-core": "^4.0.0-h3.3",
     "botbuilder-services": "^4.0.0-h3.3",
-    "restify": "^6.0.0"
+    "restify": "^6.0.0",
+    "promptly-bot": "~0.0.1"
   }
 }
