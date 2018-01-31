@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/node": "^8.0.28",
-    "botbuilder-core": "^4.0.0-h3.3"
+    "botbuilder-core": "^4.0.0-h4.1"
   },
   "devDependencies": {},
   "repository": {
