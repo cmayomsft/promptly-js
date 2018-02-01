@@ -1,31 +1,13 @@
-import { Topic } from 'promptly-bot';
+import { Topic, TopicRoot } from 'promptly-bot';
 import { ParentTopic, ActiveTopicState, ParentTopicState } from 'promptly-bot';
 import { Alarm, showAlarms } from '../alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
-export interface RootTopicState<S> {
-    state?: S;
-}
-
-declare global {
-    export interface ConversationState {
-        rootTopic?: RootTopicState<ParentTopicState>;
-    }
-}
-
-export class RootTopic extends ParentTopic<ParentTopicState> {
+export class RootTopic extends TopicRoot {
 
     public constructor(context: BotContext) {
-        // Initialize the root topic state and pass that reference to root topic to facilitate the state 
-        //  reference chain to context.state.conversation.
-        if (!context.state.conversation.rootTopic) {
-            context.state.conversation.rootTopic = { 
-                state: { activeTopic: undefined } 
-            };
-        }
-
-        super(context.state.conversation.rootTopic.state);
+        super(context);
 
         this.subTopics
             .set("addAlarmTopic", () => new AddAlarmTopic()
