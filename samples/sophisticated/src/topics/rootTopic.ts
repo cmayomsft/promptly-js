@@ -62,17 +62,17 @@ export class RootTopic extends TopicRoot {
     public onReceive(context: BotContext) { 
 
         if (context.request.type === 'message' && context.request.text.length > 0) {
-            if (/show alarms/i.test(context.request.text) || context.ifIntent('showAlarms')) {
+            if (/show alarms/i.test(context.request.text)) {
                 this.clearActiveTopic();
 
                 return showAlarms(context, context.state.user.alarms);
-            } else if (/add alarm/i.test(context.request.text) || context.ifIntent('addAlarm')) {
+            } else if (/add alarm/i.test(context.request.text)) {
 
                 this.setActiveTopic("addAlarmTopic");
-            } else if (/delete alarm/i.test(context.request.text) || context.ifIntent('deleteAlarm')) {
+            } else if (/delete alarm/i.test(context.request.text)) {
 
                 this.setActiveTopic("deleteAlarmTopic", context.state.user.alarms);
-            } else if (/help/i.test(context.request.text) || context.ifIntent('help')) {
+            } else if (/help/i.test(context.request.text)) {
                 this.clearActiveTopic();
 
                 return this.showHelp(context);
