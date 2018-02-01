@@ -1,4 +1,4 @@
-import { Promiseable } from 'botbuilder-core';
+import { Promiseable } from 'botbuilder';
 export declare abstract class Topic<S, V = any> {
     constructor(state: S);
     private _state;

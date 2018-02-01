@@ -1,6 +1,6 @@
-import { Bot, ConsoleLogger, MemoryStorage, BotStateManager } from 'botbuilder-core';
-import { BotFrameworkAdapter } from 'botbuilder-services';
 import * as restify from 'restify';
+import { Bot, ConsoleLogger, MemoryStorage, BotStateManager } from 'botbuilder';
+import { BotFrameworkAdapter } from 'botbuilder-services';
 import { LuisRecognizer } from 'botbuilder-ai';
 import { ParentTopicState } from 'promptly-bot';
 import { RootTopic } from './topics/rootTopic';
