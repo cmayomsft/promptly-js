@@ -1,4 +1,4 @@
-import { Promiseable } from 'botbuilder-core';
+import { Promiseable } from 'botbuilder';
 import { Topic } from "./topic";
 import { Validator } from "./validator/validator";
 

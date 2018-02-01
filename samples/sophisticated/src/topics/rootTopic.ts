@@ -1,13 +1,13 @@
-import { Topic } from 'promptly-bot';
+import { Topic, TopicRoot } from 'promptly-bot';
 import { ParentTopic, ActiveTopicState, ParentTopicState } from 'promptly-bot';
 import { Alarm, showAlarms } from '../alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
-export class RootTopic extends ParentTopic<ParentTopicState> {
+export class RootTopic extends TopicRoot {
 
-    public constructor(context: BotContext, state: ParentTopicState = { activeTopic: undefined }) {
-        super(state);
+    public constructor(context: BotContext) {
+        super(context);
 
         this.subTopics
             .set("addAlarmTopic", () => new AddAlarmTopic()

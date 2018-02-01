@@ -7,10 +7,10 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Sophisticated Sample",
             "sourceMaps": true,
-            "program": "${workspaceRoot}/src/app.ts",
-            "outFiles": [ "${workspaceRoot}/lib/**/*.js" ]
+            "program": "${workspaceRoot}/samples/sophisticated/src/app.ts",
+            "outFiles": [ "${workspaceRoot}/samples/sophisticated/lib/**/*.js" ]
         }
     ]
 }
