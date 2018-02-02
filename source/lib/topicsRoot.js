@@ -14,4 +14,4 @@ class TopicsRoot extends parentTopic_1.ParentTopic {
     }
 }
 exports.TopicsRoot = TopicsRoot;
-//# sourceMappingURL=topicRoot.js.map
+//# sourceMappingURL=topicsRoot.js.map
