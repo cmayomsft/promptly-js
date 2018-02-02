@@ -1,5 +1,5 @@
 {
-  "name": "promptly-bot-samples-primatives",
+  "name": "promptly-bot-samples-primitives",
   "version": "0.0.1",
   "main": "./lib/app.js",
   "scripts": {
