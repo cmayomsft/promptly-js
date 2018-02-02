@@ -11,7 +11,7 @@ export declare abstract class ParentTopic<S extends ParentTopicState, V = any> e
     protected readonly subTopics: Map<string, (any?) => Topic<any>>;
     private _activeTopic;
     readonly activeTopic: Topic<any>;
-    setActiveTopic(subTopicKey: string, ...args: any[]): void;
+    setActiveTopic(subTopicKey: string, ...args: any[]): Topic<any, any>;
     readonly hasActiveTopic: boolean;
     clearActiveTopic(): void;
 }

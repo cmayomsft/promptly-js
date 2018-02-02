@@ -33,6 +33,7 @@ class ParentTopic extends topic_1.Topic {
             ;
         }
         this.state.activeTopic = { name: subTopicKey, state: this._activeTopic.state };
+        return this._activeTopic;
     }
     get hasActiveTopic() {
         return this.state.activeTopic !== undefined;

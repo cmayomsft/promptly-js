@@ -45,6 +45,8 @@ export abstract class ParentTopic<S extends ParentTopicState, V = any> extends T
         }
 
         this.state.activeTopic = { name: subTopicKey, state: this._activeTopic.state };
+
+        return this._activeTopic;
     }
 
     public get hasActiveTopic(): boolean {
