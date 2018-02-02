@@ -1,7 +1,6 @@
 import * as restify from 'restify';
 import { Bot, ConsoleLogger, MemoryStorage, BotStateManager } from 'botbuilder';
 import { BotFrameworkAdapter } from 'botbuilder-services';
-import { ParentTopicState } from 'promptly-bot';
 import { RootTopic } from './topics/rootTopic';
 
 // Create server

@@ -1,5 +1,4 @@
-import { Topic, TopicsRoot } from 'promptly-bot';
-import { ParentTopic, ActiveTopicState, ParentTopicState } from 'promptly-bot';
+import { TopicsRoot } from '../../../../source';
 import { Alarm, showAlarms } from '../alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
@@ -68,18 +67,14 @@ export class RootTopic extends TopicsRoot {
                 return showAlarms(context, context.state.user.alarms);
             } else if (/add alarm/i.test(context.request.text)) {
 
-                this.setActiveTopic("addAlarmTopic");
+                return this.setActiveTopic("addAlarmTopic").onReceive(context);
             } else if (/delete alarm/i.test(context.request.text)) {
 
-                this.setActiveTopic("deleteAlarmTopic", context.state.user.alarms);
+                return this.setActiveTopic("deleteAlarmTopic", context.state.user.alarms).onReceive(context);
             } else if (/help/i.test(context.request.text)) {
                 this.clearActiveTopic();
 
                 return this.showHelp(context);
-            }
-
-            if (this.hasActiveTopic) {    
-                return this.activeTopic.onReceive(context);    
             }
 
             return this.showDefaultMessage(context);
