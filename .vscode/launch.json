@@ -7,6 +7,14 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Primitives Sample",
+            "sourceMaps": true,
+            "program": "${workspaceRoot}/samples/primitives/src/app.ts",
+            "outFiles": [ "${workspaceRoot}/samples/primitives/lib/**/*.js" ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Sophisticated Sample",
             "sourceMaps": true,
             "program": "${workspaceRoot}/samples/sophisticated/src/app.ts",

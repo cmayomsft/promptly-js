@@ -1,5 +1,5 @@
 {
-  "name": "promptly-bot-samples-primitives",
+  "name": "promptly-bot-samples-primatives",
   "version": "0.0.1",
   "main": "./lib/app.js",
   "scripts": {
@@ -8,9 +8,8 @@
   "dependencies": {
     "@types/node": "^8.0.28",
     "@types/restify": "^5.0.3",
-    "botbuilder-core": "^4.0.0-h4.1",
-    "botbuilder-services": "^4.0.0-h4.1",
-    "restify": "^6.0.0",
-    "promptly-bot": "0.0.x"
+    "botbuilder": "^4.0.0-m1.0",
+    "botbuilder-services": "^4.0.0-m1.0",
+    "restify": "^6.0.0"
   }
 }
