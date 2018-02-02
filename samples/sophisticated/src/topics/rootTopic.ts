@@ -61,6 +61,7 @@ export class RootTopic extends TopicsRoot {
     public onReceive(context: BotContext) { 
 
         if (context.request.type === 'message' && context.request.text.length > 0) {
+            
             if (/show alarms/i.test(context.request.text)) {
                 this.clearActiveTopic();
 
@@ -75,6 +76,10 @@ export class RootTopic extends TopicsRoot {
                 this.clearActiveTopic();
 
                 return this.showHelp(context);
+            }
+
+            if (this.hasActiveTopic) {
+                return this.activeTopic.onReceive(context);
             }
 
             return this.showDefaultMessage(context);
