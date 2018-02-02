@@ -1,8 +1,5 @@
 import { Alarm } from '../alarms';
-import { Topic } from 'promptly-bot';
-import { Prompt } from 'promptly-bot';
-import { ParentTopic, ParentTopicState } from 'promptly-bot';
-import { Validator } from 'promptly-bot';
+import { ParentTopic, ParentTopicState, Prompt, Validator } from '../../../../source';
 
 export interface AddAlarmTopicState extends ParentTopicState {
     alarm: Alarm;
@@ -75,13 +72,11 @@ export class AddAlarmTopic extends ParentTopic<AddAlarmTopicState, Alarm> {
         }
 
         if (!this.state.alarm.title) {
-            this.setActiveTopic("titlePrompt");
-            return this.activeTopic.onReceive(context);
+            return this.setActiveTopic("titlePrompt").onReceive(context);
         } 
         
         if (!this.state.alarm.time) {
-            this.setActiveTopic("timePrompt");
-            return this.activeTopic.onReceive(context);
+            return this.setActiveTopic("timePrompt").onReceive(context);
         }
         
         return this._onSuccess(context, this.state.alarm);
