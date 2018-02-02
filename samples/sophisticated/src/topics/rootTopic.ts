@@ -1,10 +1,10 @@
-import { Topic, TopicRoot } from 'promptly-bot';
+import { Topic, TopicsRoot } from 'promptly-bot';
 import { ParentTopic, ActiveTopicState, ParentTopicState } from 'promptly-bot';
 import { Alarm, showAlarms } from '../alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
-export class RootTopic extends TopicRoot {
+export class RootTopic extends TopicsRoot {
 
     public constructor(context: BotContext) {
         super(context);
