@@ -22,7 +22,8 @@ const bot = new Bot(adapter)
         // State isn't fully initialized until the contact/conversation messages are sent, so have to require
         //  activity type is message. Will affect welcome message. Refactor after bug has been addressed.
         if(context.request.type === 'message') {
-            const rootTopic = new RootTopic(context);
-            return rootTopic.onReceive(context);
+            
+            return new RootTopic(context)
+                .onReceive(context);
         }
     });
