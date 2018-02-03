@@ -15,10 +15,10 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Topic-TS Sample",
+            "name": "2-Topic-TS Sample",
             "sourceMaps": true,
-            "program": "${workspaceRoot}/samples/topic-ts/src/app.ts",
-            "outFiles": [ "${workspaceRoot}/samples/topic-ts/lib/**/*.js" ]
+            "program": "${workspaceRoot}/samples/2-topic-ts/src/app.ts",
+            "outFiles": [ "${workspaceRoot}/samples/2-topic-ts/lib/**/*.js" ]
         },
         {
             "type": "node",
