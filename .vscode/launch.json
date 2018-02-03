@@ -7,18 +7,18 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Primitives Sample",
+            "name": "Primitives-TS Sample",
             "sourceMaps": true,
-            "program": "${workspaceRoot}/samples/primitives/src/app.ts",
-            "outFiles": [ "${workspaceRoot}/samples/primitives/lib/**/*.js" ]
+            "program": "${workspaceRoot}/samples/primitives-ts/src/app.ts",
+            "outFiles": [ "${workspaceRoot}/samples/primitives-ts/lib/**/*.js" ]
         },        
         {
             "type": "node",
             "request": "launch",
-            "name": "Simple Sample",
+            "name": "Topic-TS Sample",
             "sourceMaps": true,
-            "program": "${workspaceRoot}/samples/simple/src/app.ts",
-            "outFiles": [ "${workspaceRoot}/samples/simple/lib/**/*.js" ]
+            "program": "${workspaceRoot}/samples/topic-ts/src/app.ts",
+            "outFiles": [ "${workspaceRoot}/samples/topic-ts/lib/**/*.js" ]
         },
         {
             "type": "node",
