@@ -1,4 +1,4 @@
-import { ConversationTopic, ConversationTopicState } from './parentTopic';
+import { ConversationTopic, ConversationTopicState } from './conversationTopic';
 
 export interface TopicsRootState<S> {
     state?: S;
