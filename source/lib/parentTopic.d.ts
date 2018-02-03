@@ -1,17 +1,17 @@
 import { Topic } from './topic';
 export interface ActiveTopicState {
-    name: string;
+    key: string;
     state?: any;
 }
-export interface ParentTopicState {
+export interface ConversationTopicState {
     activeTopic?: ActiveTopicState;
 }
-export declare abstract class ParentTopic<S extends ParentTopicState, V = any> extends Topic<S, V> {
+export declare abstract class ConversationTopic<S extends ConversationTopicState, V = any> extends Topic<S, V> {
     private _subTopics;
     protected readonly subTopics: Map<string, (any?) => Topic<any>>;
     private _activeTopic;
-    readonly activeTopic: Topic<any>;
     setActiveTopic(subTopicKey: string, ...args: any[]): Topic<any, any>;
+    readonly activeTopic: Topic<any>;
     readonly hasActiveTopic: boolean;
     clearActiveTopic(): void;
 }
