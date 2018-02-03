@@ -1,5 +1,5 @@
 import { ConversationTopic, ConversationTopicState } from './conversationTopic';
-export interface TopicsRootState<S> {
+export interface TopicsRootState<S extends ConversationTopicState> {
     state?: S;
 }
 declare global  {
