@@ -40,20 +40,27 @@ export abstract class ConversationTopic<S extends ConversationTopicState, V = an
     //      active Topic completes.
     //  args - Any arguments used to create the topic on the initial turn (turn 0).
     public setActiveTopic(subTopicKey: string, ...args) {
-        // If args were supplied, use them...
+
+        // Instantiate/set the active topic by calling the corresponding function in this.subTopics,
+        //  using args if supplied.
         if(args.length > 0) {
-            
             this._activeTopic = this.subTopics.get(subTopicKey)(...args);;
         } else {
             this._activeTopic = this.subTopics.get(subTopicKey)();;
         }
 
+        // Persist the sub-topic key used to create/set the active topic and the 
+        //  sub-topics's state, "dehydrating" the active topic, so it can be 
+        //  "rehydrated" on subsequent turns.
         this.state.activeTopic = { key: subTopicKey, state: this._activeTopic.state };
 
         return this._activeTopic;
     }
+    // activeTopic - Used to recreate ("rehydrate") the active topic on the current turn
+    //  so it can handle the context/message of the current turn.
     public get activeTopic(): Topic<any> {
-        // If there is no active topic state, there is no active child topic being managed.
+
+        // If there is no active topic persisted in state, there is not active topic.
         if(!this.state.activeTopic) {
             return undefined;
         } 
@@ -63,7 +70,8 @@ export abstract class ConversationTopic<S extends ConversationTopicState, V = an
             return this._activeTopic;
         }
 
-        // TODO: This should be constructing the Topic w/ it's state rather than requiring state property.
+        // Recreate the active topic using the applicable function in subTopics and the state
+        //  persisted on the last turn.
         this._activeTopic = this.subTopics.get(this.state.activeTopic.key)(this.state.activeTopic.state);
 
         return this._activeTopic;
