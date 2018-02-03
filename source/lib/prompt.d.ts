@@ -11,9 +11,5 @@ export declare class Prompt<V> extends Topic<PromptState, V> {
     maxTurns(maxTurns: number): this;
     protected _validator: Validator<V>;
     validator(validator: Validator<V>): this;
-    protected _onSuccess?: (context: BotContext, value: V) => void;
-    onSuccess(success: (context: BotContext, value: V) => void): this;
-    protected _onFailure?: (context: BotContext, reason: string) => void;
-    onFailure(failure: (context: BotContext, reason: string) => void): this;
     onReceive(context: BotContext): void;
 }

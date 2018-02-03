@@ -20,14 +20,6 @@ class Prompt extends topic_1.Topic {
         this._validator = validator;
         return this;
     }
-    onSuccess(success) {
-        this._onSuccess = success;
-        return this;
-    }
-    onFailure(failure) {
-        this._onFailure = failure;
-        return this;
-    }
     // onReceive
     onReceive(context) {
         // If this is the first turn, send the initial prompt.

@@ -34,20 +34,6 @@ export class Prompt<V> extends Topic<PromptState, V> {
         return this;
     }
 
-    // onSuccess
-    protected _onSuccess?: (context: BotContext, value: V) => void;
-    public onSuccess(success: (context: BotContext, value: V) => void) {
-        this._onSuccess = success;
-        return this;
-    }
-
-    // onFailure
-    protected _onFailure?: (context: BotContext, reason: string) => void;
-    public onFailure(failure: (context: BotContext, reason: string) => void) {
-        this._onFailure = failure;
-        return this;
-    }
-
     // onReceive
     public onReceive(context: BotContext) {
         
