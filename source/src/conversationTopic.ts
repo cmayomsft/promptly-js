@@ -10,7 +10,7 @@ export interface ActiveTopicState {
     state?: any;
 }
 
-// ConversationTopicState - Used to persist information required to recreate the ConversationTopic 
+// ConversationTopicState - Used to persist state required to recreate the ConversationTopic 
 //  between turns, including any active sub-topic (Topic or Prompt). 
 //  Note: Extend ConversationTopicState to store state above and what is required to persist the 
 //      active sub-topic between turns.
