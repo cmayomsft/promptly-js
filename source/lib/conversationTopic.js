@@ -2,24 +2,25 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const topic_1 = require("./topic");
 // ConversationTopic - Used to model a topic of conversation with (optional) sub-topics, such as 
-//  Topics and or Prompts.
+//  child Topics and or Prompts.
 class ConversationTopic extends topic_1.Topic {
     constructor() {
         super(...arguments);
-        // subTopics - Map of functions used to create any sub-topics for the conversation topic.
+        // subTopics - Map of functions used to create any sub-topics for the conversation topic
+        //  between turns.
         this._subTopics = new Map();
     }
     get subTopics() {
         return this._subTopics;
     }
     // setActiveTopic - Called to set one of the sub-topics managed by this.subTopics() to be 
-    //  the "active" Topic. 
-    //  subTopicKey - The key in the subTopics map used to create the active Topic on the initial
-    //      turn (turn 0) and to recreate the active topic on subsequent turns, until the 
-    //      active Topic completes.
+    //  the active Topic. 
+    //  subTopicKey - The key in the this.subTopics() map used to create the active Topic 
+    //      on the initial turn (turn 0) and to recreate the active topic on subsequent turns, 
+    //      until the active Topic completes.
     //  args - Any arguments used to create the topic on the initial turn (turn 0).
     setActiveTopic(subTopicKey, ...args) {
-        // Instantiate/set the active topic by calling the corresponding function in this.subTopics,
+        // Instantiate/set the active Topic by calling the corresponding function in this.subTopics(),
         //  using args if supplied.
         if (args.length > 0) {
             this._activeTopic = this.subTopics.get(subTopicKey)(...args);
@@ -29,7 +30,7 @@ class ConversationTopic extends topic_1.Topic {
             this._activeTopic = this.subTopics.get(subTopicKey)();
             ;
         }
-        // Persist the sub-topic key used to create/set the active topic and the 
+        // Persist the this.subTopics() key used to create/set the active Topic and the 
         //  sub-topics's state, "dehydrating" the active topic, so it can be 
         //  "rehydrated" on subsequent turns.
         this.state.activeTopic = { key: subTopicKey, state: this._activeTopic.state };
@@ -46,8 +47,8 @@ class ConversationTopic extends topic_1.Topic {
         if (this._activeTopic) {
             return this._activeTopic;
         }
-        // Recreate the active topic using the applicable function in subTopics and the state
-        //  persisted on the last turn.
+        // Recreate the active topic using the applicable function in this.subTopics() 
+        //  and the state persisted on the last turn.
         this._activeTopic = this.subTopics.get(this.state.activeTopic.key)(this.state.activeTopic.state);
         return this._activeTopic;
     }
