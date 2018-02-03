@@ -19,8 +19,7 @@ class ParentTopic extends topic_1.Topic {
             return this._activeTopic;
         }
         // TODO: This should be constructing the Topic w/ it's state rather than requiring state property.
-        this._activeTopic = this.subTopics.get(this.state.activeTopic.name)();
-        this._activeTopic.state = this.state.activeTopic.state;
+        this._activeTopic = this.subTopics.get(this.state.activeTopic.name)(this.state.activeTopic.state);
         return this._activeTopic;
     }
     setActiveTopic(subTopicKey, ...args) {

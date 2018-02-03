@@ -31,8 +31,7 @@ export abstract class ParentTopic<S extends ParentTopicState, V = any> extends T
         }
 
         // TODO: This should be constructing the Topic w/ it's state rather than requiring state property.
-        this._activeTopic = this.subTopics.get(this.state.activeTopic.name)();
-        this._activeTopic.state = this.state.activeTopic.state;
+        this._activeTopic = this.subTopics.get(this.state.activeTopic.name)(this.state.activeTopic.state);
 
         return this._activeTopic;
     }
