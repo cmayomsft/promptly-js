@@ -1,10 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const topic_1 = require("./topic");
+// Prompt - Specialized Topic for following the common prompt pattern without the need
+//  to create a specific class.
+//  V - When the Prompt completes successfully, the value that is passed to onSuccess()
+//      for the calling ConversationTopic to do something with.
 class Prompt extends topic_1.Topic {
     constructor(state = { turns: undefined }) {
         super(state);
-        // Max Turns
+        // maxTurns - The maximum number of turns that the Prompt will re-prompt after failing
+        //  validation before failing the Prompt. 
         this._maxTurns = 2;
         return this;
     }
@@ -20,18 +25,18 @@ class Prompt extends topic_1.Topic {
         this._validator = validator;
         return this;
     }
-    // onReceive
+    // onReceive - Used to implement the common prompt pattern using the
+    //  properties of Prompt.
     onReceive(context) {
-        // If this is the first turn, send the initial prompt.
+        // If this is the initial turn (turn 0), send the initial prompt.
         if (this.state.turns === undefined) {
-            // Set/increase the turn count.
             this.state.turns = 0;
             return this._onPrompt(context, undefined);
         }
         // For all subsequent turns...
-        // Validate the response from the last prompt.
+        // Validate the message/reply from the last turn.
         const validationResult = this._validator.validate(context);
-        // If the response wasn't a valid response to the prompt...
+        // If the message/reply wasn't a valid response to the prompt...
         if (validationResult.reason !== undefined) {
             // Increase the turn count.
             this.state.turns += 1;
@@ -40,10 +45,10 @@ class Prompt extends topic_1.Topic {
                 validationResult.reason = 'toomanyattempts';
                 return this._onFailure(context, validationResult.reason);
             }
-            // Prompt using validation reason from last turn.
+            // Re-prompt, providing the validation reason from last turn.
             return this._onPrompt(context, validationResult.reason);
         }
-        // Prompt was successful, so call code to process value and clean up.
+        // Prompt was successful, so pass value (result) of the Prompt.
         return this._onSuccess(context, validationResult.value);
     }
 }
