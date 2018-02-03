@@ -1,6 +1,6 @@
 import { Topic } from './topic';
 
-// ActiveTopicState - Used to persist information required to recreate the active Topic between turns. 
+// ActiveTopicState - Used to persist state required to recreate the active Topic between turns. 
 export interface ActiveTopicState {
     // key - Key of function in ConversationTopic.subTopics() map used to create active Topic on last turn.
     key: string;
