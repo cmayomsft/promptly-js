@@ -1,5 +1,5 @@
 import { Alarm } from '../alarms';
-import { Topic } from '../../../../source';
+import { Topic } from 'promptly-bot';
 
 export interface AddAlarmTopicState {
     alarm: Alarm;
