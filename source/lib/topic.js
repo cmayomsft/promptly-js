@@ -19,6 +19,9 @@ class Topic {
     get state() {
         return this._state;
     }
+    set state(state) {
+        this._state = state;
+    }
     onSuccess(success) {
         this._onSuccess = success;
         return this;

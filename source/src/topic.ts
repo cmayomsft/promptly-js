@@ -17,6 +17,9 @@ export abstract class Topic<S, V = any> {
     public get state(): S {
         return this._state;
     }
+    public set state(state: S) {
+        this._state = state;
+    }
 
     // onReceive - Called on each turn when Topic is the active topic of conversation.
     abstract onReceive(context: BotContext): Promiseable<any>;
