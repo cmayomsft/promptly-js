@@ -1,5 +1,5 @@
 import { Alarm } from '../alarms';
-import { ConversationTopic, ConversationTopicState, Prompt, Validator } from '../../../../source';
+import { ConversationTopic, ConversationTopicState, Prompt, Validator } from 'promptly-bot';
 
 export interface AddAlarmTopicState extends ConversationTopicState {
     alarm: Alarm;

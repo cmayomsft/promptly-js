@@ -1,4 +1,4 @@
-import { TopicsRoot } from '../../../../source';
+import { TopicsRoot } from 'promptly-bot';
 import { Alarm } from '../alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 
