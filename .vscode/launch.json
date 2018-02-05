@@ -7,10 +7,34 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Sophisticated Sample",
+            "name": "1-Primitives-TS Sample",
             "sourceMaps": true,
-            "program": "${workspaceRoot}/samples/sophisticated/src/app.ts",
-            "outFiles": [ "${workspaceRoot}/samples/sophisticated/lib/**/*.js" ]
+            "program": "${workspaceRoot}/samples/1-primitives-ts/src/app.ts",
+            "outFiles": [ "${workspaceRoot}/samples/1-primitives-ts/lib/**/*.js" ]
+        },        
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "2-Topic-TS Sample",
+            "sourceMaps": true,
+            "program": "${workspaceRoot}/samples/2-topic-ts/src/app.ts",
+            "outFiles": [ "${workspaceRoot}/samples/2-topic-ts/lib/**/*.js" ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "3-ConversationTopic-TS Sample",
+            "sourceMaps": true,
+            "program": "${workspaceRoot}/samples/3-ConversationTopic-ts/src/app.ts",
+            "outFiles": [ "${workspaceRoot}/samples/3-ConversationTopic-ts/lib/**/*.js" ]
+        }
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "alarmbot-ts",
+            "sourceMaps": true,
+            "program": "${workspaceRoot}/samples/alarmbot-ts/src/app.ts",
+            "outFiles": [ "${workspaceRoot}/samples/alarmbot-ts/lib/**/*.js" ]
         }
     ]
 }

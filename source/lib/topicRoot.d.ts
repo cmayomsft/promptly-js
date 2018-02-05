@@ -1,12 +1,12 @@
 import { ParentTopic, ParentTopicState } from './parentTopic';
-export interface RootTopicState<S> {
+export interface TopicsRootState<S> {
     state?: S;
 }
 declare global  {
     interface ConversationState {
-        rootTopic?: RootTopicState<ParentTopicState>;
+        topicsRoot?: TopicsRootState<ParentTopicState>;
     }
 }
-export declare abstract class TopicRoot extends ParentTopic<ParentTopicState> {
+export declare abstract class TopicsRoot extends ParentTopic<ParentTopicState> {
     constructor(context: BotContext);
 }

@@ -1,17 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const parentTopic_1 = require("./parentTopic");
-class TopicRoot extends parentTopic_1.ParentTopic {
+class TopicsRoot extends parentTopic_1.ParentTopic {
     constructor(context) {
         // Initialize the root topic state and pass that reference to root topic to facilitate the state 
         //  reference chain to context.state.conversation.
-        if (!context.state.conversation.rootTopic) {
-            context.state.conversation.rootTopic = {
+        if (!context.state.conversation.topicsRoot) {
+            context.state.conversation.topicsRoot = {
                 state: { activeTopic: undefined }
             };
         }
-        super(context.state.conversation.rootTopic.state);
+        super(context.state.conversation.topicsRoot.state);
     }
 }
-exports.TopicRoot = TopicRoot;
+exports.TopicsRoot = TopicsRoot;
 //# sourceMappingURL=topicRoot.js.map

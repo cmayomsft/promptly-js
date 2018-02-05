@@ -1,10 +1,7 @@
 import { Alarm, showAlarms } from '../alarms';
-import { Topic } from 'promptly-bot';
-import { ParentTopic, ParentTopicState } from 'promptly-bot';
-import { Prompt } from 'promptly-bot';
-import { Validator } from 'promptly-bot';
+import { ConversationTopic, ConversationTopicState, Prompt, Validator } from 'promptly-bot';
 
-export interface DeleteAlarmTopicState extends ParentTopicState {
+export interface DeleteAlarmTopicState extends ConversationTopicState {
     alarms?: Alarm[];
     alarmIndex?: number;
     alarm?: Partial<Alarm>;
@@ -17,7 +14,7 @@ export interface DeleteAlarmTopicValue {
     deleteConfirmed: boolean;
 }
 
-export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteAlarmTopicValue> {
+export class DeleteAlarmTopic extends ConversationTopic<DeleteAlarmTopicState, DeleteAlarmTopicValue> {
 
     public constructor(name: string, alarms: Alarm[], state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
         super(state);
@@ -105,18 +102,14 @@ export class DeleteAlarmTopic extends ParentTopic<DeleteAlarmTopicState, DeleteA
 
                 this.state.alarmIndex = 0;
             } else {
-                this.setActiveTopic("whichAlarmPrompt");
-                    
-                return this.activeTopic.onReceive(context);
+                return this.setActiveTopic("whichAlarmPrompt").onReceive(context);
             }
         }
 
         this.state.alarm.title = this.state.alarms[this.state.alarmIndex].title;
     
         if (this.state.deleteConfirmed === undefined) {
-            this.setActiveTopic("confirmDeletePrompt");
-
-            return this.activeTopic.onReceive(context);
+            return this.setActiveTopic("confirmDeletePrompt").onReceive(context);
         }
 
         return this._onSuccess(context, { alarm: this.state.alarm, alarmIndex: this.state.alarmIndex, deleteConfirmed: this.state.deleteConfirmed });
