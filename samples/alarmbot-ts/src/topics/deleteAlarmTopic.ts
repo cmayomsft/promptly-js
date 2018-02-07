@@ -102,14 +102,16 @@ export class DeleteAlarmTopic extends ConversationTopic<DeleteAlarmTopicState, D
 
                 this.state.alarmIndex = 0;
             } else {
-                return this.setActiveTopic("whichAlarmPrompt").onReceive(context);
+                return this.setActiveTopic("whichAlarmPrompt")
+                    .onReceive(context);
             }
         }
 
         this.state.alarm.title = this.state.alarms[this.state.alarmIndex].title;
     
         if (this.state.deleteConfirmed === undefined) {
-            return this.setActiveTopic("confirmDeletePrompt").onReceive(context);
+            return this.setActiveTopic("confirmDeletePrompt")
+                .onReceive(context);
         }
 
         return this._onSuccess(context, { alarm: this.state.alarm, alarmIndex: this.state.alarmIndex, deleteConfirmed: this.state.deleteConfirmed });
