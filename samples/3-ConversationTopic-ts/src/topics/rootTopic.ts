@@ -40,11 +40,13 @@ export class RootTopic extends TopicsRoot {
         if (context.request.type === 'message' && context.request.text.length > 0) {
             if (/add alarm/i.test(context.request.text)) {
 
-                return this.setActiveTopic("addAlarmTopic").onReceive(context);
+                return this.setActiveTopic("addAlarmTopic")
+                    .onReceive(context);
             }         
 
             if (this.hasActiveTopic) {
-                return this.activeTopic.onReceive(context);
+                return this.activeTopic
+                    .onReceive(context);
             }
 
             return this.showDefaultMessage(context);

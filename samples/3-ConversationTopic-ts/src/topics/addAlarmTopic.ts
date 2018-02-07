@@ -72,11 +72,13 @@ export class AddAlarmTopic extends ConversationTopic<AddAlarmTopicState, Alarm> 
         }
 
         if (!this.state.alarm.title) {
-            return this.setActiveTopic("titlePrompt").onReceive(context);
+            return this.setActiveTopic("titlePrompt")
+                .onReceive(context);
         } 
         
         if (!this.state.alarm.time) {
-            return this.setActiveTopic("timePrompt").onReceive(context);
+            return this.setActiveTopic("timePrompt")
+                .onReceive(context);
         }
         
         return this._onSuccess(context, this.state.alarm);
