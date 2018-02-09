@@ -68,10 +68,12 @@ export class RootTopic extends TopicsRoot {
                 return showAlarms(context, context.state.user.alarms);
             } else if (/add alarm/i.test(context.request.text)) {
 
-                return this.setActiveTopic("addAlarmTopic").onReceive(context);
+                return this.setActiveTopic("addAlarmTopic")
+                    .onReceive(context);
             } else if (/delete alarm/i.test(context.request.text)) {
 
-                return this.setActiveTopic("deleteAlarmTopic", context.state.user.alarms).onReceive(context);
+                return this.setActiveTopic("deleteAlarmTopic", context.state.user.alarms)
+                    .onReceive(context);
             } else if (/help/i.test(context.request.text)) {
                 this.clearActiveTopic();
 
