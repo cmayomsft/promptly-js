@@ -74,7 +74,7 @@ export abstract class ConversationTopic<S extends ConversationTopicState, V = an
         // Recreate the active topic using the applicable function in this.subTopics() 
         //  and the state persisted on the last turn.
         this._activeTopic = this.subTopics.get(this.state.activeTopic.key)();
-        this._activeTopic.state = (this.state.activeTopic.state);
+        this._activeTopic.state = this.state.activeTopic.state;
         
         return this._activeTopic;
     }
