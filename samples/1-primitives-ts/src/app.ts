@@ -19,6 +19,29 @@ const bot = new Bot(adapter)
     .use(new BotStateManager())
     .onReceive(context => {
         if (context.request.type === 'message' && context.request.text.length > 0) {
+            // If bot doesn't have state it needs, prompt for it.
+            if (!context.state.user.name) {
+                // On the first turn, prompt and update state that conversation is in a prompt.
+                if (context.state.conversation.prompt !== "name") {
+                    context.state.conversation.prompt = "name";
+                    context.reply("What is your name?");
+                // On the subsequent turn, update state with reply and update state that prompt has completed. 
+                } else {
+                    delete context.state.conversation.prompt;
+                    context.state.user.name = context.request.text;
+                    context.reply(`Great, I'll call you ${ context.state.user.name }!`);
+                }
+            } else {
+                context.reply(`${ context.state.user.name } said: '${ context.request.text }.'`);
+            }
+        }
+    });
+
+
+
+
+
+            /*
             if (!context.state.user.name) {
                 if (context.state.conversation.prompt !== "name") {
                     context.state.conversation.prompt = "name";
@@ -31,5 +54,4 @@ const bot = new Bot(adapter)
             } else {
                 context.reply(`${ context.state.user.name } said: '${ context.request.text }.'`);
             }
-        }
-    });
+            */
