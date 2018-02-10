@@ -40,8 +40,8 @@ const bot = new Bot(adapter)
 
 
 
-    /*.onReceive(context => {
-        if (context.request.type === 'message' && context.request.text.length > 0) {
+
+            /*
             if (!context.state.user.name) {
                 if (context.state.conversation.prompt !== "name") {
                     context.state.conversation.prompt = "name";
@@ -54,5 +54,4 @@ const bot = new Bot(adapter)
             } else {
                 context.reply(`${ context.state.user.name } said: '${ context.request.text }.'`);
             }
-        }
-    });*/
+            */
