@@ -50,7 +50,7 @@ class ConversationTopic extends topic_1.Topic {
         // Recreate the active topic using the applicable function in this.subTopics() 
         //  and the state persisted on the last turn.
         this._activeTopic = this.subTopics.get(this.state.activeTopic.key)();
-        this._activeTopic.state = (this.state.activeTopic.state);
+        this._activeTopic.state = this.state.activeTopic.state;
         return this._activeTopic;
     }
     get hasActiveTopic() {
