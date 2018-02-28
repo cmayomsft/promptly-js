@@ -1,1 +1,1 @@
-# promptly
+# promptly-js
