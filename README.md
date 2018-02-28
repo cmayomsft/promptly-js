@@ -6,7 +6,7 @@ Promptly is a JavsScript/TypeScript library for building chat bots using the [Bo
 Promptly provides an API for developing everything from complex, multi-turn topics of conversation to simple single-turn prompts in a simple and consistent way, so you can focus on your bot's conversational UI/UX (CUI) rather than the underlying details of conversation state and turn management.
 
 ## Packages
-You can install the [promptly-bot package](https://www.npmjs.com/package/promptly-bot) on nuget.
+You can install the [promptly-bot package](https://www.npmjs.com/package/promptly-bot) from [npm](https://www.npmjs.com/).
 
 ## Getting Started
 To get started, clone/fork this repo, open the alarmbot-ts folder in your editor, run `npm install`, and run/step through the [alarmbot-ts sample](samples/alarmbot-ts/) starting at [`app.ts`](samples/alarmbot-ts/src/app.ts).
