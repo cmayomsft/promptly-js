@@ -39,7 +39,9 @@ server.post('/api/messages', (req, res) => {
         // State isn't fully initialized until the contact/conversation messages are sent, so have to require
         //  activity type is message. Will affect welcome message. Refactor after bug has been addressed.
         if(context.request.type === 'message') {
-            
+            // Create new IBotStateContext in Promptly.
+            // Add BotStateContext generic context/user state here to pass it in.
+            // Refactor for async w/ generic class that mixes in state.
             return new RootTopic(context)
                 .onReceive(context);
         }
