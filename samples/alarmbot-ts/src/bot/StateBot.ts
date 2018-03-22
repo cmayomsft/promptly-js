@@ -1,26 +1,26 @@
-import { ConversationState, ConsoleAdapter, MemoryStorage, BotContext, ConversationReference } from 'botbuilder';
+import { ConversationState, MemoryStorage, BotContext, BotFrameworkAdapter } from 'botbuilder';
 import { BotBootStrap } from './BotBootStrap';
-import { BrandonContext } from './BrandonContext';
-export { BrandonContext }
+import { StateBotContext } from './StateBotContext';
+export { StateBotContext }
 
-export class StateBot<AppState> extends BotBootStrap<BrandonContext<AppState>> {
+export class StateBot<AppState> extends BotBootStrap<StateBotContext<AppState>> {
     conversationState = new ConversationState<AppState>(new MemoryStorage());
 
-    adapter = new ConsoleAdapter()
+    adapter = new BotFrameworkAdapter()
         .use(this.conversationState);
 
     getContext(
         context: BotContext,
     ) {
-        return BrandonContext.from(context, this.conversationState)
+        return StateBotContext.from(context, this.conversationState)
     }
 
-    onRequest(
+    onReceiveActivity(
         handler: (
-            context: BrandonContext<AppState>,
+            context: StateBotContext<AppState>,
         ) => Promise<void>
     ) {
-        this.adapter.listen(this.do(handler));
+        this.adapter.processRequest(this.do(handler));
         return Promise.resolve();
     }
 }
