@@ -1,10 +1,4 @@
-
 import { Activity, BotContext, ConversationState, UserState } from 'botbuilder';
-
-export class BotState<BotConversationState, BotUserState> {
-    user!: BotUserState;
-    conversation!: BotConversationState;
-}
 
 export class StateBotContext<BotConversationState, BotUserState> extends BotContext {
     // Instead of adding things here, add them in `from()`
@@ -13,21 +7,21 @@ export class StateBotContext<BotConversationState, BotUserState> extends BotCont
     }
 
     // Define the properties and methods to add to BotContext
-    state!: BotState<BotConversationState, BotUserState>;
-    reply(...activityOrText: (string | Partial<Activity>)[]) {
-        return this.sendActivity(... activityOrText);
-    }
+    conversationState!: BotConversationState;
+    userState!: BotUserState;
 
     // "from" adds any properties or methods that depend on arguments or async calls or both
     // think of it as an async constructor
-
-    static async from <State = any> (
+    static async from <BotConversationState = any, BotUserState = any> (
         context: BotContext,
         conversationState: ConversationState<BotConversationState>,
-        userState: UserState
+        userState: ConversationState<BotUserState>,
     ): Promise<StateBotContext<BotConversationState, BotUserState>> {
-        const appContext = new StateBotContext<State>(context);
-        appContext.state = await conversationState.read(context);
-        return appContext;
+        const stateContext = new StateBotContext<BotConversationState, BotUserState>(context);
+
+        stateContext.conversationState = await conversationState.read(context);
+        stateContext.userState = await userState.read(context);
+
+        return stateContext;
     }
 }
