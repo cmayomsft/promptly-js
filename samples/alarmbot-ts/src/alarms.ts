@@ -3,13 +3,6 @@ export interface Alarm {
     time: string;
 }
 
-declare global {
-    export interface UserState {
-        /** Users list of active alarms. */
-        alarms?: Alarm[];
-    }
-}
-
 export function findAlarmIndex(alarms: Alarm[], title: string): number {
     return alarms.findIndex((alarm) => {
         return alarm.title.toLowerCase() === title.toLowerCase();
