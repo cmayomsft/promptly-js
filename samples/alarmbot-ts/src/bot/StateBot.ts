@@ -8,7 +8,7 @@ export class StateBot<AppState> extends BotBootStrap<StateBotContext<AppState>> 
     conversationState = new ConversationState<AppState>(new MemoryStorage());
 
     server = restify.createServer();
-    
+
     adapter = new BotFrameworkAdapter()
         .use(this.conversationState);
 
@@ -17,8 +17,8 @@ export class StateBot<AppState> extends BotBootStrap<StateBotContext<AppState>> 
     }
 
     onReceiveActivity(handler: (context: StateBotContext<AppState>) => Promise<void>) {
-        this.server.listen(process.env.port || process.env.PORT || 3978, function () {
-            //console.log(`${ this.server.name } listening to ${ this.server.url }`);
+        this.server.listen(process.env.port || process.env.PORT || 3978, () => {
+            console.log(`${ this.server.name } listening to ${ this.server.url }`);
         });
 
         this.server.post('/api/messages', (req, res) => {
