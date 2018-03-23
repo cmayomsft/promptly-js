@@ -1,4 +1,4 @@
-import { BotContext, Promiseable } from 'botbuilder';
+import { Promiseable, BotContext } from 'botbuilder';
 import { Topic } from "./topic";
 import { Validator } from "./validator/validator";
 
@@ -12,7 +12,7 @@ export interface PromptState {
 //  to create a specific class.
 //  V - When the Prompt completes successfully, the value that is passed to onSuccess()
 //      for the calling ConversationTopic to do something with.
-export class Prompt<V> extends Topic<PromptState, V> {
+export class Prompt<BTC extends BotContext, V> extends Topic<BTC, PromptState, V> {
     
     constructor(state: PromptState = { turns: undefined }) {
         super(state);
@@ -22,8 +22,8 @@ export class Prompt<V> extends Topic<PromptState, V> {
     // onPrompt - Function to call on each turn to construct the prompt to the user.
     //  context - The context (request, response,etc.) of the current turn.
     //  lastTurnReason - The reason the last message from the last turn failed validation.
-    protected _onPrompt?: (context: BotContext, lastTurnReason: string) => void;
-    public onPrompt(prompt: (context: BotContext, lastTurnReason: string) => void) {
+    protected _onPrompt?: (context: BTC, lastTurnReason: string) => void;
+    public onPrompt(prompt: (context: BTC, lastTurnReason: string) => void) {
         this._onPrompt = prompt;
         return this;
     }
@@ -38,15 +38,15 @@ export class Prompt<V> extends Topic<PromptState, V> {
 
     // validator - The Validator used to validate/parse the value V from the message 
     //  on the current turn.
-    protected _validator: Validator<V>;
-    public validator(validator: Validator<V>) {
+    protected _validator: Validator<BTC, V>;
+    public validator(validator: Validator<BTC, V>) {
         this._validator = validator;
         return this;
     }
 
     // onReceive - Used to implement the common prompt pattern using the
     //  properties of Prompt.
-    public onReceive(context: BotContext) {
+    public onReceive(context: BTC) {
         
         // If this is the initial turn (turn 0), send the initial prompt.
         if(this.state.turns === undefined) {
