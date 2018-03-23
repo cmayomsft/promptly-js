@@ -1,12 +1,20 @@
 import { TopicsRoot } from 'promptly-bot';
+import { BotConversationState, BotUserState } from '../app';
+import { StateBotContext } from '../bot/StateBotContext';
 import { Alarm, showAlarms } from '../alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
-export class RootTopic extends TopicsRoot {
+export class RootTopic extends TopicsRoot<BotConversationState> {
 
-    public constructor(context: BotContext) {
+    public constructor(context: StateBotContext<BotConversationState, BotUserState>) {
         super(context);
+
+        // User state initialization should be done once in the welcome 
+        //  new user feature. Placing it here until that feature is added.
+        if (!context.userState.alarms) {
+            context.userState.alarms = [];
+        }
 
         this.subTopics
             .set("addAlarmTopic", () => new AddAlarmTopic()
