@@ -1,14 +1,19 @@
 
-import { Activity, BotContext, ConversationState } from 'botbuilder';
+import { Activity, BotContext, ConversationState, UserState } from 'botbuilder';
 
-export class BrandonContext <State> extends BotContext {
-    // instead of adding things here, add them in `from()`
+export class BotState<BotConversationState, BotUserState> {
+    user!: BotUserState;
+    conversation!: BotConversationState;
+}
+
+export class StateBotContext<BotConversationState, BotUserState> extends BotContext {
+    // Instead of adding things here, add them in `from()`
     private constructor(context: BotContext) {
         super(context);
     }
 
-    // define the properties and methods to add to BotContext
-    state!: State;
+    // Define the properties and methods to add to BotContext
+    state!: BotState<BotConversationState, BotUserState>;
     reply(...activityOrText: (string | Partial<Activity>)[]) {
         return this.sendActivity(... activityOrText);
     }
@@ -18,9 +23,10 @@ export class BrandonContext <State> extends BotContext {
 
     static async from <State = any> (
         context: BotContext,
-        conversationState: ConversationState<State>,
-    ): Promise<BrandonContext<State>> {
-        const appContext = new BrandonContext<State>(context);
+        conversationState: ConversationState<BotConversationState>,
+        userState: UserState
+    ): Promise<StateBotContext<BotConversationState, BotUserState>> {
+        const appContext = new StateBotContext<State>(context);
         appContext.state = await conversationState.read(context);
         return appContext;
     }
