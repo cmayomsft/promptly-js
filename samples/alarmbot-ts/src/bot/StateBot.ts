@@ -5,20 +5,10 @@ import { StateBotContext } from './StateBotContext';
 export { StateBotContext }
 
 export class StateBot<AppState> extends BotBootStrap<StateBotContext<AppState>> {
-    private _onReceiveActivityHandler: (context: StateBotContext<AppState>) => Promise<void>;
-    
     conversationState = new ConversationState<AppState>(new MemoryStorage());
 
-    server = restify.createServer()
-        .listen(process.env.port || process.env.PORT || 3978, function () {
-            console.log(`${this.server.name} listening to ${this.server.url}`);
-        })
-        .post('/api/messages', (req, res) => {
-            this.adapter.processRequest(req, res, async (context) => {
-                this.adapter.processRequest(req, res, this.do(this._onReceiveActivityHandler));
-            });
-        });
-
+    server = restify.createServer();
+    
     adapter = new BotFrameworkAdapter()
         .use(this.conversationState);
 
@@ -27,7 +17,14 @@ export class StateBot<AppState> extends BotBootStrap<StateBotContext<AppState>> 
     }
 
     onReceiveActivity(handler: (context: StateBotContext<AppState>) => Promise<void>) {
-        this._onReceiveActivityHandler = handler;
+        this.server.listen(process.env.port || process.env.PORT || 3978, function () {
+            //console.log(`${ this.server.name } listening to ${ this.server.url }`);
+        });
+
+        this.server.post('/api/messages', (req, res) => {
+            this.adapter.processRequest(req, res, this.do(handler));
+        });
+
         return Promise.resolve();
     }
 }
