@@ -1,3 +1,4 @@
+import { BotContext } from 'botbuilder';
 export interface ValidatorResult<V> {
     value?: V;
     reason?: string;

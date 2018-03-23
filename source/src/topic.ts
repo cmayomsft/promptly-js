@@ -1,3 +1,4 @@
+import { BotContext } from 'botbuilder';
 import { Promiseable } from 'botbuilder';
 
 // Topic - Abstract base class for modeling a topic of conversation.

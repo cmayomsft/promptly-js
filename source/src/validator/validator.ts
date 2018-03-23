@@ -1,3 +1,5 @@
+import { BotContext } from 'botbuilder';
+
 // ValidatorResult
 export interface ValidatorResult<V> {
     value?: V;

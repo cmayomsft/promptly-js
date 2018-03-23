@@ -1,3 +1,4 @@
+import { BotContext } from 'botbuilder';
 import { Promiseable } from 'botbuilder';
 export declare abstract class Topic<S, V = any> {
     constructor(state: S);

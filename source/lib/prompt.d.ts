@@ -1,3 +1,4 @@
+import { BotContext } from 'botbuilder';
 import { Topic } from "./topic";
 import { Validator } from "./validator/validator";
 export interface PromptState {
