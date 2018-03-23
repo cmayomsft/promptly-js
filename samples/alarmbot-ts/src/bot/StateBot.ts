@@ -1,11 +1,12 @@
 import * as restify from 'restify';
-import { ConversationState, MemoryStorage, BotContext, BotFrameworkAdapter } from 'botbuilder';
+import { ConversationState, UserState, MemoryStorage, BotContext, BotFrameworkAdapter } from 'botbuilder';
 import { BotBootStrap } from './BotBootStrap';
 import { StateBotContext } from './StateBotContext';
 export { StateBotContext }
 
-export class StateBot<AppState> extends BotBootStrap<StateBotContext<AppState>> {
-    conversationState = new ConversationState<AppState>(new MemoryStorage());
+export class StateBot<BotConversationState, BotUserState> extends BotBootStrap<StateBotContext<BotConversationState, BotUserState>> {
+    conversationState = new ConversationState<BotConversationState>(new MemoryStorage());
+    userState = new UserState<BotUserState>(new MemoryStorage());
 
     server = restify.createServer();
 
@@ -13,10 +14,10 @@ export class StateBot<AppState> extends BotBootStrap<StateBotContext<AppState>> 
         .use(this.conversationState);
 
     getContext(context: BotContext) {
-        return StateBotContext.from(context, this.conversationState)
+        return StateBotContext.from(context, this.conversationState, this.userState)
     }
 
-    onReceiveActivity(handler: (context: StateBotContext<AppState>) => Promise<void>) {
+    onReceiveActivity(handler: (context: StateBotContext<BotConversationState, BotUserState>) => Promise<void>) {
         this.server.listen(process.env.port || process.env.PORT || 3978, () => {
             console.log(`${ this.server.name } listening to ${ this.server.url }`);
         });

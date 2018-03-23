@@ -11,12 +11,13 @@ interface BotUserState {
     name: string;
 }
 
-const alarmBot = new StateBot<BotConversationState>();
+const alarmBot = new StateBot<BotConversationState, BotUserState>();
 
 alarmBot.onReceiveActivity(async context => {
     if (context.request.type === 'message') {
-        context.state.count = context.state.count === undefined ? 0 : context.state.count + 1;
+        context.conversationState.count = context.conversationState.count === undefined ? 0 : context.conversationState.count + 1;
+        context.userState.name = context.userState.name === undefined ? "Chris" : context.userState.name;
 
-        await context.sendActivity(`${context.state.count}: You said "${context.request.text}"`);
+        await context.sendActivity(`${context.userState.name} ${context.conversationState.count}: You said "${context.request.text}"`);
     }
 });
