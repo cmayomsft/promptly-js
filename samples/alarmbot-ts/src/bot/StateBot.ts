@@ -11,7 +11,8 @@ export class StateBot<BotConversationState, BotUserState> extends BotBootStrap<S
     server = restify.createServer();
 
     adapter = new BotFrameworkAdapter()
-        .use(this.conversationState);
+        .use(this.conversationState)
+        .use(this.userState);
 
     getContext(context: BotContext) {
         return StateBotContext.from(context, this.conversationState, this.userState)

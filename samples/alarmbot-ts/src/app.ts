@@ -4,9 +4,7 @@ import { RootTopic } from './topics/rootTopic';
 import { Alarm } from './alarms';
 
 // Define conversation state shape
-export interface BotConversationState extends TopicsRootState {
-    count: number;
-}
+export interface BotConversationState extends TopicsRootState { }
 
 // Define user state shape
 export interface BotUserState {

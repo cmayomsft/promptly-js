@@ -1,3 +1,7 @@
+import { BotContext } from 'botbuilder';
+import { BotConversationState, BotUserState } from './app';
+import { StateBotContext } from './bot/StateBotContext';
+
 export interface Alarm {
     title: string;
     time: string;
@@ -12,12 +16,12 @@ export function findAlarmIndex(alarms: Alarm[], title: string): number {
 export function showAlarms(context: BotContext, alarms: Alarm[]) {
 
     if (!alarms || (alarms.length === 0)) {
-        context.reply(`You have no alarms.`);
+        context.sendActivity(`You have no alarms.`);
         return;
     }
 
     if (alarms.length == 1) {
-        context.reply(`You have one alarm named '${alarms[0].title}', set for ${alarms[0].time}.`);
+        context.sendActivity(`You have one alarm named '${alarms[0].title}', set for ${alarms[0].time}.`);
         return;
     }
 
@@ -27,5 +31,5 @@ export function showAlarms(context: BotContext, alarms: Alarm[]) {
         message += `'${alarm.title}' set for ${alarm.time}\n\n`;
     });
 
-    context.reply(message);
+    context.sendActivity(message);
 }
