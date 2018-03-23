@@ -8,9 +8,6 @@ export class StateBotContext<State> extends BotContext {
 
     // Define the properties and methods to add to BotContext
     state!: State;
-    reply(...activityOrText: (string | Partial<Activity>)[]) {
-        return this.sendActivity(... activityOrText);
-    }
 
     // "from" adds any properties or methods that depend on arguments or async calls or both
     // think of it as an async constructor
