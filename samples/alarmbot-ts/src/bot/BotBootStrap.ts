@@ -1,7 +1,9 @@
+import { Server } from 'restify';
 import { BotContext, BotAdapter, ConversationReference } from 'botbuilder';
 
 export abstract class BotBootStrap<AppContext> {
     abstract adapter: BotAdapter;
+    abstract server: Server
 
     protected do(handler: (appContext: AppContext) => Promise<void>) {
         return (context: BotContext) => 
