@@ -19,10 +19,6 @@ export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, 
             .set("addAlarmTopic", () => new AddAlarmTopic()
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
-
-                    if (!context.userState.alarms) {
-                        context.userState.alarms = [];
-                    }
                 
                     context.userState.alarms.push({
                         title: value.title,
