@@ -1,122 +1,70 @@
 import { TopicsRoot } from 'promptly-bot';
+import { BotConversationState, BotUserState } from '../app';
+import { StateBotContext } from '../bot/StateBotContext';
 import { Alarm } from '../alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 
-export class RootTopic extends TopicsRoot {
+export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, BotUserState>> {
 
-    public constructor(context: BotContext) {
+    public constructor(context: StateBotContext<BotConversationState, BotUserState>) {
         super(context);
 
-        // subTopics are functions that can create the active topic on
-        //  each turn until it completes.
+        // User state initialization should be done once in the welcome 
+        //  new user feature. Placing it here until that feature is added.
+        if (!context.userState.alarms) {
+            context.userState.alarms = [];
+        }
+
         this.subTopics
             .set("addAlarmTopic", () => new AddAlarmTopic()
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
 
-                    if (!context.state.user.alarms) {
-                        context.state.user.alarms = [];
+                    if (!context.userState.alarms) {
+                        context.userState.alarms = [];
                     }
                 
-                    context.state.user.alarms.push({
+                    context.userState.alarms.push({
                         title: value.title,
                         time: value.time
                     });
 
-                    return context.reply(`Added alarm named '${ value.title }' set for '${ value.time }'.`);
+                    return context.sendActivity(`Added alarm named '${ value.title }' set for '${ value.time }'.`);
                 })
                 .onFailure((context, reason) => {
                     this.clearActiveTopic();
 
                     if(reason && reason === 'toomanyattempts') {
-                        context.reply(`Let's try something else.`);
+                        context.sendActivity(`Let's try something else.`);
                     }
 
                     return this.showDefaultMessage(context);
                 })
-            )
+            );
     }
 
-    public onReceive(context: BotContext) { 
+    public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) { 
 
         if (context.request.type === 'message' && context.request.text.length > 0) {
-            // If the user wants to change the topic of conversation... 
+            
+            // If the user wants to change the topic of conversation...
             if (/add alarm/i.test(context.request.text)) {
+
                 // Set the active topic and let the active topic handle this turn.
                 return this.setActiveTopic("addAlarmTopic")
-                    .onReceive(context);
-            }         
+                    .onReceiveActivity(context);
+            }
 
-            // If there is an active topic, let it handle this turn until it completes.
+            // If there is an active topic, let it handle this turn.
             if (this.hasActiveTopic) {
-                return this.activeTopic
-                    .onReceive(context);
+                return this.activeTopic.onReceiveActivity(context);
             }
 
             return this.showDefaultMessage(context);
         }
     }
 
-    public showDefaultMessage(context: BotContext) {
-        context.reply("Say 'Add Alarm'.");
+    public showDefaultMessage(context: StateBotContext<BotConversationState, BotUserState>) {
+        context.sendActivity("'Add Alarm'.");
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            /*
-            .set("addAlarmTopic", () => new AddAlarmTopic()
-                .onSuccess((context, value) => {
-                    this.clearActiveTopic();
-
-                    if (!context.state.user.alarms) {
-                        context.state.user.alarms = [];
-                    }
-                
-                    context.state.user.alarms.push({
-                        title: value.title,
-                        time: value.time
-                    });
-
-                    return context.reply(`Added alarm named '${ value.title }' set for '${ value.time }'.`);
-                })
-                .onFailure((context, reason) => {
-                    this.clearActiveTopic();
-
-                    if(reason && reason === 'toomanyattempts') {
-                        context.reply(`Let's try something else.`);
-                    }
-
-                    return this.showDefaultMessage(context);
-                })
-            )
-            */
-
-            /*
-            // If the user wants to change the topic of conversation... 
-            if (/add alarm/i.test(context.request.text)) {
-                // Set the active topic and let the active topic handle this turn.
-                return this.setActiveTopic("addAlarmTopic")
-                    .onReceive(context);
-            }         
-
-            // If there is an active topic, let it handle this turn until it completes.
-            if (this.hasActiveTopic) {
-                return this.activeTopic
-                    .onReceive(context);
-            }
-            */
