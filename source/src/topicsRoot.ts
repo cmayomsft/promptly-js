@@ -1,5 +1,5 @@
+import { BotContext, UserState, ConversationState } from 'botbuilder';
 import { ConversationTopic, ConversationTopicState } from './conversationTopic';
-import { BotContext } from 'botbuilder';
 
 // TopicsRootState - Used to persist state required to recreate the TopicsRoot 
 //  between turns. 
@@ -13,13 +13,13 @@ export interface PromptlyBotTurnContext extends BotContext {
 
 // TopicsRoot - A specialized ConversationTopic used to anchor a Topics based conversation model
 //  in state.
-export abstract class TopicsRoot<BTC extends PromptlyBotTurnContext, CS extends TopicsRootState> extends ConversationTopic<BTC, ConversationTopicState> {
-    public constructor(context: BTC) {
+export abstract class TopicsRoot<BUS, BCS extends TopicsRootState> extends ConversationTopic<BUS, BCS, ConversationTopicState> {
+    public constructor(context: BotContext, userState: UserState<BUS>, conversationState: ConversationState<BCS>) {
         
-        if (!context.conversationState.rootTopic) {
+        if (!conversationState.get(context).rootTopic) {
             // Initialize root ConversationTopic state and persist it to conversatin state
             //  to establish the root of all state in the model.
-            context.conversationState.rootTopic = { 
+            conversationState.get(context).rootTopic = { 
                 activeTopic: undefined
             };
         }
@@ -28,6 +28,6 @@ export abstract class TopicsRoot<BTC extends PromptlyBotTurnContext, CS extends 
         //  state in conversation state this way and using that state by reference to all 
         //  subsequent Topics, each Topic's state is persisted automatically (without having to write
         //  state management code).
-        super(context.conversationState.rootTopic);
+        super(conversationState.get(context).rootTopic, userState, conversationState);
     }
 }

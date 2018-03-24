@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //  V = Interface for the resulting value for when the Topic completes successfully.
 //      Optional for cases where the Topic doesn't need to return a value. 
 class Topic {
-    constructor(state) {
+    constructor(state, userState, conversationState) {
         // onSuccess - Function to call when the Topic completes successfully, passing the
         //  resulting value of the Topic.
         this._onSuccess = () => { };

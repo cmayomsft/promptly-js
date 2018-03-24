@@ -6,8 +6,8 @@ const topic_1 = require("./topic");
 //  V - When the Prompt completes successfully, the value that is passed to onSuccess()
 //      for the calling ConversationTopic to do something with.
 class Prompt extends topic_1.Topic {
-    constructor(state = { turns: undefined }) {
-        super(state);
+    constructor(state = { turns: undefined }, userState, conversationState) {
+        super(state, userState, conversationState);
         // maxTurns - The maximum number of turns that the Prompt will re-prompt after failing
         //  validation before failing the Prompt. 
         this._maxTurns = 2;
@@ -27,7 +27,7 @@ class Prompt extends topic_1.Topic {
     }
     // onReceive - Used to implement the common prompt pattern using the
     //  properties of Prompt.
-    onReceive(context) {
+    onReceive(context, userState, conversationState) {
         // If this is the initial turn (turn 0), send the initial prompt.
         if (this.state.turns === undefined) {
             this.state.turns = 0;
@@ -43,13 +43,13 @@ class Prompt extends topic_1.Topic {
             // If max turns has been reached, the prompt has failed with too many attempts.
             if (this.state.turns === this._maxTurns) {
                 validationResult.reason = 'toomanyattempts';
-                return this._onFailure(context, validationResult.reason);
+                return this._onFailure(context, userState, conversationState, validationResult.reason);
             }
             // Re-prompt, providing the validation reason from last turn.
             return this._onPrompt(context, validationResult.reason);
         }
         // Prompt was successful, so pass value (result) of the Prompt.
-        return this._onSuccess(context, validationResult.value);
+        return this._onSuccess(context, userState, conversationState, validationResult.value);
     }
 }
 exports.Prompt = Prompt;

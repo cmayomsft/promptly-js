@@ -1,3 +1,4 @@
+import { BotContext, ConversationState, UserState } from 'botbuilder';
 import { Alarm } from '../alarms';
 import { ConversationTopic, ConversationTopicState, Prompt, Validator } from 'promptly-bot';
 import { StateBotContext } from '../bot/StateBotContext';
@@ -7,13 +8,13 @@ export interface AddAlarmTopicState extends ConversationTopicState {
     alarm: Alarm;
 }
 
-export class AddAlarmTopic extends ConversationTopic<StateBotContext<BotConversationState, BotUserState>, AddAlarmTopicState, Alarm> {
+export class AddAlarmTopic extends ConversationTopic<BotUserState, BotConversationState, AddAlarmTopicState, Alarm> {
 
-    public constructor(state: AddAlarmTopicState = { alarm: {} as Alarm, activeTopic: undefined }) {
-        super(state);    
+    public constructor(state: AddAlarmTopicState = { alarm: {} as Alarm, activeTopic: undefined }, userState: UserState<BotUserState>, conversationState: ConversationState<BotConversationState>) {
+        super(state, userState, conversationState);    
         
         this.subTopics
-            .set("titlePrompt", () => new Prompt<StateBotContext<BotConversationState, BotUserState>, string>()
+            .set("titlePrompt", () => new Prompt<BotUserState, BotConversationState, string>()
                 .onPrompt((context, lastTurnReason) => {
    
                     if(lastTurnReason && lastTurnReason === 'titletoolong') {
@@ -87,8 +88,8 @@ export class AddAlarmTopic extends ConversationTopic<StateBotContext<BotConversa
     }
 }
 
-class AlarmTitleValidator extends Validator<StateBotContext<BotConversationState, BotUserState>, string> {
-    public validate(context: StateBotContext<BotConversationState, BotUserState>) {
+class AlarmTitleValidator extends Validator<BotUserState, BotConversationState, string> {
+    public validate(context: BotContext) {
         if(context.request.text.length > 20) {
             return { reason: 'titletoolong' };
         } else {
@@ -97,7 +98,7 @@ class AlarmTitleValidator extends Validator<StateBotContext<BotConversationState
     }
 }
 
-class AlarmTimeValidator extends Validator<StateBotContext<BotConversationState, BotUserState>, string> {
+class AlarmTimeValidator extends Validator<BotUserState>, string> {
     public validate(context: StateBotContext<BotConversationState, BotUserState>) {
         return { value: context.request.text };
     }
