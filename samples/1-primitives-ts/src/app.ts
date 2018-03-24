@@ -1,6 +1,5 @@
-import { Bot, ConsoleLogger, MemoryStorage, BotStateManager } from 'botbuilder';
-import { BotFrameworkAdapter } from 'botbuilder-services';
 import * as restify from 'restify';
+import { UserState, ConversationState, BotFrameworkAdapter, MemoryStorage } from 'botbuilder';
 
 // Create server
 let server = restify.createServer();
@@ -9,34 +8,52 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 });
 
 // Create adapter
-const adapter = new BotFrameworkAdapter({ appId: process.env.MICROSOFT_APP_ID, appPassword: process.env.MICROSOFT_APP_PASSWORD });
-server.post('/api/messages', adapter.listen() as any);
+const adapter = new BotFrameworkAdapter( { 
+    appId: process.env.MICROSOFT_APP_ID, 
+    appPassword: process.env.MICROSOFT_APP_PASSWORD 
+});
 
-// Initialize bot
-const bot = new Bot(adapter)
-    .use(new ConsoleLogger())
-    .use(new MemoryStorage())
-    .use(new BotStateManager())
-    .onReceive(context => {
+// Define conversation state shape
+interface BotConversationState {
+    prompt: string;
+}
+
+// Define user state shape
+interface BotUserState {
+    name: string;
+}
+
+// Add state middleware
+const conversationState = new ConversationState<BotConversationState>(new MemoryStorage());
+const userState = new UserState<BotUserState>(new MemoryStorage());
+
+adapter
+    .use(userState)
+    .use(conversationState)
+
+// Listen for incoming requests 
+server.post('/api/messages', (req, res) => {
+    // Route received request to adapter for processing
+    adapter.processRequest(req, res, async (context) => {
         if (context.request.type === 'message' && context.request.text.length > 0) {
             // If bot doesn't have state it needs, prompt for it.
-            if (!context.state.user.name) {
+            if (!userState.get(context).name) {
                 // On the first turn, prompt and update state that conversation is in a prompt.
-                if (context.state.conversation.prompt !== "name") {
-                    context.state.conversation.prompt = "name";
-                    context.reply("What is your name?");
+                if (conversationState.get(context).prompt !== "name") {
+                    conversationState.get(context).prompt = "name";
+                    await context.sendActivity("What is your name?");
                 // On the subsequent turn, update state with reply and update state that prompt has completed. 
                 } else {
-                    delete context.state.conversation.prompt;
-                    context.state.user.name = context.request.text;
-                    context.reply(`Great, I'll call you ${ context.state.user.name }!`);
+                    conversationState.get(context).prompt = undefined;
+                    userState.get(context).name = context.request.text;
+                    await context.sendActivity(`Great, I'll call you '${ userState.get(context).name }'!`);
                 }
             } else {
-                context.reply(`${ context.state.user.name } said: '${ context.request.text }.'`);
+                await context.sendActivity(`${ userState.get(context).name } said: '${ context.request.text }.'`);
             }
         }
     });
-
+});
 
 
 
