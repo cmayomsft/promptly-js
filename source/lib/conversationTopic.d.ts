@@ -7,12 +7,12 @@ export interface ActiveTopicState {
 export interface ConversationTopicState {
     activeTopic?: ActiveTopicState;
 }
-export declare abstract class ConversationTopic<BTC extends BotContext, S extends ConversationTopicState, V = any> extends Topic<BTC, S, V> {
+export declare abstract class ConversationTopic<BotTurnContext extends BotContext, State extends ConversationTopicState, Value = any> extends Topic<BotTurnContext, State, Value> {
     private _subTopics;
-    protected readonly subTopics: Map<string, (any?) => Topic<BTC, any>>;
+    protected readonly subTopics: Map<string, (any?) => Topic<BotTurnContext, any>>;
     private _activeTopic;
-    setActiveTopic(subTopicKey: string, ...args: any[]): Topic<BTC, any, any>;
-    readonly activeTopic: Topic<BTC, any>;
+    setActiveTopic(subTopicKey: string, ...args: any[]): Topic<BotTurnContext, any, any>;
+    readonly activeTopic: Topic<BotTurnContext, any>;
     readonly hasActiveTopic: boolean;
     clearActiveTopic(): void;
 }

@@ -4,13 +4,13 @@ import { Validator } from "./validator/validator";
 export interface PromptState {
     turns?: number;
 }
-export declare class Prompt<BTC extends BotContext, V> extends Topic<BTC, PromptState, V> {
+export declare class Prompt<BotTurnContext extends BotContext, Value> extends Topic<BotTurnContext, PromptState, Value> {
     constructor(state?: PromptState);
-    protected _onPrompt?: (context: BTC, lastTurnReason: string) => void;
-    onPrompt(prompt: (context: BTC, lastTurnReason: string) => void): this;
+    protected _onPrompt?: (context: BotTurnContext, lastTurnReason: string) => void;
+    onPrompt(prompt: (context: BotTurnContext, lastTurnReason: string) => void): this;
     protected _maxTurns: number;
     maxTurns(maxTurns: number): this;
-    protected _validator: Validator<BTC, V>;
-    validator(validator: Validator<BTC, V>): this;
-    onReceive(context: BTC): void;
+    protected _validator: Validator<BotTurnContext, Value>;
+    validator(validator: Validator<BotTurnContext, Value>): this;
+    onReceiveActivity(context: BotTurnContext): void;
 }

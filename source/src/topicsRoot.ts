@@ -13,8 +13,10 @@ export interface PromptlyBotTurnContext extends BotContext {
 
 // TopicsRoot - A specialized ConversationTopic used to anchor a Topics based conversation model
 //  in state.
-export abstract class TopicsRoot<BTC extends PromptlyBotTurnContext, CS extends TopicsRootState> extends ConversationTopic<BTC, ConversationTopicState> {
-    public constructor(context: BTC) {
+export abstract class TopicsRoot<BotTurnContext extends PromptlyBotTurnContext> 
+    extends ConversationTopic<BotTurnContext, ConversationTopicState> {
+    
+        public constructor(context: BotTurnContext) {
         
         if (!context.conversationState.rootTopic) {
             // Initialize root ConversationTopic state and persist it to conversatin state

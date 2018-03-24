@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // Topic - Abstract base class for modeling a topic of conversation.
-//  S = Interface for the state of the Topic, used to manage the Topic on each turn, 
+//  State = Interface for the state of the Topic, used to manage the Topic on each turn, 
 //      or call to onReceive().
-//  V = Interface for the resulting value for when the Topic completes successfully.
+//  Value = Interface for the resulting value for when the Topic completes successfully.
 //      Optional for cases where the Topic doesn't need to return a value. 
 class Topic {
     constructor(state) {

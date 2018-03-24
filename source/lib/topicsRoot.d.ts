@@ -6,6 +6,6 @@ export interface TopicsRootState {
 export interface PromptlyBotTurnContext extends BotContext {
     conversationState: TopicsRootState;
 }
-export declare abstract class TopicsRoot<BTC extends PromptlyBotTurnContext, CS extends TopicsRootState> extends ConversationTopic<BTC, ConversationTopicState> {
-    constructor(context: BTC);
+export declare abstract class TopicsRoot<BotTurnContext extends PromptlyBotTurnContext> extends ConversationTopic<BotTurnContext, ConversationTopicState> {
+    constructor(context: BotTurnContext);
 }
