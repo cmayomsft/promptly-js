@@ -18,7 +18,7 @@ export interface DeleteAlarmTopicValue {
 
 export class DeleteAlarmTopic extends ConversationTopic<StateBotContext<BotConversationState, BotUserState>, DeleteAlarmTopicState, DeleteAlarmTopicValue> {
 
-    public constructor(name: string, alarms: Alarm[], state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
+    public constructor(alarms: Alarm[], state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
         super(state);
 
         if(alarms) {
@@ -44,7 +44,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateBotContext<BotConve
 
                     this.state.alarmIndex = value;
     
-                    return this.onReceive(context);
+                    return this.onReceiveActivity(context);
                 })
                 .onFailure((context, reason) => {
                     this.clearActiveTopic();
@@ -72,7 +72,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateBotContext<BotConve
 
                     this.state.deleteConfirmed = value;
     
-                    return this.onReceive(context);
+                    return this.onReceiveActivity(context);
                 })
                 .onFailure((context, reason) => {
                     this.clearActiveTopic();
@@ -86,10 +86,10 @@ export class DeleteAlarmTopic extends ConversationTopic<StateBotContext<BotConve
             );
     }
 
-    public onReceive(context: StateBotContext<BotConversationState, BotUserState>) {
+    public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) {
 
         if(this.hasActiveTopic) { 
-            return this.activeTopic.onReceive(context);
+            return this.activeTopic.onReceiveActivity(context);
         }
 
         // If there are no alarms to delete...
@@ -105,7 +105,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateBotContext<BotConve
                 this.state.alarmIndex = 0;
             } else {
                 return this.setActiveTopic("whichAlarmPrompt")
-                    .onReceive(context);
+                    .onReceiveActivity(context);
             }
         }
 
@@ -113,7 +113,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateBotContext<BotConve
     
         if (this.state.deleteConfirmed === undefined) {
             return this.setActiveTopic("confirmDeletePrompt")
-                .onReceive(context);
+                .onReceiveActivity(context);
         }
 
         return this._onSuccess(context, { alarm: this.state.alarm, alarmIndex: this.state.alarmIndex, deleteConfirmed: this.state.deleteConfirmed });

@@ -5,7 +5,7 @@ import { Alarm, showAlarms } from '../alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
-export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, BotUserState>, BotConversationState> {
+export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, BotUserState>> {
 
     public constructor(context: StateBotContext<BotConversationState, BotUserState>) {
         super(context);
@@ -42,7 +42,7 @@ export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, 
                     return this.showDefaultMessage(context);
                 })
             )
-            .set("deleteAlarmTopic", (alarms: Alarm[]) => new DeleteAlarmTopic("deleteAlarmTopic", alarms)
+            .set("deleteAlarmTopic", (alarms: Alarm[]) => new DeleteAlarmTopic(alarms)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
 
@@ -66,7 +66,7 @@ export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, 
             );
     }
 
-    public onReceive(context: StateBotContext<BotConversationState, BotUserState>) { 
+    public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) { 
 
         if (context.request.type === 'message' && context.request.text.length > 0) {
             
@@ -77,11 +77,11 @@ export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, 
             } else if (/add alarm/i.test(context.request.text)) {
 
                 return this.setActiveTopic("addAlarmTopic")
-                    .onReceive(context);
+                    .onReceiveActivity(context);
             } else if (/delete alarm/i.test(context.request.text)) {
 
                 return this.setActiveTopic("deleteAlarmTopic", context.userState.alarms)
-                    .onReceive(context);
+                    .onReceiveActivity(context);
             } else if (/help/i.test(context.request.text)) {
                 this.clearActiveTopic();
 
@@ -89,7 +89,7 @@ export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, 
             }
 
             if (this.hasActiveTopic) {
-                return this.activeTopic.onReceive(context);
+                return this.activeTopic.onReceiveActivity(context);
             }
 
             return this.showDefaultMessage(context);

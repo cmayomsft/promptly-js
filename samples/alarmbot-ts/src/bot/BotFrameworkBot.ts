@@ -1,10 +1,10 @@
 import * as restify from 'restify';
 import { ConversationState, UserState, MemoryStorage, BotContext, BotFrameworkAdapter } from 'botbuilder';
-import { BotBootStrap } from './BotBootStrap';
+import { BaseBot } from './BaseBot';
 import { StateBotContext } from './StateBotContext';
 export { StateBotContext }
 
-export class StateBot<BotConversationState, BotUserState> extends BotBootStrap<StateBotContext<BotConversationState, BotUserState>> {
+export class BotFrameworkBot<BotConversationState, BotUserState> extends BaseBot<StateBotContext<BotConversationState, BotUserState>> {
     conversationState = new ConversationState<BotConversationState>(new MemoryStorage());
     userState = new UserState<BotUserState>(new MemoryStorage());
 

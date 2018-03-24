@@ -30,7 +30,7 @@ export class AddAlarmTopic extends ConversationTopic<StateBotContext<BotConversa
 
                     this.state.alarm.title = value;
     
-                    return this.onReceive(context);
+                    return this.onReceiveActivity(context);
                 })
                 .onFailure((context, reason) => {                    
                     this.clearActiveTopic();
@@ -53,7 +53,7 @@ export class AddAlarmTopic extends ConversationTopic<StateBotContext<BotConversa
 
                     this.state.alarm.time = value;
     
-                    return this.onReceive(context);
+                    return this.onReceiveActivity(context);
                 })
                 .onFailure((context, reason) => {
                     this.clearActiveTopic();
@@ -67,20 +67,20 @@ export class AddAlarmTopic extends ConversationTopic<StateBotContext<BotConversa
             );
     };
 
-    public onReceive(context: StateBotContext<BotConversationState, BotUserState>) {
+    public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) {
 
         if(this.hasActiveTopic) { 
-            return this.activeTopic.onReceive(context);
+            return this.activeTopic.onReceiveActivity(context);
         }
 
         if (!this.state.alarm.title) {
             return this.setActiveTopic("titlePrompt")
-                .onReceive(context);
+                .onReceiveActivity(context);
         } 
         
         if (!this.state.alarm.time) {
             return this.setActiveTopic("timePrompt")
-                .onReceive(context);
+                .onReceiveActivity(context);
         }
         
         return this._onSuccess(context, this.state.alarm);

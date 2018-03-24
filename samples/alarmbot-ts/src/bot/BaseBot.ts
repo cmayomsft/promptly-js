@@ -1,18 +1,18 @@
 import { Server } from 'restify';
 import { BotContext, BotAdapter, ConversationReference } from 'botbuilder';
 
-export abstract class BotBootStrap<AppContext> {
+export abstract class BaseBot<BaseBotContext> {
     abstract adapter: BotAdapter;
     abstract server: Server
 
-    protected do(handler: (appContext: AppContext) => Promise<void>) {
+    protected do(handler: (baseBotContext: BaseBotContext) => Promise<void>) {
         return (context: BotContext) => 
             this
                 .getContext(context)
                 .then(appContext => handler(appContext));
     }
     
-    abstract getContext(context: BotContext): Promise<AppContext>;
+    abstract getContext(context: BotContext): Promise<BaseBotContext>;
 
-    abstract onReceiveActivity(handler: (appContext: AppContext) => Promise<void>): Promise<void>;
+    abstract onReceiveActivity(handler: (baseBotContext: BaseBotContext) => Promise<void>): Promise<void>;
 }
