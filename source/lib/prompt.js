@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const topic_1 = require("./topic");
 // Prompt - Specialized Topic for following the common prompt pattern without the need
 //  to create a specific class.
-//  V - When the Prompt completes successfully, the value that is passed to onSuccess()
+//  Value - When the Prompt completes successfully, the value that is passed to onSuccess()
 //      for the calling ConversationTopic to do something with.
 class Prompt extends topic_1.Topic {
     constructor(state = { turns: undefined }) {
@@ -27,7 +27,7 @@ class Prompt extends topic_1.Topic {
     }
     // onReceive - Used to implement the common prompt pattern using the
     //  properties of Prompt.
-    onReceive(context) {
+    onReceiveActivity(context) {
         // If this is the initial turn (turn 0), send the initial prompt.
         if (this.state.turns === undefined) {
             this.state.turns = 0;
