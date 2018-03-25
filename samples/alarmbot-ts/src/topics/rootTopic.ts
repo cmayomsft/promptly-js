@@ -1,11 +1,14 @@
-import { TopicsRoot } from 'promptly-bot';
+import { TopicsRoot, ConversationTopicState } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
 import { StateBotContext } from '../bot/StateBotContext';
 import { Alarm, showAlarms } from '../alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
-export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, BotUserState>> {
+export interface RootTopicState extends ConversationTopicState { }
+
+export class RootTopic 
+    extends TopicsRoot<StateBotContext<BotConversationState, BotUserState>, BotConversationState, RootTopicState> {
 
     public constructor(context: StateBotContext<BotConversationState, BotUserState>) {
         super(context);
