@@ -3,9 +3,9 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(require("./topic"));
-__export(require("./conversationTopic"));
-__export(require("./prompt"));
-__export(require("./topicsRoot"));
-__export(require("./validator/validator"));
+__export(require("./topics/topic"));
+__export(require("./topics/conversationTopic"));
+__export(require("./topics/topicsRoot"));
+__export(require("./prompts/prompt"));
+__export(require("./validators/validator"));
 //# sourceMappingURL=promptly.js.map

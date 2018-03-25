@@ -1,11 +1,11 @@
 import { ConversationTopic, ConversationTopicState } from './conversationTopic';
 import { BotContext } from 'botbuilder';
-export interface TopicsRootState {
-    rootTopic?: ConversationTopicState;
+export interface PromptlyBotConversationState<RootTopicState extends ConversationTopicState> {
+    rootTopic?: RootTopicState;
 }
-export interface PromptlyBotTurnContext extends BotContext {
-    conversationState: TopicsRootState;
+export interface PromptlyBotTurnContext<BotConversationState extends PromptlyBotConversationState<RootTopicState>, RootTopicState extends ConversationTopicState> extends BotContext {
+    conversationState: BotConversationState;
 }
-export declare abstract class TopicsRoot<BotTurnContext extends PromptlyBotTurnContext> extends ConversationTopic<BotTurnContext, ConversationTopicState> {
+export declare abstract class TopicsRoot<BotTurnContext extends PromptlyBotTurnContext<BotConversationState, RootTopicState>, BotConversationState extends PromptlyBotConversationState<RootTopicState>, RootTopicState extends ConversationTopicState> extends ConversationTopic<BotTurnContext, RootTopicState> {
     constructor(context: BotTurnContext);
 }

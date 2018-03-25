@@ -1,27 +1,36 @@
 import { ConversationTopic, ConversationTopicState } from './conversationTopic';
 import { BotContext } from 'botbuilder';
 
-// TopicsRootState - Used to persist state required to recreate the TopicsRoot 
-//  between turns. 
-export interface TopicsRootState {
-    rootTopic?: ConversationTopicState;
+// PromptlyBotConversationState - Used to define the shape of the bot's ConversationState to guarantee a place to put the 
+//  root topics state.
+export interface PromptlyBotConversationState<RootTopicState extends ConversationTopicState> {
+    rootTopic?: RootTopicState;
 }
 
-export interface PromptlyBotTurnContext extends BotContext {
-    conversationState: TopicsRootState;
+// TopicsRootState - Used to persist state required to recreate the TopicsRoot 
+//  between turns. 
+/*export interface TopicsRootState {
+    rootTopic?: ConversationTopicState;
+}*/
+
+// PromptlyBotTurnContext - Used define the shape of conversation state used in the custom BotContext for the bot.
+export interface PromptlyBotTurnContext<BotConversationState extends PromptlyBotConversationState<RootTopicState>, RootTopicState extends ConversationTopicState> extends BotContext {
+    conversationState: BotConversationState;
 }
 
 // TopicsRoot - A specialized ConversationTopic used to anchor a Topics based conversation model
 //  in state.
-export abstract class TopicsRoot<BotTurnContext extends PromptlyBotTurnContext> 
-    extends ConversationTopic<BotTurnContext, ConversationTopicState> {
+export abstract class TopicsRoot<BotTurnContext extends PromptlyBotTurnContext<BotConversationState, RootTopicState>, 
+        BotConversationState extends PromptlyBotConversationState<RootTopicState>, 
+        RootTopicState extends ConversationTopicState> 
+    extends ConversationTopic<BotTurnContext, RootTopicState> {
     
         public constructor(context: BotTurnContext) {
         
         if (!context.conversationState.rootTopic) {
             // Initialize root ConversationTopic state and persist it to conversatin state
             //  to establish the root of all state in the model.
-            context.conversationState.rootTopic = { 
+            context.conversationState.rootTopic = <RootTopicState>{ 
                 activeTopic: undefined
             };
         }
