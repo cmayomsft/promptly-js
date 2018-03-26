@@ -1,6 +1,6 @@
 {
   "name": "promptly-bot",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Conversation modeling library for bots.",
   "main": "./lib/promptly.js",
   "types": "./lib/promptly.d.ts",

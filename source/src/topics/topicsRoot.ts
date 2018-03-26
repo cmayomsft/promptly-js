@@ -7,25 +7,24 @@ export interface PromptlyBotConversationState<RootTopicState extends Conversatio
     rootTopic?: RootTopicState;
 }
 
-// TopicsRootState - Used to persist state required to recreate the TopicsRoot 
-//  between turns. 
-/*export interface TopicsRootState {
-    rootTopic?: ConversationTopicState;
-}*/
-
 // PromptlyBotTurnContext - Used define the shape of conversation state used in the custom BotContext for the bot.
-export interface PromptlyBotTurnContext<BotConversationState extends PromptlyBotConversationState<RootTopicState>, RootTopicState extends ConversationTopicState> extends BotContext {
+export interface PromptlyBotTurnContext<
+        BotConversationState extends PromptlyBotConversationState<RootTopicState>, 
+        RootTopicState extends ConversationTopicState> 
+    extends BotContext {
+        
     conversationState: BotConversationState;
 }
 
 // TopicsRoot - A specialized ConversationTopic used to anchor a Topics based conversation model
 //  in state.
-export abstract class TopicsRoot<BotTurnContext extends PromptlyBotTurnContext<BotConversationState, RootTopicState>, 
+export abstract class TopicsRoot<
+        BotTurnContext extends PromptlyBotTurnContext<BotConversationState, RootTopicState>, 
         BotConversationState extends PromptlyBotConversationState<RootTopicState>, 
         RootTopicState extends ConversationTopicState> 
     extends ConversationTopic<BotTurnContext, RootTopicState> {
     
-        public constructor(context: BotTurnContext) {
+    public constructor(context: BotTurnContext) {
         
         if (!context.conversationState.rootTopic) {
             // Initialize root ConversationTopic state and persist it to conversatin state
