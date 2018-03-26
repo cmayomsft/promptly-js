@@ -71,7 +71,7 @@ export class RootTopic
 
     public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) { 
 
-        if (context.request.type === 'message' && context.request.text.length > 0) {
+        if (context.request.type === 'message') {
             
             // Check to see if there is an active topic.
             if (this.hasActiveTopic) {
@@ -81,17 +81,17 @@ export class RootTopic
 
             // If you don't have the state you need, prompt for it
             if (!this.state.name) {
-                this.setActiveTopic("namePrompt")
+                return this.setActiveTopic("namePrompt")
                     .onReceiveActivity(context);
             }
 
             if (!this.state.age) {
-                this.setActiveTopic("agePrompt")
+                return this.setActiveTopic("agePrompt")
                     .onReceiveActivity(context);                
             }
 
             // Now that you have the state you need (age and name), use it!
-            context.sendActivity(`Hello ${ this.state.name }! You are ${ this.state.age } years old.`);
+            return context.sendActivity(`Hello ${ this.state.name }! You are ${ this.state.age } years old.`);
         }
     }
 
