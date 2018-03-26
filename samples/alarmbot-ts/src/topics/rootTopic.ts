@@ -8,7 +8,10 @@ import { DeleteAlarmTopic } from './deleteAlarmTopic';
 export interface RootTopicState extends ConversationTopicState { }
 
 export class RootTopic 
-    extends TopicsRoot<StateBotContext<BotConversationState, BotUserState>, BotConversationState, RootTopicState> {
+    extends TopicsRoot<
+        StateBotContext<BotConversationState, BotUserState>, 
+        BotConversationState, 
+        RootTopicState> {
 
     public constructor(context: StateBotContext<BotConversationState, BotUserState>) {
         super(context);
