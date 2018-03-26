@@ -1,10 +1,10 @@
-import { TopicsRootState } from 'promptly-bot';
+import { PromptlyBotConversationState } from 'promptly-bot';
 import { BotFrameworkBot, StateBotContext } from './bot/BotFrameworkBot';
-import { RootTopic } from './topics/rootTopic';
+import { RootTopic , RootTopicState } from './topics/rootTopic';
 import { Alarm } from './alarms';
 
 // Define conversation state shape
-export interface BotConversationState extends TopicsRootState { }
+export interface BotConversationState extends PromptlyBotConversationState<RootTopicState> { }
 
 // Define user state shape
 export interface BotUserState {

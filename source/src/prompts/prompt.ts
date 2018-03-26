@@ -1,6 +1,6 @@
 import { Promiseable, BotContext } from 'botbuilder';
-import { Topic } from "./topic";
-import { Validator } from "./validator/validator";
+import { Topic } from "../topics/topic";
+import { Validator } from "../validators/validator";
 
 // PromptState - Used to persist state required to recreate the Prompt between turns. 
 export interface PromptState {

@@ -1,10 +1,16 @@
-import { TopicsRoot } from 'promptly-bot';
+import { TopicsRoot, ConversationTopicState } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
 import { StateBotContext } from '../bot/StateBotContext';
 import { Alarm } from '../alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 
-export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, BotUserState>> {
+export interface RootTopicState extends ConversationTopicState { }
+
+export class RootTopic 
+    extends TopicsRoot<
+        StateBotContext<BotConversationState, BotUserState>, 
+        BotConversationState, 
+        RootTopicState> {
 
     public constructor(context: StateBotContext<BotConversationState, BotUserState>) {
         super(context);
@@ -19,10 +25,6 @@ export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, 
             .set("addAlarmTopic", () => new AddAlarmTopic()
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
-
-                    if (!context.userState.alarms) {
-                        context.userState.alarms = [];
-                    }
                 
                     context.userState.alarms.push({
                         title: value.title,

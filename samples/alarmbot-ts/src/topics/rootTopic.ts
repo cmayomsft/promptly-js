@@ -1,11 +1,17 @@
-import { TopicsRoot } from 'promptly-bot';
+import { TopicsRoot, ConversationTopicState } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
 import { StateBotContext } from '../bot/StateBotContext';
 import { Alarm, showAlarms } from '../alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
-export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, BotUserState>> {
+export interface RootTopicState extends ConversationTopicState { }
+
+export class RootTopic 
+    extends TopicsRoot<
+        StateBotContext<BotConversationState, BotUserState>, 
+        BotConversationState, 
+        RootTopicState> {
 
     public constructor(context: StateBotContext<BotConversationState, BotUserState>) {
         super(context);
@@ -20,10 +26,6 @@ export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, 
             .set("addAlarmTopic", () => new AddAlarmTopic()
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
-
-                    if (!context.userState.alarms) {
-                        context.userState.alarms = [];
-                    }
                 
                     context.userState.alarms.push({
                         title: value.title,
@@ -69,13 +71,15 @@ export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, 
     public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) { 
 
         if (context.request.type === 'message' && context.request.text.length > 0) {
-            
+             
+            // If the user wants to change the topic of conversation...
             if (/show alarms/i.test(context.request.text)) {
                 this.clearActiveTopic();
 
                 return showAlarms(context, context.userState.alarms);
             } else if (/add alarm/i.test(context.request.text)) {
 
+                // Set the active topic and let the active topic handle this turn.
                 return this.setActiveTopic("addAlarmTopic")
                     .onReceiveActivity(context);
             } else if (/delete alarm/i.test(context.request.text)) {
@@ -88,6 +92,7 @@ export class RootTopic extends TopicsRoot<StateBotContext<BotConversationState, 
                 return this.showHelp(context);
             }
 
+            // If there is an active topic, let it handle this turn.
             if (this.hasActiveTopic) {
                 return this.activeTopic.onReceiveActivity(context);
             }

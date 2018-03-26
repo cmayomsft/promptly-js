@@ -1,6 +1,6 @@
 import { BotContext } from 'botbuilder';
-import { Topic } from "./topic";
-import { Validator } from "./validator/validator";
+import { Topic } from "../topics/topic";
+import { Validator } from "../validators/validator";
 export interface PromptState {
     turns?: number;
 }
@@ -12,5 +12,5 @@ export declare class Prompt<BotTurnContext extends BotContext, Value> extends To
     maxTurns(maxTurns: number): this;
     protected _validator: Validator<BotTurnContext, Value>;
     validator(validator: Validator<BotTurnContext, Value>): this;
-    onReceiveActivity(context: BotTurnContext): any;
+    onReceiveActivity(context: BotTurnContext): void;
 }
