@@ -35,6 +35,14 @@
             "sourceMaps": true,
             "program": "${workspaceRoot}/samples/alarmbot-ts/src/app.ts",
             "outFiles": [ "${workspaceRoot}/samples/alarmbot-ts/lib/**/*.js" ]
-        }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "simplePrompt-ts sample",
+            "sourceMaps": true,
+            "program": "${workspaceRoot}/samples/simpleprompt-ts/src/app.ts",
+            "outFiles": [ "${workspaceRoot}/samples/simpleprompt-ts/lib/**/*.js" ]
+        },   
     ]
 }
