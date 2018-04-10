@@ -1,5 +1,5 @@
+import { BotFrameworkAdapter, MemoryStorage, ConversationState } from 'botbuilder';
 import * as restify from 'restify';
-import { UserState, ConversationState, BotFrameworkAdapter, MemoryStorage } from 'botbuilder';
 
 // Create server
 let server = restify.createServer();
@@ -8,67 +8,76 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 });
 
 // Create adapter
-const adapter = new BotFrameworkAdapter( { 
-    appId: process.env.MICROSOFT_APP_ID, 
-    appPassword: process.env.MICROSOFT_APP_PASSWORD 
+const adapter = new BotFrameworkAdapter({
+    appId: process.env.MICROSOFT_APP_ID,
+    appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
 // Define conversation state shape
-interface BotConversationState {
-    prompt: string;
-}
-
-// Define user state shape
-interface BotUserState {
+interface PromptBotState {
     name: string;
+    activePrompt: string;
+    age: number;
 }
 
-// Add state middleware
-const conversationState = new ConversationState<BotConversationState>(new MemoryStorage());
-const userState = new UserState<BotUserState>(new MemoryStorage());
-
-adapter
-    .use(userState)
-    .use(conversationState)
+// Add conversation state middleware
+const conversationState = new ConversationState<PromptBotState>(new MemoryStorage());
+adapter.use(conversationState);
 
 // Listen for incoming requests 
-server.post('/api/messages', (req, res) => {
+server.post(`/api/messages`, (req, res) => {
     // Route received request to adapter for processing
     adapter.processRequest(req, res, async (context) => {
-        if (context.request.type === 'message' && context.request.text.length > 0) {
+        if (context.request.type === `message`) {
+
+            const state = conversationState.get(context);
+
+            // On the subsequent turn, update state with reply from user and that prompt has completed.
+
+
             // If bot doesn't have state it needs, prompt for it.
-            if (!userState.get(context).name) {
-                // On the first turn, prompt and update state that conversation is in a prompt.
-                if (conversationState.get(context).prompt !== "name") {
-                    conversationState.get(context).prompt = "name";
-                    await context.sendActivity("What is your name?");
-                // On the subsequent turn, update state with reply and update state that prompt has completed. 
-                } else {
-                    conversationState.get(context).prompt = undefined;
-                    userState.get(context).name = context.request.text;
-                    await context.sendActivity(`Great, I'll call you '${ userState.get(context).name }'!`);
-                }
-            } else {
-                await context.sendActivity(`${ userState.get(context).name } said: '${ context.request.text }.'`);
-            }
-        }
+
+
+            // The bot has the state it needs, use it!
+            return context.sendActivity(`Hello ${state.name}! You are ${state.age} years old.`);
+        } 
     });
 });
 
 
 
 
+
+
+
+
+
+
+
             /*
-            if (!context.state.user.name) {
-                if (context.state.conversation.prompt !== "name") {
-                    context.state.conversation.prompt = "name";
-                    context.reply("What is your name?");
-                } else {
-                    delete context.state.conversation.prompt;
-                    context.state.user.name = context.request.text;
-                    context.reply(`Great, I'll call you ${ context.state.user.name }!`);
+            // On the subsequent turn, update state with reply from user and that prompt has completed.
+            if (state.activePrompt) {
+                switch (state.activePrompt) {
+                    // Set state respective to the prompt that we're in 
+                    case `namePrompt`:
+                        state.name = context.request.text;
+                        break;
+                    case `agePrompt`:
+                        state.age = parseInt(context.request.text);
+                        break;
                 }
-            } else {
-                context.reply(`${ context.state.user.name } said: '${ context.request.text }.'`);
+                // End prompt, since we successfully gathered our state
+                state.activePrompt = undefined;
+            }
+
+            // If bot doesn't have state it needs, prompt for it.
+            if (!state.name) {
+                state.activePrompt = `namePrompt`;
+                return context.sendActivity(`What is your name?`);
+            }
+
+            if (!state.age) {
+                state.activePrompt = `agePrompt`;
+                return context.sendActivity(`How old are you?`);
             }
             */
