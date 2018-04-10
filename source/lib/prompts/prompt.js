@@ -8,9 +8,13 @@ const topic_1 = require("../topics/topic");
 class Prompt extends topic_1.Topic {
     constructor(state = { turns: undefined }) {
         super(state);
+        // onPrompt - Function to call on each turn to construct the prompt to the user.
+        //  context - The context (request, response,etc.) of the current turn.
+        //  lastTurnReason - The reason the last message from the last turn failed validation.
+        this._onPrompt = (context, lastTurnReason) => { };
         // maxTurns - The maximum number of turns that the Prompt will re-prompt after failing
         //  validation before failing the Prompt. 
-        this._maxTurns = 2;
+        this._maxTurns = Number.MAX_SAFE_INTEGER;
         return this;
     }
     onPrompt(prompt) {

@@ -8,4 +8,6 @@ __export(require("./topics/conversationTopic"));
 __export(require("./topics/topicsRoot"));
 __export(require("./prompts/prompt"));
 __export(require("./validators/validator"));
+__export(require("./validators/textValidator"));
+__export(require("./validators/intValidator"));
 //# sourceMappingURL=promptly.js.map

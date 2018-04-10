@@ -23,7 +23,7 @@ export class Prompt<BotTurnContext extends BotContext, Value>
     // onPrompt - Function to call on each turn to construct the prompt to the user.
     //  context - The context (request, response,etc.) of the current turn.
     //  lastTurnReason - The reason the last message from the last turn failed validation.
-    protected _onPrompt?: (context: BotTurnContext, lastTurnReason: string) => void;
+    protected _onPrompt?: (context: BotTurnContext, lastTurnReason: string) => void = (context, lastTurnReason) => { };
     public onPrompt(prompt: (context: BotTurnContext, lastTurnReason: string) => void) {
         this._onPrompt = prompt;
         return this;
@@ -31,7 +31,7 @@ export class Prompt<BotTurnContext extends BotContext, Value>
 
     // maxTurns - The maximum number of turns that the Prompt will re-prompt after failing
     //  validation before failing the Prompt. 
-    protected _maxTurns: number = 2;
+    protected _maxTurns: number = Number.MAX_SAFE_INTEGER;
     public maxTurns(maxTurns: number) {
         this._maxTurns = maxTurns;
         return this;
