@@ -1,4 +1,4 @@
-import { TopicsRoot, ConversationTopicState, Prompt, Validator, ValidatorResult } from 'promptly-bot';
+import { TopicsRoot, ConversationTopicState, Prompt, TextValidator, IntValidator } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
 import { StateBotContext } from '../bot/StateBotContext';
 import { Alarm } from '../alarms';
@@ -97,25 +97,5 @@ export class RootTopic
 
     public showDefaultMessage(context: StateBotContext<BotConversationState, BotUserState>) {
         context.sendActivity("'Add Alarm'.");
-    }
-}
-
-export class TextValidator extends Validator<StateBotContext<BotConversationState, BotUserState>, string> {
-    public validate(context: StateBotContext<BotConversationState, BotUserState>) {
-        if((context.request.text) && (context.request.text.length > 0)) {
-            return { value: context.request.text };
-        } else {
-            return { reason: "nottext" };
-        }
-    }
-}
-
-export class IntValidator extends Validator<StateBotContext<BotConversationState, BotUserState>, number> {
-    public validate(context: StateBotContext<BotConversationState, BotUserState>) {
-        if((context.request.text) && (!Number.isNaN(parseInt(context.request.text)))) {
-            return { value: parseInt(context.request.text) };
-        } else {
-            return { reason: "notint" };
-        }
     }
 }
