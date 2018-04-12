@@ -7,6 +7,8 @@ __export(require("./topics/topic"));
 __export(require("./topics/conversationTopic"));
 __export(require("./topics/topicsRoot"));
 __export(require("./prompts/prompt"));
+__export(require("./prompts/textPrompt"));
+__export(require("./prompts/intPrompt"));
 __export(require("./validators/validator"));
 __export(require("./validators/textValidator"));
 __export(require("./validators/intValidator"));
