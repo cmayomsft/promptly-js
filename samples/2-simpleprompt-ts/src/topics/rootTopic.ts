@@ -1,4 +1,4 @@
-import { TopicsRoot, ConversationTopicState, Prompt, TextValidator, IntValidator } from 'promptly-bot';
+import { TopicsRoot, ConversationTopicState, Prompt, TextPrompt, IntPrompt } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
 import { StateBotContext } from '../bot/StateBotContext';
 import { Alarm } from '../alarms';
@@ -18,13 +18,11 @@ export class RootTopic
         super(context);
 
         this.subTopics
-            .set("namePrompt", () => new Prompt<StateBotContext<BotConversationState, BotUserState>, string>()
+            .set("namePrompt", () => new TextPrompt<StateBotContext<BotConversationState, BotUserState>>()
                 .onPrompt((context, lastTurnReason) => {
 
                     return context.sendActivity(`What is your name?`);
                 })
-                .validator(new TextValidator())
-                .maxTurns(2)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
 
@@ -32,23 +30,12 @@ export class RootTopic
 
                     return this.onReceiveActivity(context);
                 })
-                .onFailure((context, reason) => {                    
-                    this.clearActiveTopic();
-
-                    if(reason && reason === 'toomanyattempts') {
-                        context.sendActivity(`I'm sorry I'm having issues understanding you.`);
-                    }
-
-                    return this._onFailure(context, reason);
-                })
             )
-            .set("agePrompt", () => new Prompt<StateBotContext<BotConversationState, BotUserState>, number>()
+            .set("agePrompt", () => new IntPrompt<StateBotContext<BotConversationState, BotUserState>>()
                 .onPrompt((context, lastTurnReason) => {
 
                     return context.sendActivity(`How old are you?`);
                 })
-                .validator(new IntValidator())
-                .maxTurns(2)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
 
@@ -56,17 +43,7 @@ export class RootTopic
 
                     return this.onReceiveActivity(context);
                 })
-                .onFailure((context, reason) => {
-                    this.clearActiveTopic();
-
-                    if(reason && reason === 'toomanyattempts') {
-                        return context.sendActivity(`I'm sorry I'm having issues understanding you.`);
-                    }
-
-                    return this._onFailure(context, reason);;
-                })
             );
-
     }
 
     public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) { 
