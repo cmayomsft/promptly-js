@@ -1,7 +1,8 @@
-import { TopicsRoot, ConversationTopicState, Prompt, Validator, ValidatorResult } from 'promptly-bot';
+import { TopicsRoot, ConversationTopicState, TextPrompt, IntPrompt } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
 import { StateBotContext } from '../bot/StateBotContext';
 import { Alarm } from '../alarms';
+import { ActivityTypes } from 'botbuilder';
 
 export interface RootTopicState extends ConversationTopicState { 
     name: string;
@@ -18,13 +19,13 @@ export class RootTopic
         super(context);
 
         this.subTopics
-            .set("namePrompt", () => new Prompt<StateBotContext<BotConversationState, BotUserState>, string>()
+            .set("namePrompt", () => new TextPrompt<StateBotContext<BotConversationState, BotUserState>>()
                 .onPrompt((context, lastTurnReason) => {
 
                     return context.sendActivity(`What is your name?`);
                 })
-                .validator(new TextValidator())
-                .maxTurns(2)
+                //.onPrompt(`Yo~`, `What is your name????`)
+                //.onPrompt({ text: "Yo!", type: ActivityTypes.Message }, { text: "What is your name!!!", type: ActivityTypes.Message })
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
 
@@ -32,38 +33,18 @@ export class RootTopic
 
                     return this.onReceiveActivity(context);
                 })
-                .onFailure((context, reason) => {                    
-                    this.clearActiveTopic();
-
-                    if(reason && reason === 'toomanyattempts') {
-                        context.sendActivity(`I'm sorry I'm having issues understanding you.`);
-                    }
-
-                    return this._onFailure(context, reason);
-                })
             )
-            .set("agePrompt", () => new Prompt<StateBotContext<BotConversationState, BotUserState>, number>()
+            .set("agePrompt", () => new IntPrompt<StateBotContext<BotConversationState, BotUserState>>()
                 .onPrompt((context, lastTurnReason) => {
 
                     return context.sendActivity(`How old are you?`);
                 })
-                .validator(new IntValidator())
-                .maxTurns(2)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
 
                     this.state.age = value;
 
                     return this.onReceiveActivity(context);
-                })
-                .onFailure((context, reason) => {
-                    this.clearActiveTopic();
-
-                    if(reason && reason === 'toomanyattempts') {
-                        return context.sendActivity(`I'm sorry I'm having issues understanding you.`);
-                    }
-
-                    return this._onFailure(context, reason);;
                 })
             );
 
@@ -97,25 +78,5 @@ export class RootTopic
 
     public showDefaultMessage(context: StateBotContext<BotConversationState, BotUserState>) {
         context.sendActivity("'Add Alarm'.");
-    }
-}
-
-export class TextValidator extends Validator<StateBotContext<BotConversationState, BotUserState>, string> {
-    public validate(context: StateBotContext<BotConversationState, BotUserState>) {
-        if((context.request.text) && (context.request.text.length > 0)) {
-            return { value: context.request.text };
-        } else {
-            return { reason: "nottext" };
-        }
-    }
-}
-
-export class IntValidator extends Validator<StateBotContext<BotConversationState, BotUserState>, number> {
-    public validate(context: StateBotContext<BotConversationState, BotUserState>) {
-        if((context.request.text) && (!Number.isNaN(parseInt(context.request.text)))) {
-            return { value: parseInt(context.request.text) };
-        } else {
-            return { reason: "notint" };
-        }
     }
 }
