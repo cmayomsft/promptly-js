@@ -7,7 +7,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "1-Primitives-TS Sample",
+            "name": "1-Primitives-TS",
             "sourceMaps": true,
             "program": "${workspaceRoot}/samples/1-primitives-ts/src/app.ts",
             "outFiles": [ "${workspaceRoot}/samples/1-primitives-ts/lib/**/*.js" ]
@@ -15,7 +15,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "2-SimplePrompt-TS Sample",
+            "name": "2-SimplePrompt-TS",
             "sourceMaps": true,
             "program": "${workspaceRoot}/samples/2-simpleprompt-ts/src/app.ts",
             "outFiles": [ "${workspaceRoot}/samples/2-simpleprompt-ts/lib/**/*.js" ]
@@ -23,7 +23,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "3-Topic-TS Sample",
+            "name": "3-Topic-TS",
             "sourceMaps": true,
             "program": "${workspaceRoot}/samples/3-topic-ts/src/app.ts",
             "outFiles": [ "${workspaceRoot}/samples/3-topic-ts/lib/**/*.js" ]
@@ -39,10 +39,10 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "simplePrompt-ts sample",
+            "name": "simplePrompt-ts",
             "sourceMaps": true,
             "program": "${workspaceRoot}/samples/simpleprompt-ts/src/app.ts",
-            "outFiles": [ "${workspaceRoot}/samples/simpleprompt-ts/lib/**/*.js" ]
+            "outFiles": [ "${workspaceRoot}/samples/simpleprompt-ts/lib/**/*.js", "${workspaceRoot}/samples/simpleprompt-ts/node_modules/promptly-bot/lib/**/*.js" ]
         },   
     ]
 }
