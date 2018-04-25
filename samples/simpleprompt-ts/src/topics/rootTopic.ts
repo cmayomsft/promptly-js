@@ -20,12 +20,7 @@ export class RootTopic
 
         this.subTopics
             .set("namePrompt", () => new TextPrompt<StateBotContext<BotConversationState, BotUserState>>()
-                .onPrompt((context, lastTurnReason) => {
-
-                    return context.sendActivity(`What is your name?`);
-                })
-                //.onPrompt(`Yo~`, `What is your name????`)
-                //.onPrompt({ text: "Yo!", type: ActivityTypes.Message }, { text: "What is your name!!!", type: ActivityTypes.Message })
+                .onPrompt(`What is your name?`)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
 
@@ -35,10 +30,7 @@ export class RootTopic
                 })
             )
             .set("agePrompt", () => new IntPrompt<StateBotContext<BotConversationState, BotUserState>>()
-                .onPrompt((context, lastTurnReason) => {
-
-                    return context.sendActivity(`How old are you?`);
-                })
+                .onPrompt(`How old are you?`)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
 
