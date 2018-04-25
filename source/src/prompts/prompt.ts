@@ -1,4 +1,4 @@
-import { Promiseable, BotContext } from 'botbuilder';
+import { Promiseable, BotContext, Activity } from 'botbuilder';
 import { Topic } from "../topics/topic";
 import { Validator } from "../validators/validator";
 
@@ -24,8 +24,22 @@ export class Prompt<BotTurnContext extends BotContext, Value>
     //  context - The context (request, response,etc.) of the current turn.
     //  lastTurnReason - The reason the last message from the last turn failed validation.
     protected _onPrompt?: (context: BotTurnContext, lastTurnReason: string) => void = (context, lastTurnReason) => { };
-    public onPrompt(prompt: (context: BotTurnContext, lastTurnReason: string) => void) {
-        this._onPrompt = prompt;
+
+    // sendActivity(...activityOrText: (Partial<Activity> | string)[]): Promise<ResourceResponse[]>;
+    public onPrompt(...prompt: string[]);
+    public onPrompt(...prompt: Partial<Activity>[]);
+    public onPrompt(prompt: (context: BotTurnContext, lastTurnReason: string) => void);
+    public onPrompt(...prompt: any[]) {
+
+        if (typeof prompt[0] === "function") {
+            this._onPrompt = prompt[0];
+        }
+        else {
+            this._onPrompt = (context, lastTurnReason) => {
+                return context.sendActivity(...prompt);
+            }
+        }
+
         return this;
     }
 

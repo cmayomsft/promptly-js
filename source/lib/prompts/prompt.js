@@ -17,8 +17,15 @@ class Prompt extends topic_1.Topic {
         this._maxTurns = Number.MAX_SAFE_INTEGER;
         return this;
     }
-    onPrompt(prompt) {
-        this._onPrompt = prompt;
+    onPrompt(...prompt) {
+        if (typeof prompt[0] === "function") {
+            this._onPrompt = prompt[0];
+        }
+        else {
+            this._onPrompt = (context, lastTurnReason) => {
+                return context.sendActivity(...prompt);
+            };
+        }
         return this;
     }
     maxTurns(maxTurns) {
