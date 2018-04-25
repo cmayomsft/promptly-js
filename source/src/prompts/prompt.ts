@@ -25,7 +25,6 @@ export class Prompt<BotTurnContext extends BotContext, Value>
     //  lastTurnReason - The reason the last message from the last turn failed validation.
     protected _onPrompt?: (context: BotTurnContext, lastTurnReason: string) => void = (context, lastTurnReason) => { };
 
-    // sendActivity(...activityOrText: (Partial<Activity> | string)[]): Promise<ResourceResponse[]>;
     public onPrompt(...prompt: string[]);
     public onPrompt(...prompt: Partial<Activity>[]);
     public onPrompt(prompt: (context: BotTurnContext, lastTurnReason: string) => void);
