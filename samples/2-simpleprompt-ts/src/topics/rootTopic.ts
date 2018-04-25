@@ -1,7 +1,8 @@
-import { TopicsRoot, ConversationTopicState, Prompt, TextPrompt, IntPrompt } from 'promptly-bot';
+import { TopicsRoot, ConversationTopicState, TextPrompt, IntPrompt } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
 import { StateBotContext } from '../bot/StateBotContext';
 import { Alarm } from '../alarms';
+import { ActivityTypes } from 'botbuilder';
 
 export interface RootTopicState extends ConversationTopicState { 
     name: string;
@@ -19,10 +20,7 @@ export class RootTopic
 
         this.subTopics
             .set("namePrompt", () => new TextPrompt<StateBotContext<BotConversationState, BotUserState>>()
-                .onPrompt((context, lastTurnReason) => {
-
-                    return context.sendActivity(`What is your name?`);
-                })
+                .onPrompt(`What is your name?`)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
 
@@ -32,10 +30,7 @@ export class RootTopic
                 })
             )
             .set("agePrompt", () => new IntPrompt<StateBotContext<BotConversationState, BotUserState>>()
-                .onPrompt((context, lastTurnReason) => {
-
-                    return context.sendActivity(`How old are you?`);
-                })
+                .onPrompt(`How old are you?`)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
 
@@ -44,6 +39,7 @@ export class RootTopic
                     return this.onReceiveActivity(context);
                 })
             );
+
     }
 
     public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) { 
