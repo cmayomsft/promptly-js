@@ -10,7 +10,7 @@
             "name": "1-Primitives-TS",
             "sourceMaps": true,
             "program": "${workspaceRoot}/samples/1-primitives-ts/src/app.ts",
-            "outFiles": [ "${workspaceRoot}/samples/1-primitives-ts/lib/**/*.js" ]
+            "outFiles": [ "${workspaceRoot}/samples/1-primitives-ts/lib/**/*.js", "${workspaceRoot}/source/lib/**/*.js" ]
         },   
         {
             "type": "node",
@@ -18,7 +18,7 @@
             "name": "2-SimplePrompt-TS",
             "sourceMaps": true,
             "program": "${workspaceRoot}/samples/2-simpleprompt-ts/src/app.ts",
-            "outFiles": [ "${workspaceRoot}/samples/2-simpleprompt-ts/lib/**/*.js" ]
+            "outFiles": [ "${workspaceRoot}/samples/2-simpleprompt-ts/lib/**/*.js", "${workspaceRoot}/source/lib/**/*.js" ]
         },     
         {
             "type": "node",
@@ -26,7 +26,7 @@
             "name": "3-Topic-TS",
             "sourceMaps": true,
             "program": "${workspaceRoot}/samples/3-topic-ts/src/app.ts",
-            "outFiles": [ "${workspaceRoot}/samples/3-topic-ts/lib/**/*.js" ]
+            "outFiles": [ "${workspaceRoot}/samples/3-topic-ts/lib/**/*.js", "${workspaceRoot}/source/lib/**/*.js" ]
         },
         {
             "type": "node",
@@ -34,7 +34,7 @@
             "name": "alarmbot-ts",
             "sourceMaps": true,
             "program": "${workspaceRoot}/samples/alarmbot-ts/src/app.ts",
-            "outFiles": [ "${workspaceRoot}/samples/alarmbot-ts/lib/**/*.js" ]
+            "outFiles": [ "${workspaceRoot}/samples/alarmbot-ts/lib/**/*.js", "${workspaceRoot}/source/lib/**/*.js" ]
         },
         {
             "type": "node",
@@ -42,7 +42,7 @@
             "name": "simplePrompt-ts",
             "sourceMaps": true,
             "program": "${workspaceRoot}/samples/simpleprompt-ts/src/app.ts",
-            "outFiles": [ "${workspaceRoot}/samples/simpleprompt-ts/lib/**/*.js", "${workspaceRoot}/samples/simpleprompt-ts/node_modules/promptly-bot/lib/**/*.js" ]
+            "outFiles": [ "${workspaceRoot}/samples/simpleprompt-ts/lib/**/*.js", "${workspaceRoot}/source/lib/**/*.js" ]
         },   
     ]
 }
