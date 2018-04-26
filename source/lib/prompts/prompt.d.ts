@@ -1,4 +1,4 @@
-import { BotContext } from 'botbuilder';
+import { BotContext, Activity } from 'botbuilder';
 import { Topic } from "../topics/topic";
 import { Validator } from "../validators/validator";
 export interface PromptState {
@@ -7,7 +7,9 @@ export interface PromptState {
 export declare class Prompt<BotTurnContext extends BotContext, Value> extends Topic<BotTurnContext, PromptState, Value> {
     constructor(state?: PromptState);
     protected _onPrompt?: (context: BotTurnContext, lastTurnReason: string) => void;
-    onPrompt(prompt: (context: BotTurnContext, lastTurnReason: string) => void): this;
+    onPrompt(...promptStrings: string[]): any;
+    onPrompt(...promptActivities: Partial<Activity>[]): any;
+    onPrompt(promptCallBack: (context: BotTurnContext, lastTurnReason: string) => void): any;
     protected _maxTurns: number;
     maxTurns(maxTurns: number): this;
     protected _validator: Validator<BotTurnContext, Value>;

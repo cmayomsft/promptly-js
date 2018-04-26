@@ -1,4 +1,4 @@
-import { Promiseable, BotContext } from 'botbuilder';
+import { Promiseable, BotContext, Activity } from 'botbuilder';
 import { Topic } from "../topics/topic";
 import { Validator } from "../validators/validator";
 
@@ -23,15 +23,28 @@ export class Prompt<BotTurnContext extends BotContext, Value>
     // onPrompt - Function to call on each turn to construct the prompt to the user.
     //  context - The context (request, response,etc.) of the current turn.
     //  lastTurnReason - The reason the last message from the last turn failed validation.
-    protected _onPrompt?: (context: BotTurnContext, lastTurnReason: string) => void;
-    public onPrompt(prompt: (context: BotTurnContext, lastTurnReason: string) => void) {
-        this._onPrompt = prompt;
+    protected _onPrompt?: (context: BotTurnContext, lastTurnReason: string) => void = (context, lastTurnReason) => { };
+
+    public onPrompt(...promptStrings: string[]);
+    public onPrompt(...promptActivities: Partial<Activity>[]);
+    public onPrompt(promptCallBack: (context: BotTurnContext, lastTurnReason: string) => void);
+    public onPrompt(...args: any[]) {
+
+        if (typeof args[0] === "function") {
+            this._onPrompt = args[0];
+        }
+        else {
+            this._onPrompt = (context, lastTurnReason) => {
+                return context.sendActivity(...args);
+            }
+        }
+
         return this;
     }
 
     // maxTurns - The maximum number of turns that the Prompt will re-prompt after failing
     //  validation before failing the Prompt. 
-    protected _maxTurns: number = 2;
+    protected _maxTurns: number = Number.MAX_SAFE_INTEGER;
     public maxTurns(maxTurns: number) {
         this._maxTurns = maxTurns;
         return this;
