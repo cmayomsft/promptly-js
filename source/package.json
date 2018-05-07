@@ -1,6 +1,6 @@
 {
   "name": "promptly-bot",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Conversation modeling library for bots.",
   "main": "./lib/promptly.js",
   "types": "./lib/promptly.d.ts",
@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/node": "^8.0.28",
-    "botbuilder": "4.0.0-m2.1"
+    "botbuilder": "4.0.0-m4.2"
   },
   "devDependencies": {},
   "repository": {
