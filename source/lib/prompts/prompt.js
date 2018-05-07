@@ -17,13 +17,23 @@ class Prompt extends topic_1.Topic {
         this._maxTurns = Number.MAX_SAFE_INTEGER;
         return this;
     }
-    onPrompt(...args) {
-        if (typeof args[0] === "function") {
-            this._onPrompt = args[0];
+    onPrompt(arg, ...args) {
+        if (typeof arg === "function") {
+            this._onPrompt = arg;
         }
         else {
+            // TurnContext.sentActivities() expects 1 or more activities, so required to have at least
+            //  one and they all be Partial<Activity>.
+            args = [arg, ...args];
+            let activities = [];
+            if (typeof args[0] === "string") {
+                activities = [arg, ...args.map(a => { return { type: 'message', text: a }; })];
+            }
+            else {
+                activities = [arg, ...args];
+            }
             this._onPrompt = (context, lastTurnReason) => {
-                return context.sendActivity(...args);
+                return context.sendActivities(activities);
             };
         }
         return this;

@@ -1,4 +1,4 @@
-import { Promiseable, BotContext, Activity } from 'botbuilder';
+import { Promiseable, TurnContext, Activity } from 'botbuilder';
 import { Topic } from "../topics/topic";
 import { Validator } from "../validators/validator";
 
@@ -12,7 +12,7 @@ export interface PromptState {
 //  to create a specific class.
 //  Value - When the Prompt completes successfully, the value that is passed to onSuccess()
 //      for the calling ConversationTopic to do something with.
-export class Prompt<BotTurnContext extends BotContext, Value> 
+export class Prompt<BotTurnContext extends TurnContext, Value> 
     extends Topic<BotTurnContext, PromptState, Value> {
     
     constructor(state: PromptState = { turns: undefined }) {
@@ -25,17 +25,30 @@ export class Prompt<BotTurnContext extends BotContext, Value>
     //  lastTurnReason - The reason the last message from the last turn failed validation.
     protected _onPrompt?: (context: BotTurnContext, lastTurnReason: string) => void = (context, lastTurnReason) => { };
 
-    public onPrompt(...promptStrings: string[]);
-    public onPrompt(...promptActivities: Partial<Activity>[]);
+    public onPrompt(promptString: string, ...promptStrings: string[]);
+    public onPrompt(promptActivity: Partial<Activity>, ...promptActivities: Partial<Activity>[]);
     public onPrompt(promptCallBack: (context: BotTurnContext, lastTurnReason: string) => void);
-    public onPrompt(...args: any[]) {
+    public onPrompt(arg: any, ...args: any[]) {
 
-        if (typeof args[0] === "function") {
-            this._onPrompt = args[0];
+        if (typeof arg === "function") {
+            this._onPrompt = arg;
         }
         else {
+            // TurnContext.sentActivities() expects 1 or more activities, so required to have at least
+            //  one and they all be Partial<Activity>.
+            args = [arg, ...args];
+
+            let activities: Partial<Activity>[] = [];
+
+            if (typeof args[0] === "string") {
+                activities = [ arg, ...args.map(a => { return { type: 'message', text: a }})];
+            }
+            else {
+                activities = [arg, ...args];
+            }
+
             this._onPrompt = (context, lastTurnReason) => {
-                return context.sendActivity(...args);
+                return context.sendActivities(activities);
             }
         }
 
