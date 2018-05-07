@@ -1,5 +1,5 @@
-import { BotContext, Promiseable } from 'botbuilder';
-export declare abstract class Topic<BotTurnContext extends BotContext, State, Value = any> {
+import { TurnContext, Promiseable } from 'botbuilder';
+export declare abstract class Topic<BotTurnContext extends TurnContext, State, Value = any> {
     constructor(state: State);
     private _state;
     state: State;
