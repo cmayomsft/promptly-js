@@ -1,4 +1,4 @@
-import { BotContext } from 'botbuilder';
+import { TurnContext } from 'botbuilder';
 import { Topic } from './topic';
 
 // ActiveTopicState - Used to persist state required to recreate the active Topic between turns. 
@@ -21,7 +21,7 @@ export interface ConversationTopicState {
 
 // ConversationTopic - Used to model a topic of conversation with (optional) sub-topics, such as 
 //  child Topics and or Prompts.
-export abstract class ConversationTopic<BotTurnContext extends BotContext, State extends ConversationTopicState, Value = any> 
+export abstract class ConversationTopic<BotTurnContext extends TurnContext, State extends ConversationTopicState, Value = any> 
     extends Topic<BotTurnContext, State, Value> {
 
     // subTopics - Map of functions used to create any sub-topics for the conversation topic
