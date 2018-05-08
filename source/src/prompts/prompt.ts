@@ -35,7 +35,8 @@ export class Prompt<BotTurnContext extends TurnContext, Value>
         }
         else {
             // TurnContext.sentActivities() expects 1 or more activities, so required to have at least
-            //  one and they all be Partial<Activity>.
+            //  one and they all be Partial<Activity>, so requiring 1 string/Partial<Activity> and building
+            //  array with any others supplied.
             args = [arg, ...args];
 
             let activities: Partial<Activity>[] = [];
