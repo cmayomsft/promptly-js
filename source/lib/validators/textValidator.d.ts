@@ -1,8 +1,8 @@
 import { Validator } from '../validators/validator';
-import { BotContext } from 'botbuilder';
-export declare class TextValidator<BotTurnContext extends BotContext> extends Validator<BotTurnContext, string> {
+import { TurnContext } from 'botbuilder';
+export declare class TextValidator<BotTurnContext extends TurnContext> extends Validator<BotTurnContext, string> {
     validate(context: BotTurnContext): {
-        value: any;
+        value: string;
         reason?: undefined;
     } | {
         reason: string;
