@@ -42,10 +42,10 @@ export class Prompt<BotTurnContext extends TurnContext, Value>
             let activities: Partial<Activity>[] = [];
 
             if (typeof args[0] === "string") {
-                activities = [ arg, ...args.map(a => { return { type: 'message', text: a }})];
+                activities = [...args.map(a => { return { type: 'message', text: a }})];
             }
             else {
-                activities = [arg, ...args];
+                activities = [...args];
             }
 
             this._onPrompt = (context, lastTurnReason) => {

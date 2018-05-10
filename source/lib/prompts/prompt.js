@@ -28,10 +28,10 @@ class Prompt extends topic_1.Topic {
             args = [arg, ...args];
             let activities = [];
             if (typeof args[0] === "string") {
-                activities = [arg, ...args.map(a => { return { type: 'message', text: a }; })];
+                activities = [...args.map(a => { return { type: 'message', text: a }; })];
             }
             else {
-                activities = [arg, ...args];
+                activities = [...args];
             }
             this._onPrompt = (context, lastTurnReason) => {
                 return context.sendActivities(activities);
