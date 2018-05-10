@@ -1,5 +1,5 @@
 import * as restify from 'restify';
-import { ConversationState, UserState, MemoryStorage, BotContext, BotFrameworkAdapter } from 'botbuilder';
+import { ConversationState, UserState, MemoryStorage, TurnContext, BotFrameworkAdapter } from 'botbuilder';
 import { BaseBot } from './BaseBot';
 import { StateBotContext } from './StateBotContext';
 export { StateBotContext }
@@ -14,8 +14,8 @@ export class BotFrameworkBot<BotConversationState, BotUserState> extends BaseBot
         .use(this.conversationState)
         .use(this.userState);
 
-    getContext(context: BotContext) {
-        return StateBotContext.from(context, this.conversationState, this.userState)
+    getContext(turnContext: TurnContext) {
+        return StateBotContext.from(turnContext, this.conversationState, this.userState);
     }
 
     onReceiveActivity(handler: (context: StateBotContext<BotConversationState, BotUserState>) => Promise<void>) {
@@ -24,7 +24,7 @@ export class BotFrameworkBot<BotConversationState, BotUserState> extends BaseBot
         });
 
         this.server.post('/api/messages', (req, res) => {
-            this.adapter.processRequest(req, res, this.do(handler));
+            this.adapter.processActivity(req, res, this.do(handler));
         });
 
         return Promise.resolve();

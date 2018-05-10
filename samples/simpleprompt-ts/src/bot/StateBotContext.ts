@@ -1,9 +1,9 @@
-import { Activity, BotContext, ConversationState, UserState } from 'botbuilder';
+import { Activity, TurnContext, ConversationState, UserState } from 'botbuilder';
 
-export class StateBotContext<BotConversationState, BotUserState> extends BotContext {
+export class StateBotContext<BotConversationState, BotUserState> extends TurnContext {
     // Instead of adding things here, add them in `from()`
-    private constructor(context: BotContext) {
-        super(context);
+    private constructor(turnContext: TurnContext) {
+        super(turnContext);
     }
 
     // Define the properties and methods to add to BotContext
@@ -13,14 +13,14 @@ export class StateBotContext<BotConversationState, BotUserState> extends BotCont
     // "from" adds any properties or methods that depend on arguments or async calls or both
     // think of it as an async constructor
     static async from <BotConversationState = any, BotUserState = any> (
-        context: BotContext,
+        turnContext: TurnContext,
         conversationState: ConversationState<BotConversationState>,
-        userState: ConversationState<BotUserState>,
+        userState: UserState<BotUserState>,
     ): Promise<StateBotContext<BotConversationState, BotUserState>> {
-        const stateContext = new StateBotContext<BotConversationState, BotUserState>(context);
+        const stateContext = new StateBotContext<BotConversationState, BotUserState>(turnContext);
 
-        stateContext.conversationState = await conversationState.read(context);
-        stateContext.userState = await userState.read(context);
+        stateContext.conversationState = await conversationState.read(turnContext);
+        stateContext.userState = await userState.read(turnContext);
 
         return stateContext;
     }
