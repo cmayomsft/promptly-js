@@ -16,7 +16,7 @@ const alarmBot = new BotFrameworkBot<BotConversationState, BotUserState>();
 alarmBot.onReceiveActivity(async context => {
     // State isn't fully initialized until the contact/conversation messages are sent, so have to require
     //  activity type is message. Will affect welcome message. Refactor after bug has been addressed.
-    if(context.request.type === 'message') {
+    if(context.activity.type === 'message') {
         
         return new RootTopic(context)
             .onReceiveActivity(context);

@@ -44,7 +44,7 @@ export class RootTopic
 
     public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) { 
 
-        if (context.request.type === 'message') {
+        if (context.activity.type === 'message') {
             
             // Check to see if there is an active topic.
             if (this.hasActiveTopic) {
