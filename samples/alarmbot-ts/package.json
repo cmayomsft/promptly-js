@@ -8,7 +8,7 @@
   "dependencies": {
     "@types/node": "^8.0.28",
     "@types/restify": "^5.0.3",
-    "botbuilder": "4.0.0-m2.1",
+    "botbuilder": "4.0.0-m4.2",
     "restify": "^6.0.0",
     "promptly-bot": "~0.0.1"
   }
