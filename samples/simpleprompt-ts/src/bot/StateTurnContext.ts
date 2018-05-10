@@ -1,6 +1,6 @@
 import { Activity, TurnContext, ConversationState, UserState } from 'botbuilder';
 
-export class StateBotContext<BotConversationState, BotUserState> extends TurnContext {
+export class StateTurnContext<BotConversationState, BotUserState> extends TurnContext {
     // Instead of adding things here, add them in `from()`
     private constructor(turnContext: TurnContext) {
         super(turnContext);
@@ -16,8 +16,8 @@ export class StateBotContext<BotConversationState, BotUserState> extends TurnCon
         turnContext: TurnContext,
         conversationState: ConversationState<BotConversationState>,
         userState: UserState<BotUserState>,
-    ): Promise<StateBotContext<BotConversationState, BotUserState>> {
-        const stateContext = new StateBotContext<BotConversationState, BotUserState>(turnContext);
+    ): Promise<StateTurnContext<BotConversationState, BotUserState>> {
+        const stateContext = new StateTurnContext<BotConversationState, BotUserState>(turnContext);
 
         stateContext.conversationState = await conversationState.read(turnContext);
         stateContext.userState = await userState.read(turnContext);
