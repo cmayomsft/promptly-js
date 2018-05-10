@@ -1,6 +1,6 @@
 import { TopicsRoot, ConversationTopicState, TextPrompt, IntPrompt } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
-import { StateBotContext } from '../bot/StateBotContext';
+import { StateTurnContext } from '../bot/StateTurnContext';
 import { Alarm } from '../alarms';
 import { ActivityTypes } from 'botbuilder';
 
@@ -11,15 +11,15 @@ export interface RootTopicState extends ConversationTopicState {
 
 export class RootTopic 
     extends TopicsRoot<
-        StateBotContext<BotConversationState, BotUserState>, 
+        StateTurnContext<BotConversationState, BotUserState>, 
         BotConversationState, 
         RootTopicState> {
 
-    public constructor(context: StateBotContext<BotConversationState, BotUserState>) {
+    public constructor(context: StateTurnContext<BotConversationState, BotUserState>) {
         super(context);
 
         this.subTopics
-            .set("namePrompt", () => new TextPrompt<StateBotContext<BotConversationState, BotUserState>>()
+            .set("namePrompt", () => new TextPrompt<StateTurnContext<BotConversationState, BotUserState>>()
                 .onPrompt(`What is your name?`)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
@@ -29,7 +29,7 @@ export class RootTopic
                     return this.onReceiveActivity(context);
                 })
             )
-            .set("agePrompt", () => new IntPrompt<StateBotContext<BotConversationState, BotUserState>>()
+            .set("agePrompt", () => new IntPrompt<StateTurnContext<BotConversationState, BotUserState>>()
                 .onPrompt(`How old are you?`)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
@@ -42,7 +42,7 @@ export class RootTopic
 
     }
 
-    public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) { 
+    public onReceiveActivity(context: StateTurnContext<BotConversationState, BotUserState>) { 
 
         if (context.activity.type === 'message') {
             
@@ -68,7 +68,7 @@ export class RootTopic
         }
     }
 
-    public showDefaultMessage(context: StateBotContext<BotConversationState, BotUserState>) {
+    public showDefaultMessage(context: StateTurnContext<BotConversationState, BotUserState>) {
         context.sendActivity("'Add Alarm'.");
     }
 }
