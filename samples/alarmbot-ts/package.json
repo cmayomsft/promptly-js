@@ -10,6 +10,7 @@
     "@types/restify": "^5.0.3",
     "botbuilder": "4.0.0-m4.2",
     "restify": "^6.0.0",
+    "botbuilder-botbldr": "0.2.1",
     "promptly-bot": "~0.0.1"
   }
 }
