@@ -7,9 +7,9 @@ export interface PromptState {
 export declare class Prompt<BotTurnContext extends TurnContext, Value> extends Topic<BotTurnContext, PromptState, Value> {
     constructor(state?: PromptState);
     protected _onPrompt?: (context: BotTurnContext, lastTurnReason: string) => void;
-    onPrompt(promptString: string, ...promptStrings: string[]): any;
-    onPrompt(promptActivity: Partial<Activity>, ...promptActivities: Partial<Activity>[]): any;
-    onPrompt(promptCallBack: (context: BotTurnContext, lastTurnReason: string) => void): any;
+    onPrompt(stringOrActivityOrCallBack: string, ...stringsOrActivities: string[]): any;
+    onPrompt(stringOrActivityOrCallBack: Partial<Activity>, ...stringsOrActivities: Partial<Activity>[]): any;
+    onPrompt(stringOrActivityOrCallBack: (context: BotTurnContext, lastTurnReason: string) => void): any;
     protected _maxTurns: number;
     maxTurns(maxTurns: number): this;
     protected _validator: Validator<BotTurnContext, Value>;

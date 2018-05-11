@@ -16,21 +16,21 @@ class Prompt extends topic_1.Topic {
         //  validation before failing the Prompt. 
         this._maxTurns = Number.MAX_SAFE_INTEGER;
     }
-    onPrompt(arg, ...args) {
-        if (typeof arg === "function") {
-            this._onPrompt = arg;
+    onPrompt(stringOrActivityOrCallBack, ...stringsOrActivities) {
+        if (typeof stringOrActivityOrCallBack === "function") {
+            this._onPrompt = stringOrActivityOrCallBack;
         }
         else {
             // TurnContext.sendActivities() expects 1 or more activities, so required to have at least
             //  one and they all be Partial<Activity>, so requiring 1 string/Partial<Activity> and building
             //  array with any others supplied.
-            args = [arg, ...args];
+            stringsOrActivities = [stringOrActivityOrCallBack, ...stringsOrActivities];
             let activities = [];
-            if (typeof args[0] === "string") {
-                activities = [...args.map(a => { return { type: 'message', text: a }; })];
+            if (typeof stringsOrActivities[0] === "string") {
+                activities = [...stringsOrActivities.map(a => { return { type: 'message', text: a }; })];
             }
             else {
-                activities = [...args];
+                activities = [...stringsOrActivities];
             }
             this._onPrompt = (context, lastTurnReason) => {
                 return context.sendActivities(activities);

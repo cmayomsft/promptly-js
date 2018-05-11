@@ -24,27 +24,27 @@ export class Prompt<BotTurnContext extends TurnContext, Value>
     //  lastTurnReason - The reason the last message from the last turn failed validation.
     protected _onPrompt?: (context: BotTurnContext, lastTurnReason: string) => void = (context, lastTurnReason) => { };
 
-    public onPrompt(promptString: string, ...promptStrings: string[]);
-    public onPrompt(promptActivity: Partial<Activity>, ...promptActivities: Partial<Activity>[]);
-    public onPrompt(promptCallBack: (context: BotTurnContext, lastTurnReason: string) => void);
-    public onPrompt(arg: any, ...args: any[]) {
+    public onPrompt(stringOrActivityOrCallBack: string, ...stringsOrActivities: string[]);
+    public onPrompt(stringOrActivityOrCallBack: Partial<Activity>, ...stringsOrActivities: Partial<Activity>[]);
+    public onPrompt(stringOrActivityOrCallBack: (context: BotTurnContext, lastTurnReason: string) => void);
+    public onPrompt(stringOrActivityOrCallBack: string | Partial<Activity> | ((context: BotTurnContext, lastTurnReason: string) => void), ...stringsOrActivities: any[]) {
 
-        if (typeof arg === "function") {
-            this._onPrompt = arg;
+        if (typeof stringOrActivityOrCallBack === "function") {
+            this._onPrompt = stringOrActivityOrCallBack;
         }
         else {
             // TurnContext.sendActivities() expects 1 or more activities, so required to have at least
             //  one and they all be Partial<Activity>, so requiring 1 string/Partial<Activity> and building
             //  array with any others supplied.
-            args = [arg, ...args];
+            stringsOrActivities = [stringOrActivityOrCallBack, ...stringsOrActivities];
 
             let activities: Partial<Activity>[] = [];
 
-            if (typeof args[0] === "string") {
-                activities = [...args.map(a => { return { type: 'message', text: a }})];
+            if (typeof stringsOrActivities[0] === "string") {
+                activities = [...stringsOrActivities.map(a => { return { type: 'message', text: a }})];
             }
             else {
-                activities = [...args];
+                activities = [...stringsOrActivities];
             }
 
             this._onPrompt = (context, lastTurnReason) => {
