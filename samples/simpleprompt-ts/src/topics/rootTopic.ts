@@ -1,7 +1,6 @@
+import { StateContext } from 'botbuilder-botbldr';
 import { TopicsRoot, ConversationTopicState, TextPrompt, IntPrompt } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
-import { StateTurnContext } from '../bot/StateTurnContext';
-import { Alarm } from '../alarms';
 import { ActivityTypes } from 'botbuilder';
 
 export interface RootTopicState extends ConversationTopicState { 
@@ -11,15 +10,15 @@ export interface RootTopicState extends ConversationTopicState {
 
 export class RootTopic 
     extends TopicsRoot<
-        StateTurnContext<BotConversationState, BotUserState>, 
+        StateContext<BotConversationState, BotUserState>, 
         BotConversationState, 
         RootTopicState> {
 
-    public constructor(context: StateTurnContext<BotConversationState, BotUserState>) {
+    public constructor(context: StateContext<BotConversationState, BotUserState>) {
         super(context);
 
         this.subTopics
-            .set("namePrompt", () => new TextPrompt<StateTurnContext<BotConversationState, BotUserState>>()
+            .set("namePrompt", () => new TextPrompt<StateContext<BotConversationState, BotUserState>>()
                 .onPrompt(`What is your name?`)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
@@ -29,7 +28,7 @@ export class RootTopic
                     return this.onReceiveActivity(context);
                 })
             )
-            .set("agePrompt", () => new IntPrompt<StateTurnContext<BotConversationState, BotUserState>>()
+            .set("agePrompt", () => new IntPrompt<StateContext<BotConversationState, BotUserState>>()
                 .onPrompt(`How old are you?`)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
@@ -42,7 +41,7 @@ export class RootTopic
 
     }
 
-    public onReceiveActivity(context: StateTurnContext<BotConversationState, BotUserState>) { 
+    public onReceiveActivity(context: StateContext<BotConversationState, BotUserState>) { 
 
         if (context.activity.type === 'message') {
             
@@ -66,9 +65,5 @@ export class RootTopic
             // Now that you have the state you need (age and name), use it!
             return context.sendActivity(`Hello ${ this.state.name }! You are ${ this.state.age } years old.`);
         }
-    }
-
-    public showDefaultMessage(context: StateTurnContext<BotConversationState, BotUserState>) {
-        context.sendActivity("'Add Alarm'.");
     }
 }

@@ -1,24 +1,19 @@
+import { ServiceBot } from 'botbuilder-botbldr';
 import { PromptlyBotConversationState } from 'promptly-bot';
-import { BotFrameworkBot, StateBotContext } from './bot/BotFrameworkBot';
 import { RootTopic , RootTopicState } from './topics/rootTopic';
-import { Alarm } from './alarms';
 
 // Define conversation state shape
 export interface BotConversationState extends PromptlyBotConversationState<RootTopicState> { }
+export interface BotUserState { }
 
-// Define user state shape
-export interface BotUserState {
-    alarms?: Alarm[];
-}
+const simplePromptBot = new ServiceBot<BotConversationState, BotUserState>();
 
-const alarmBot = new BotFrameworkBot<BotConversationState, BotUserState>();
-
-alarmBot.onReceiveActivity(async context => {
+simplePromptBot.onTurn(async turnContext => {
     // State isn't fully initialized until the contact/conversation messages are sent, so have to require
     //  activity type is message. Will affect welcome message. Refactor after bug has been addressed.
-    if(context.activity.type === 'message') {
+    if(turnContext.activity.type === 'message') {
         
-        return new RootTopic(context)
-            .onReceiveActivity(context);
+        return new RootTopic(turnContext)
+            .onReceiveActivity(turnContext);
     }
 });
