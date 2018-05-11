@@ -19,14 +19,14 @@ export function showAlarms(context: TurnContext, alarms: Alarm[]) {
     }
 
     if (alarms.length == 1) {
-        context.sendActivity(`You have one alarm named '${alarms[0].title}', set for ${alarms[0].time}.`);
+        context.sendActivity(`You have one alarm named '${ alarms[0].title }', set for ${ alarms[0].time }.`);
         return;
     }
 
-    let message = `You have ${alarms.length} alarms: \n\n`;
+    let message = `You have ${ alarms.length } alarms: \n`;
 
     alarms.forEach((alarm) => {
-        message += `'${alarm.title}' set for ${alarm.time}\n\n`;
+        message += `'${ alarm.title }' set for ${ alarm.time }\n`;
     });
 
     context.sendActivity(message);
