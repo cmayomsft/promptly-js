@@ -106,10 +106,10 @@ export class RootTopic
     }
         
     private showHelp(context: StateContext<BotConversationState, BotUserState>) {
-        let message = "Here's what I can do:\n\n";
-        message += "To see your alarms, say 'Show Alarms'.\n\n";
-        message += "To add an alarm, say 'Add Alarm'.\n\n";
-        message += "To delete an alarm, say 'Delete Alarm'.\n\n";
+        let message = "Here's what I can do:\n";
+        message += "To see your alarms, say 'Show Alarms'.\n";
+        message += "To add an alarm, say 'Add Alarm'.\n";
+        message += "To delete an alarm, say 'Delete Alarm'.\n";
         message += "To see this again, say 'Help'.";
     
         context.sendActivity(message);
