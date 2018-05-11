@@ -1,6 +1,6 @@
+import { StateContext } from 'botbuilder-botbldr';
 import { ConversationTopic, ConversationTopicState, Prompt, Validator } from 'promptly-bot';
 import { Alarm, showAlarms } from '../alarms';
-import { StateBotContext } from '../bot/StateBotContext';
 import { BotConversationState, BotUserState } from '../app';
 
 export interface DeleteAlarmTopicState extends ConversationTopicState {
@@ -16,7 +16,7 @@ export interface DeleteAlarmTopicValue {
     deleteConfirmed: boolean;
 }
 
-export class DeleteAlarmTopic extends ConversationTopic<StateBotContext<BotConversationState, BotUserState>, DeleteAlarmTopicState, DeleteAlarmTopicValue> {
+export class DeleteAlarmTopic extends ConversationTopic<StateContext<BotConversationState, BotUserState>, DeleteAlarmTopicState, DeleteAlarmTopicValue> {
 
     public constructor(alarms: Alarm[], state: DeleteAlarmTopicState = { alarms: [] as Alarm[], alarm: {} as Alarm, activeTopic: undefined }) {
         super(state);
@@ -26,7 +26,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateBotContext<BotConve
         }
 
         this.subTopics
-            .set("whichAlarmPrompt", () => new Prompt<StateBotContext<BotConversationState, BotUserState>, number>()
+            .set("whichAlarmPrompt", () => new Prompt<StateContext<BotConversationState, BotUserState>, number>()
                 .onPrompt((context, lastTurnReason) => {                           
                     if(lastTurnReason && lastTurnReason === 'indexnotfound') {
                         context.sendActivity(`Sorry, I coulnd't find an alarm named '${context.request.text}'.`,
@@ -56,7 +56,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateBotContext<BotConve
                     return this._onFailure(context, reason);
                 })
             )
-            .set("confirmDeletePrompt", () => new Prompt<StateBotContext<BotConversationState, BotUserState>, boolean>()
+            .set("confirmDeletePrompt", () => new Prompt<StateContext<BotConversationState, BotUserState>, boolean>()
                 .onPrompt((context, lastTurnReason) => {
                     if(lastTurnReason && lastTurnReason === 'notyesorno') {
                         context.sendActivity(`Sorry, I was expecting 'yes' or 'no'.`,
@@ -86,7 +86,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateBotContext<BotConve
             );
     }
 
-    public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) {
+    public onReceiveActivity(context: StateContext<BotConversationState, BotUserState>) {
 
         if(this.hasActiveTopic) { 
             return this.activeTopic.onReceiveActivity(context);
@@ -120,7 +120,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateBotContext<BotConve
     }
 }
 
-class AlarmIndexValidator extends Validator<StateBotContext<BotConversationState, BotUserState>, number> {
+class AlarmIndexValidator extends Validator<StateContext<BotConversationState, BotUserState>, number> {
 
     private _alarms: Alarm[] = [];
 
@@ -129,9 +129,9 @@ class AlarmIndexValidator extends Validator<StateBotContext<BotConversationState
         this._alarms = alarms;
     }
 
-    public validate(context: StateBotContext<BotConversationState, BotUserState>) {
+    public validate(context: StateContext<BotConversationState, BotUserState>) {
         const index = this._alarms.findIndex((alarm) => {
-            return alarm.title.toLowerCase() === context.request.text.toLowerCase();
+            return alarm.title.toLowerCase() === context.activity.text.toLowerCase();
         });
 
         if(index > -1) {
@@ -142,11 +142,11 @@ class AlarmIndexValidator extends Validator<StateBotContext<BotConversationState
     }
 }
 
-class YesOrNoValidator extends Validator<StateBotContext<BotConversationState, BotUserState>, boolean> {
-    public validate(context: StateBotContext<BotConversationState, BotUserState>) {
-        if(context.request.text === 'yes') {
+class YesOrNoValidator extends Validator<StateContext<BotConversationState, BotUserState>, boolean> {
+    public validate(context: StateContext<BotConversationState, BotUserState>) {
+        if(context.activity.text === 'yes') {
             return { value: true };
-        } else if(context.request.text === 'no') {
+        } else if(context.activity.text === 'no') {
             return { value: false };
         } else {
             return { reason: 'notyesorno' };
