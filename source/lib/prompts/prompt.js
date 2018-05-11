@@ -15,14 +15,13 @@ class Prompt extends topic_1.Topic {
         // maxTurns - The maximum number of turns that the Prompt will re-prompt after failing
         //  validation before failing the Prompt. 
         this._maxTurns = Number.MAX_SAFE_INTEGER;
-        return this;
     }
     onPrompt(arg, ...args) {
         if (typeof arg === "function") {
             this._onPrompt = arg;
         }
         else {
-            // TurnContext.sentActivities() expects 1 or more activities, so required to have at least
+            // TurnContext.sendActivities() expects 1 or more activities, so required to have at least
             //  one and they all be Partial<Activity>, so requiring 1 string/Partial<Activity> and building
             //  array with any others supplied.
             args = [arg, ...args];

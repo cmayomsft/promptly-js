@@ -17,7 +17,6 @@ export class Prompt<BotTurnContext extends TurnContext, Value>
     
     constructor(state: PromptState = { turns: undefined }) {
         super(state);
-        return this;
     }
 
     // onPrompt - Function to call on each turn to construct the prompt to the user.
@@ -34,7 +33,7 @@ export class Prompt<BotTurnContext extends TurnContext, Value>
             this._onPrompt = arg;
         }
         else {
-            // TurnContext.sentActivities() expects 1 or more activities, so required to have at least
+            // TurnContext.sendActivities() expects 1 or more activities, so required to have at least
             //  one and they all be Partial<Activity>, so requiring 1 string/Partial<Activity> and building
             //  array with any others supplied.
             args = [arg, ...args];
