@@ -9,7 +9,6 @@ export abstract class Topic<BotTurnContext extends TurnContext, State, Value = a
 
     constructor(state: State) {
         this._state = state;
-        return this;
     }
 
     // state - Property to get state of Topic for persisting between turns.

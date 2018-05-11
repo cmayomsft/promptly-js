@@ -14,7 +14,6 @@ class Topic {
         //  why the Topic failed. 
         this._onFailure = () => { };
         this._state = state;
-        return this;
     }
     get state() {
         return this._state;
