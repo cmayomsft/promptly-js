@@ -1,6 +1,6 @@
 import { StateContext } from 'botbuilder-botbldr';
 import { ConversationTopic, ConversationTopicState, Prompt, Validator } from 'promptly-bot';
-import { Alarm, showAlarms } from '../alarms';
+import { Alarm, showAlarms } from '../models/alarms';
 import { BotConversationState, BotUserState } from '../app';
 
 export interface DeleteAlarmTopicState extends ConversationTopicState {

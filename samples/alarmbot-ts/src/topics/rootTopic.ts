@@ -1,7 +1,7 @@
 import { StateContext } from 'botbuilder-botbldr';
 import { TopicsRoot, ConversationTopicState } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
-import { Alarm, showAlarms } from '../alarms';
+import { Alarm, showAlarms } from '../models/alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 

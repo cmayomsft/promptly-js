@@ -1,6 +1,4 @@
-import { BotContext } from 'botbuilder';
-import { BotConversationState, BotUserState } from './app';
-import { StateBotContext } from './bot/StateBotContext';
+import { TurnContext } from 'botbuilder';
 
 export interface Alarm {
     title: string;
@@ -13,7 +11,7 @@ export function findAlarmIndex(alarms: Alarm[], title: string): number {
     });
 }
 
-export function showAlarms(context: BotContext, alarms: Alarm[]) {
+export function showAlarms(context: TurnContext, alarms: Alarm[]) {
 
     if (!alarms || (alarms.length === 0)) {
         context.sendActivity(`You have no alarms.`);

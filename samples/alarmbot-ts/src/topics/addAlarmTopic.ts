@@ -1,5 +1,5 @@
 import { StateContext } from 'botbuilder-botbldr';
-import { Alarm } from '../alarms';
+import { Alarm } from '../models/alarms';
 import { ConversationTopic, ConversationTopicState, Prompt, Validator } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
 

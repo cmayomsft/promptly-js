@@ -1,7 +1,7 @@
 import { ServiceBot } from 'botbuilder-botbldr';
 import { PromptlyBotConversationState } from 'promptly-bot';
 import { RootTopic, RootTopicState } from './topics/rootTopic';
-import { Alarm } from './alarms';
+import { Alarm } from './models/alarms';
 
 // Define conversation state shape
 export interface BotConversationState extends PromptlyBotConversationState<RootTopicState> { }
