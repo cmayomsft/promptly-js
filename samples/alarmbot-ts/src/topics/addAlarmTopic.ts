@@ -1,19 +1,19 @@
+import { StateContext } from 'botbuilder-botbldr';
 import { Alarm } from '../alarms';
 import { ConversationTopic, ConversationTopicState, Prompt, Validator } from 'promptly-bot';
-import { StateBotContext } from '../bot/StateBotContext';
 import { BotConversationState, BotUserState } from '../app';
 
 export interface AddAlarmTopicState extends ConversationTopicState {
     alarm: Alarm;
 }
 
-export class AddAlarmTopic extends ConversationTopic<StateBotContext<BotConversationState, BotUserState>, AddAlarmTopicState, Alarm> {
+export class AddAlarmTopic extends ConversationTopic<StateContext<BotConversationState, BotUserState>, AddAlarmTopicState, Alarm> {
 
     public constructor(state: AddAlarmTopicState = { alarm: {} as Alarm, activeTopic: undefined }) {
         super(state);    
         
         this.subTopics
-            .set("titlePrompt", () => new Prompt<StateBotContext<BotConversationState, BotUserState>, string>()
+            .set("titlePrompt", () => new Prompt<StateContext<BotConversationState, BotUserState>, string>()
                 .onPrompt((context, lastTurnReason) => {
    
                     if(lastTurnReason && lastTurnReason === 'titletoolong') {
@@ -42,7 +42,7 @@ export class AddAlarmTopic extends ConversationTopic<StateBotContext<BotConversa
                     return this._onFailure(context, reason);
                 })
             )
-            .set("timePrompt", () => new Prompt<StateBotContext<BotConversationState, BotUserState>, string>()
+            .set("timePrompt", () => new Prompt<StateContext<BotConversationState, BotUserState>, string>()
                 .onPrompt((context, lastTurnReason) => {
                     return context.sendActivity(`What time would you like to set your alarm for?`);
                 })
@@ -67,7 +67,7 @@ export class AddAlarmTopic extends ConversationTopic<StateBotContext<BotConversa
             );
     };
 
-    public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) {
+    public onReceiveActivity(context: StateContext<BotConversationState, BotUserState>) {
 
         if(this.hasActiveTopic) { 
             return this.activeTopic.onReceiveActivity(context);
@@ -87,18 +87,18 @@ export class AddAlarmTopic extends ConversationTopic<StateBotContext<BotConversa
     }
 }
 
-class AlarmTitleValidator extends Validator<StateBotContext<BotConversationState, BotUserState>, string> {
-    public validate(context: StateBotContext<BotConversationState, BotUserState>) {
-        if(context.request.text.length > 20) {
+class AlarmTitleValidator extends Validator<StateContext<BotConversationState, BotUserState>, string> {
+    public validate(context: StateContext<BotConversationState, BotUserState>) {
+        if(context.activity.text.length > 20) {
             return { reason: 'titletoolong' };
         } else {
-            return { value: context.request.text };
+            return { value: context.activity.text };
         }
     }
 }
 
-class AlarmTimeValidator extends Validator<StateBotContext<BotConversationState, BotUserState>, string> {
-    public validate(context: StateBotContext<BotConversationState, BotUserState>) {
-        return { value: context.request.text };
+class AlarmTimeValidator extends Validator<StateContext<BotConversationState, BotUserState>, string> {
+    public validate(context: StateContext<BotConversationState, BotUserState>) {
+        return { value: context.activity.text };
     }
 }
