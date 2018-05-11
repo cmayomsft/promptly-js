@@ -29,7 +29,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateContext<BotConversa
             .set("whichAlarmPrompt", () => new Prompt<StateContext<BotConversationState, BotUserState>, number>()
                 .onPrompt((context, lastTurnReason) => {                           
                     if(lastTurnReason && lastTurnReason === 'indexnotfound') {
-                        context.sendActivity(`Sorry, I coulnd't find an alarm named '${context.request.text}'.`,
+                        context.sendActivity(`Sorry, I coulnd't find an alarm named '${ context.activity.text }'.`,
                             `Let's try again.`);
                     }
                     
@@ -87,7 +87,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateContext<BotConversa
     }
 
     public onReceiveActivity(context: StateContext<BotConversationState, BotUserState>) {
-
+        
         if(this.hasActiveTopic) { 
             return this.activeTopic.onReceiveActivity(context);
         }
