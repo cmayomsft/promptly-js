@@ -11,20 +11,19 @@ class Prompt extends topic_1.Topic {
         // onPrompt - Function to call on each turn to construct the prompt to the user.
         //  context - The context (request, response,etc.) of the current turn.
         //  lastTurnReason - The reason the last message from the last turn failed validation.
-        this._onPrompt = (context, lastTurnReason) => { };
+        this._onPrompt = (context, lastTurnReason) => {
+            let responses = [];
+            return Promise.resolve(responses);
+        };
         // maxTurns - The maximum number of turns that the Prompt will re-prompt after failing
         //  validation before failing the Prompt. 
         this._maxTurns = Number.MAX_SAFE_INTEGER;
     }
-    onPrompt(arg, ...args) {
-        if (typeof arg === "function") {
-            this._onPrompt = arg;
+    onPrompt(...args) {
+        if (typeof args[0] === "function") {
+            this._onPrompt = args[0];
         }
         else {
-            // TurnContext.sendActivities() expects 1 or more activities, so required to have at least
-            //  one and they all be Partial<Activity>, so requiring 1 string/Partial<Activity> and building
-            //  array with any others supplied.
-            args = [arg, ...args];
             let activities = [];
             if (typeof args[0] === "string") {
                 activities = [...args.map(a => { return { type: 'message', text: a }; })];
@@ -52,7 +51,7 @@ class Prompt extends topic_1.Topic {
         // If this is the initial turn (turn 0), send the initial prompt.
         if (this.state.turns === undefined) {
             this.state.turns = 0;
-            return this._onPrompt(context, undefined);
+            return this._onPrompt(context);
         }
         // For all subsequent turns...
         // Validate the message/reply from the last turn.

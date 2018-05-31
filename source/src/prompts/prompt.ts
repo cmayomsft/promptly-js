@@ -1,4 +1,4 @@
-import { Promiseable, TurnContext, Activity } from 'botbuilder';
+import { Promiseable, TurnContext, Activity, ResourceResponse } from 'botbuilder';
 import { Topic } from "../topics/topic";
 import { Validator } from "../validators/validator";
 
@@ -22,22 +22,21 @@ export class Prompt<BotTurnContext extends TurnContext, Value>
     // onPrompt - Function to call on each turn to construct the prompt to the user.
     //  context - The context (request, response,etc.) of the current turn.
     //  lastTurnReason - The reason the last message from the last turn failed validation.
-    protected _onPrompt?: (context: BotTurnContext, lastTurnReason: string) => void = (context, lastTurnReason) => { };
+    protected _onPrompt?: (context: BotTurnContext, lastTurnReason?: string) => Promise<ResourceResponse[]> = 
+        (context, lastTurnReason) => { 
+            let responses: ResourceResponse[] = [];
+            return Promise.resolve(responses); 
+        };
 
-    public onPrompt(promptString: string, ...promptStrings: string[]);
-    public onPrompt(promptActivity: Partial<Activity>, ...promptActivities: Partial<Activity>[]);
-    public onPrompt(promptCallBack: (context: BotTurnContext, lastTurnReason: string) => void);
-    public onPrompt(arg: any, ...args: any[]) {
+    public onPrompt(...promptStrings: string[]) : this;
+    public onPrompt(...promptActivities: Partial<Activity>[]) : this;
+    public onPrompt(promptCallBack: (context: BotTurnContext, lastTurnReason?: string) => Promise<ResourceResponse[]>) : this;
+    public onPrompt(...args: any[]) : this {
 
-        if (typeof arg === "function") {
-            this._onPrompt = arg;
+        if (typeof args[0] === "function") {
+            this._onPrompt = args[0];
         }
         else {
-            // TurnContext.sendActivities() expects 1 or more activities, so required to have at least
-            //  one and they all be Partial<Activity>, so requiring 1 string/Partial<Activity> and building
-            //  array with any others supplied.
-            args = [arg, ...args];
-
             let activities: Partial<Activity>[] = [];
 
             if (typeof args[0] === "string") {
@@ -65,7 +64,7 @@ export class Prompt<BotTurnContext extends TurnContext, Value>
 
     // validator - The Validator used to validate/parse the value V from the message 
     //  on the current turn.
-    protected _validator: Validator<BotTurnContext, Value>;
+    protected _validator?: Validator<BotTurnContext, Value>;
     public validator(validator: Validator<BotTurnContext, Value>) {
         this._validator = validator;
         return this;
@@ -78,13 +77,13 @@ export class Prompt<BotTurnContext extends TurnContext, Value>
         // If this is the initial turn (turn 0), send the initial prompt.
         if(this.state.turns === undefined) {
             this.state.turns = 0;
-            return this._onPrompt(context, undefined);
+            return this._onPrompt!(context);
         }
 
         // For all subsequent turns...
 
         // Validate the message/reply from the last turn.
-        const validationResult = this._validator.validate(context);
+        const validationResult = this._validator!.validate(context);
 
         // If the message/reply wasn't a valid response to the prompt...
         if(validationResult.reason !== undefined) {
@@ -95,14 +94,14 @@ export class Prompt<BotTurnContext extends TurnContext, Value>
             if(this.state.turns === this._maxTurns) {
                 validationResult.reason = 'toomanyattempts';
     
-                return this._onFailure(context, validationResult.reason);
+                return this._onFailure!(context, validationResult.reason);
             }
 
             // Re-prompt, providing the validation reason from last turn.
-            return this._onPrompt(context, validationResult.reason);
+            return this._onPrompt!(context, validationResult.reason);
         }
         
         // Prompt was successful, so pass value (result) of the Prompt.
-        return this._onSuccess(context, validationResult.value);
+        return this._onSuccess!(context, validationResult.value!);
     }
 }
