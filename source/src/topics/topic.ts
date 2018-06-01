@@ -21,7 +21,7 @@ export abstract class Topic<BotTurnContext extends TurnContext, State, Value = a
     }
 
     // onReceiveActivity - Called on each turn when Topic is the active topic of conversation.
-    abstract onReceiveActivity(context: BotTurnContext): Promiseable<any>;
+    abstract onTurn(context: BotTurnContext): Promiseable<any>;
 
     // onSuccess - Function to call when the Topic completes successfully, passing the
     //  resulting value of the Topic.

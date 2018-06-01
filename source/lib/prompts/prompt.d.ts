@@ -14,5 +14,5 @@ export declare class Prompt<BotTurnContext extends TurnContext, Value> extends T
     maxTurns(maxTurns: number): this;
     protected _validator?: Validator<BotTurnContext, Value>;
     validator(validator: Validator<BotTurnContext, Value>): this;
-    onReceiveActivity(context: BotTurnContext): void | Promise<any>;
+    onTurn(context: BotTurnContext): void | Promise<any>;
 }

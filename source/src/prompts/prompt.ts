@@ -73,7 +73,7 @@ export class Prompt<BotTurnContext extends TurnContext, Value>
 
     // onReceive - Used to implement the common prompt pattern using the
     //  properties of Prompt.
-    public onReceiveActivity(context: BotTurnContext) {
+    public onTurn(context: BotTurnContext) {
         
         // If this is the initial turn (turn 0), send the initial prompt.
         if(this.state.turns === undefined) {

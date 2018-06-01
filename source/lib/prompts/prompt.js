@@ -46,7 +46,7 @@ class Prompt extends topic_1.Topic {
     }
     // onReceive - Used to implement the common prompt pattern using the
     //  properties of Prompt.
-    onReceiveActivity(context) {
+    onTurn(context) {
         // If this is the initial turn (turn 0), send the initial prompt.
         if (this.state.turns === undefined) {
             this.state.turns = 0;
