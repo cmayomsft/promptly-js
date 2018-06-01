@@ -13,5 +13,5 @@ const simplePromptBot = new ServiceBot<BotConversationState, BotUserState>();
 simplePromptBot.onTurn(async turnContext => {
 
     return new RootTopic(turnContext)
-        .onReceiveActivity(turnContext);
+        .onTurn(turnContext);
 });

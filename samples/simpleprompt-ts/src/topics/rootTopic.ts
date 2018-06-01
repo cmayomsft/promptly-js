@@ -25,7 +25,7 @@ export class RootTopic
 
                     this.state.name = value;
 
-                    return this.onReceiveActivity(context);
+                    return this.onTurn(context);
                 })
             )
             .set("agePrompt", () => new IntPrompt<StateContext<BotConversationState, BotUserState>>()
@@ -35,31 +35,31 @@ export class RootTopic
 
                     this.state.age = value;
 
-                    return this.onReceiveActivity(context);
+                    return this.onTurn(context);
                 })
             );
 
     }
 
-    public onReceiveActivity(context: StateContext<BotConversationState, BotUserState>) { 
+    public onTurn(context: StateContext<BotConversationState, BotUserState>) { 
 
         if (context.activity.type === 'message') {
             
             // Check to see if there is an active topic.
             if (this.hasActiveTopic) {
                 // Let the active topic handle this turn by passing context to it's OnReceiveActivity().
-                return this.activeTopic!.onReceiveActivity(context);
+                return this.activeTopic!.onTurn(context);
             }
 
             // If you don't have the state you need, prompt for it
             if (!this.state.name) {
                 return this.setActiveTopic("namePrompt")
-                    .onReceiveActivity(context);
+                    .onTurn(context);
             }
 
             if (!this.state.age) {
                 return this.setActiveTopic("agePrompt")
-                    .onReceiveActivity(context);                
+                    .onTurn(context);                
             }
 
             // Now that you have the state you need (age and name), use it!
