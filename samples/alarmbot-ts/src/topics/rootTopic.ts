@@ -68,7 +68,7 @@ export class RootTopic
             );
     }
 
-    public onReceiveActivity(context: StateContext<BotConversationState, BotUserState>) { 
+    public onTurn(context: StateContext<BotConversationState, BotUserState>) { 
 
         if (context.activity.type === 'message' && context.activity.text.length > 0) {
              
@@ -81,11 +81,11 @@ export class RootTopic
 
                 // Set the active topic and let the active topic handle this turn.
                 return this.setActiveTopic("addAlarmTopic")
-                    .onReceiveActivity(context);
+                    .onTurn(context);
             } else if (/delete alarm/i.test(context.activity.text)) {
 
                 return this.setActiveTopic("deleteAlarmTopic", context.userState.alarms)
-                    .onReceiveActivity(context);
+                    .onTurn(context);
             } else if (/help/i.test(context.activity.text)) {
                 this.clearActiveTopic();
 
@@ -94,7 +94,7 @@ export class RootTopic
 
             // If there is an active topic, let it handle this turn.
             if (this.hasActiveTopic) {
-                return this.activeTopic!.onReceiveActivity(context);
+                return this.activeTopic!.onTurn(context);
             }
 
             return this.showDefaultMessage(context);

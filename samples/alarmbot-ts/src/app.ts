@@ -16,5 +16,5 @@ const alarmBot = new ServiceBot<BotConversationState, BotUserState>();
 alarmBot.onTurn(async context => {
         
         return new RootTopic(context)
-            .onReceiveActivity(context);
+            .onTurn(context);
 });
