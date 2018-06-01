@@ -48,7 +48,7 @@ export class RootTopic
             // Check to see if there is an active topic.
             if (this.hasActiveTopic) {
                 // Let the active topic handle this turn by passing context to it's OnReceiveActivity().
-                return this.activeTopic.onReceiveActivity(context);
+                return this.activeTopic!.onReceiveActivity(context);
             }
 
             // If you don't have the state you need, prompt for it
