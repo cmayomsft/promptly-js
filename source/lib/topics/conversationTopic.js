@@ -20,14 +20,19 @@ class ConversationTopic extends topic_1.Topic {
     //      until the active Topic completes.
     //  args - Any arguments used to create the topic on the initial turn (turn 0).
     setActiveTopic(subTopicKey, ...args) {
-        // Instantiate/set the active Topic by calling the corresponding function in this.subTopics(),
+        let subtopic = this.subTopics.get(subTopicKey);
+        // Check to make sure there is a function to create the Topic in this.subTopics.
+        if (subtopic === undefined) {
+            throw new Error(`There is no subtopic with the key '${subTopicKey}'. Could '${subTopicKey}' be misspelled?`);
+        }
+        // Instantiate/set the active Topic by calling the corresponding function from this.subTopics(),
         //  using args if supplied.
         if (args.length > 0) {
-            this._activeTopic = this.subTopics.get(subTopicKey)(...args);
+            this._activeTopic = subtopic(...args);
             ;
         }
         else {
-            this._activeTopic = this.subTopics.get(subTopicKey)();
+            this._activeTopic = subtopic();
             ;
         }
         // Persist the this.subTopics() key used to create/set the active Topic and the 
@@ -47,9 +52,14 @@ class ConversationTopic extends topic_1.Topic {
         if (this._activeTopic) {
             return this._activeTopic;
         }
+        let subtopic = this.subTopics.get(this.state.activeTopic.key);
+        // Check to make sure there is a function to create the Topic in this.subTopics.
+        if (subtopic === undefined) {
+            throw new Error(`Could not find an activeTopic with the key '${this.state.activeTopic.key}'. Could '${this.state.activeTopic.key}' have been removed from subTopics?`);
+        }
         // Recreate the active topic using the applicable function in this.subTopics() 
         //  and the state persisted on the last turn.
-        this._activeTopic = this.subTopics.get(this.state.activeTopic.key)();
+        this._activeTopic = subtopic();
         this._activeTopic.state = this.state.activeTopic.state;
         return this._activeTopic;
     }

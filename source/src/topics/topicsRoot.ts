@@ -1,5 +1,5 @@
 import { ConversationTopic, ConversationTopicState } from './conversationTopic';
-import { BotContext } from 'botbuilder';
+import { TurnContext } from 'botbuilder';
 
 // PromptlyBotConversationState - Used to define the shape of the bot's ConversationState to guarantee a place to put the 
 //  root topics state.
@@ -11,7 +11,7 @@ export interface PromptlyBotConversationState<RootTopicState extends Conversatio
 export interface PromptlyBotTurnContext<
         BotConversationState extends PromptlyBotConversationState<RootTopicState>, 
         RootTopicState extends ConversationTopicState> 
-    extends BotContext {
+    extends TurnContext {
         
     conversationState: BotConversationState;
 }

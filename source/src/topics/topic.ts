@@ -1,15 +1,14 @@
-import { BotContext, Promiseable } from 'botbuilder';
+import { TurnContext, Promiseable } from 'botbuilder';
 
 // Topic - Abstract base class for modeling a topic of conversation.
 //  State = Interface for the state of the Topic, used to manage the Topic on each turn, 
 //      or call to onReceive().
 //  Value = Interface for the resulting value for when the Topic completes successfully.
 //      Optional for cases where the Topic doesn't need to return a value. 
-export abstract class Topic<BotTurnContext extends BotContext, State, Value = any> {
+export abstract class Topic<BotTurnContext extends TurnContext, State, Value = any> {
 
     constructor(state: State) {
         this._state = state;
-        return this;
     }
 
     // state - Property to get state of Topic for persisting between turns.
@@ -22,7 +21,7 @@ export abstract class Topic<BotTurnContext extends BotContext, State, Value = an
     }
 
     // onReceiveActivity - Called on each turn when Topic is the active topic of conversation.
-    abstract onReceiveActivity(context: BotTurnContext): Promiseable<any>;
+    abstract onTurn(context: BotTurnContext): Promiseable<any>;
 
     // onSuccess - Function to call when the Topic completes successfully, passing the
     //  resulting value of the Topic.

@@ -1,5 +1,5 @@
-import { BotContext } from 'botbuilder';
+import { TurnContext } from 'botbuilder';
 import { Prompt } from "./prompt";
-export declare class TextPrompt<BotTurnContext extends BotContext> extends Prompt<BotTurnContext, string> {
+export declare class TextPrompt<BotTurnContext extends TurnContext> extends Prompt<BotTurnContext, string> {
     constructor();
 }

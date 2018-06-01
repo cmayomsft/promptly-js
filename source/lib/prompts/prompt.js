@@ -11,19 +11,27 @@ class Prompt extends topic_1.Topic {
         // onPrompt - Function to call on each turn to construct the prompt to the user.
         //  context - The context (request, response,etc.) of the current turn.
         //  lastTurnReason - The reason the last message from the last turn failed validation.
-        this._onPrompt = (context, lastTurnReason) => { };
+        this._onPrompt = (context, lastTurnReason) => {
+            return Promise.resolve();
+        };
         // maxTurns - The maximum number of turns that the Prompt will re-prompt after failing
         //  validation before failing the Prompt. 
         this._maxTurns = Number.MAX_SAFE_INTEGER;
-        return this;
     }
     onPrompt(...args) {
         if (typeof args[0] === "function") {
             this._onPrompt = args[0];
         }
         else {
+            let activities = [];
+            if (typeof args[0] === "string") {
+                activities = args.map(a => { return { type: 'message', text: a }; });
+            }
+            else {
+                activities = args;
+            }
             this._onPrompt = (context, lastTurnReason) => {
-                return context.sendActivity(...args);
+                return context.sendActivities(activities);
             };
         }
         return this;
@@ -38,11 +46,11 @@ class Prompt extends topic_1.Topic {
     }
     // onReceive - Used to implement the common prompt pattern using the
     //  properties of Prompt.
-    onReceiveActivity(context) {
+    onTurn(context) {
         // If this is the initial turn (turn 0), send the initial prompt.
         if (this.state.turns === undefined) {
             this.state.turns = 0;
-            return this._onPrompt(context, undefined);
+            return this._onPrompt(context);
         }
         // For all subsequent turns...
         // Validate the message/reply from the last turn.

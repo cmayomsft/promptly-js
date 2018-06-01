@@ -1,4 +1,4 @@
-import { BotContext } from 'botbuilder';
+import { TurnContext } from 'botbuilder';
 
 // ValidatorResult
 export interface ValidatorResult<Value> {
@@ -7,6 +7,6 @@ export interface ValidatorResult<Value> {
 }
 
 // Validator
-export abstract class Validator<BotTurnContext extends BotContext, Value> {
+export abstract class Validator<BotTurnContext extends TurnContext, Value> {
     abstract validate(context: BotTurnContext): ValidatorResult<Value>;
 }

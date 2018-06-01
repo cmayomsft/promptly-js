@@ -1,7 +1,7 @@
+import { StateContext } from 'botbuilder-botbldr';
 import { TopicsRoot, ConversationTopicState } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
-import { StateBotContext } from '../bot/StateBotContext';
-import { Alarm, showAlarms } from '../alarms';
+import { Alarm, showAlarms } from '../models/alarms';
 import { AddAlarmTopic } from './addAlarmTopic';
 import { DeleteAlarmTopic } from './deleteAlarmTopic';
 
@@ -9,11 +9,11 @@ export interface RootTopicState extends ConversationTopicState { }
 
 export class RootTopic 
     extends TopicsRoot<
-        StateBotContext<BotConversationState, BotUserState>, 
+        StateContext<BotConversationState, BotUserState>, 
         BotConversationState, 
         RootTopicState> {
 
-    public constructor(context: StateBotContext<BotConversationState, BotUserState>) {
+    public constructor(context: StateContext<BotConversationState, BotUserState>) {
         super(context);
 
         // User state initialization should be done once in the welcome 
@@ -27,7 +27,7 @@ export class RootTopic
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
                 
-                    context.userState.alarms.push({
+                    context.userState.alarms!.push({
                         title: value.title,
                         time: value.time
                     });
@@ -52,7 +52,7 @@ export class RootTopic
                         return context.sendActivity(`Ok, I won't delete alarm ${value.alarm.title}.`);
                     }
 
-                    context.userState.alarms.splice(value.alarmIndex, 1);
+                    context.userState.alarms!.splice(value.alarmIndex, 1);
 
                     return context.sendActivity(`Done. I've deleted alarm '${value.alarm.title}'.`);
                 })
@@ -68,25 +68,25 @@ export class RootTopic
             );
     }
 
-    public onReceiveActivity(context: StateBotContext<BotConversationState, BotUserState>) { 
+    public onTurn(context: StateContext<BotConversationState, BotUserState>) { 
 
-        if (context.request.type === 'message' && context.request.text.length > 0) {
+        if (context.activity.type === 'message' && context.activity.text.length > 0) {
              
             // If the user wants to change the topic of conversation...
-            if (/show alarms/i.test(context.request.text)) {
+            if (/show alarms/i.test(context.activity.text)) {
                 this.clearActiveTopic();
 
-                return showAlarms(context, context.userState.alarms);
-            } else if (/add alarm/i.test(context.request.text)) {
+                return showAlarms(context, context.userState.alarms!);
+            } else if (/add alarm/i.test(context.activity.text)) {
 
                 // Set the active topic and let the active topic handle this turn.
                 return this.setActiveTopic("addAlarmTopic")
-                    .onReceiveActivity(context);
-            } else if (/delete alarm/i.test(context.request.text)) {
+                    .onTurn(context);
+            } else if (/delete alarm/i.test(context.activity.text)) {
 
                 return this.setActiveTopic("deleteAlarmTopic", context.userState.alarms)
-                    .onReceiveActivity(context);
-            } else if (/help/i.test(context.request.text)) {
+                    .onTurn(context);
+            } else if (/help/i.test(context.activity.text)) {
                 this.clearActiveTopic();
 
                 return this.showHelp(context);
@@ -94,22 +94,22 @@ export class RootTopic
 
             // If there is an active topic, let it handle this turn.
             if (this.hasActiveTopic) {
-                return this.activeTopic.onReceiveActivity(context);
+                return this.activeTopic!.onTurn(context);
             }
 
             return this.showDefaultMessage(context);
         }
     }
 
-    public showDefaultMessage(context: StateBotContext<BotConversationState, BotUserState>) {
+    public showDefaultMessage(context: StateContext<BotConversationState, BotUserState>) {
         context.sendActivity("'Show Alarms', 'Add Alarm', 'Delete Alarm', 'Help'.");
     }
         
-    private showHelp(context: StateBotContext<BotConversationState, BotUserState>) {
-        let message = "Here's what I can do:\n\n";
-        message += "To see your alarms, say 'Show Alarms'.\n\n";
-        message += "To add an alarm, say 'Add Alarm'.\n\n";
-        message += "To delete an alarm, say 'Delete Alarm'.\n\n";
+    private showHelp(context: StateContext<BotConversationState, BotUserState>) {
+        let message = "Here's what I can do:\n";
+        message += "To see your alarms, say 'Show Alarms'.\n";
+        message += "To add an alarm, say 'Add Alarm'.\n";
+        message += "To delete an alarm, say 'Delete Alarm'.\n";
         message += "To see this again, say 'Help'.";
     
         context.sendActivity(message);
