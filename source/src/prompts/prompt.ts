@@ -22,15 +22,16 @@ export class Prompt<BotTurnContext extends TurnContext, Value>
     // onPrompt - Function to call on each turn to construct the prompt to the user.
     //  context - The context (request, response,etc.) of the current turn.
     //  lastTurnReason - The reason the last message from the last turn failed validation.
-    protected _onPrompt?: (context: BotTurnContext, lastTurnReason?: string) => Promise<ResourceResponse[]> = 
+    protected _onPrompt?: (context: BotTurnContext, lastTurnReason?: string) => Promise<any> = 
         (context, lastTurnReason) => { 
-            let responses: ResourceResponse[] = [];
-            return Promise.resolve(responses); 
+            return Promise.resolve(); 
         };
 
     public onPrompt(...promptStrings: string[]) : this;
-    public onPrompt(...promptActivities: Partial<Activity>[]) : this;
-    public onPrompt(promptCallBack: (context: BotTurnContext, lastTurnReason?: string) => Promise<ResourceResponse[]>) : this;
+    // Note: Defining promptActivities as Partial<Activity>[] throws off the typing of promptCallBack, so removing Partial.
+    //  Will file a bug to have Activity defined with proper required/optional parameters to remove need for Partial.
+    public onPrompt(...promptActivities: Activity[]) : this;
+    public onPrompt(promptCallBack: (context: BotTurnContext, lastTurnReason?: string) => Promise<any>) : this;
     public onPrompt(...args: any[]) : this {
 
         if (typeof args[0] === "function") {
@@ -40,10 +41,10 @@ export class Prompt<BotTurnContext extends TurnContext, Value>
             let activities: Partial<Activity>[] = [];
 
             if (typeof args[0] === "string") {
-                activities = [...args.map(a => { return { type: 'message', text: a }})];
+                activities = args.map(a => { return { type: 'message', text: a }});
             }
             else {
-                activities = [...args];
+                activities = args;
             }
 
             this._onPrompt = (context, lastTurnReason) => {

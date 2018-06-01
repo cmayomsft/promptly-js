@@ -12,8 +12,7 @@ class Prompt extends topic_1.Topic {
         //  context - The context (request, response,etc.) of the current turn.
         //  lastTurnReason - The reason the last message from the last turn failed validation.
         this._onPrompt = (context, lastTurnReason) => {
-            let responses = [];
-            return Promise.resolve(responses);
+            return Promise.resolve();
         };
         // maxTurns - The maximum number of turns that the Prompt will re-prompt after failing
         //  validation before failing the Prompt. 
@@ -26,10 +25,10 @@ class Prompt extends topic_1.Topic {
         else {
             let activities = [];
             if (typeof args[0] === "string") {
-                activities = [...args.map(a => { return { type: 'message', text: a }; })];
+                activities = args.map(a => { return { type: 'message', text: a }; });
             }
             else {
-                activities = [...args];
+                activities = args;
             }
             this._onPrompt = (context, lastTurnReason) => {
                 return context.sendActivities(activities);
