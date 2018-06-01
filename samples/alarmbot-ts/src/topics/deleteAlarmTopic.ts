@@ -27,17 +27,17 @@ export class DeleteAlarmTopic extends ConversationTopic<StateContext<BotConversa
 
         this.subTopics
             .set("whichAlarmPrompt", () => new Prompt<StateContext<BotConversationState, BotUserState>, number>()
-                .onPrompt((context, lastTurnReason) => {                           
+                .onPrompt(async (context, lastTurnReason) => {                           
                     if(lastTurnReason && lastTurnReason === 'indexnotfound') {
-                        context.sendActivity(`Sorry, I coulnd't find an alarm named '${ context.activity.text }'.`,
+                        await context.sendActivity(`Sorry, I coulnd't find an alarm named '${ context.activity.text }'.`,
                             `Let's try again.`);
                     }
                     
-                    showAlarms(context, this.state.alarms);
+                    showAlarms(context, this.state.alarms!);
     
                     return context.sendActivity(`Which alarm would you like to delete?`);
                 })
-                .validator(new AlarmIndexValidator(this.state.alarms))
+                .validator(new AlarmIndexValidator(this.state.alarms!))
                 .maxTurns(2)
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
@@ -53,7 +53,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateContext<BotConversa
                         context.sendActivity(`I'm sorry I'm having issues understanding you.`);
                     }
     
-                    return this._onFailure(context, reason);
+                    return this._onFailure!(context, reason);
                 })
             )
             .set("confirmDeletePrompt", () => new Prompt<StateContext<BotConversationState, BotUserState>, boolean>()
@@ -63,7 +63,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateContext<BotConversa
                             `Let's try again.`);
                     }
     
-                    return context.sendActivity(`Are you sure you want to delete alarm '${ this.state.alarm.title }' ('yes' or 'no')?`);
+                    return context.sendActivity(`Are you sure you want to delete alarm '${ this.state.alarm!.title }' ('yes' or 'no')?`);
                 })
                 .validator(new YesOrNoValidator())
                 .maxTurns(2)
@@ -81,7 +81,7 @@ export class DeleteAlarmTopic extends ConversationTopic<StateContext<BotConversa
                         context.sendActivity(`I'm sorry I'm having issues understanding you.`);
                     }
     
-                    return this._onFailure(context, reason);;
+                    return this._onFailure!(context, reason);;
                 })
             );
     }
@@ -89,18 +89,18 @@ export class DeleteAlarmTopic extends ConversationTopic<StateContext<BotConversa
     public onReceiveActivity(context: StateContext<BotConversationState, BotUserState>) {
         
         if(this.hasActiveTopic) { 
-            return this.activeTopic.onReceiveActivity(context);
+            return this.activeTopic!.onReceiveActivity(context);
         }
 
         // If there are no alarms to delete...
-        if (this.state.alarms.length === 0) {
+        if (this.state.alarms!.length === 0) {
             return context.sendActivity(`There are no alarms to delete.`);
         }
 
         if (this.state.alarmIndex === undefined) {
             // If there is only one alarm to delete, use that index. No need to prompt.
-            if (this.state.alarms.length === 1) {
-                showAlarms(context, this.state.alarms);
+            if (this.state.alarms!.length === 1) {
+                showAlarms(context, this.state.alarms!);
 
                 this.state.alarmIndex = 0;
             } else {
@@ -109,14 +109,14 @@ export class DeleteAlarmTopic extends ConversationTopic<StateContext<BotConversa
             }
         }
 
-        this.state.alarm.title = this.state.alarms[this.state.alarmIndex].title;
+        this.state.alarm!.title = this.state.alarms![this.state.alarmIndex].title;
     
         if (this.state.deleteConfirmed === undefined) {
             return this.setActiveTopic("confirmDeletePrompt")
                 .onReceiveActivity(context);
         }
 
-        return this._onSuccess(context, { alarm: this.state.alarm, alarmIndex: this.state.alarmIndex, deleteConfirmed: this.state.deleteConfirmed });
+        return this._onSuccess!(context, { alarm: this.state.alarm!, alarmIndex: this.state.alarmIndex, deleteConfirmed: this.state.deleteConfirmed });
     }
 }
 

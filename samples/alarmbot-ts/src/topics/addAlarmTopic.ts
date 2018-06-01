@@ -2,6 +2,7 @@ import { StateContext } from 'botbuilder-botbldr';
 import { Alarm } from '../models/alarms';
 import { ConversationTopic, ConversationTopicState, Prompt, Validator } from 'promptly-bot';
 import { BotConversationState, BotUserState } from '../app';
+import { ResourceResponse } from 'botbuilder';
 
 export interface AddAlarmTopicState extends ConversationTopicState {
     alarm: Alarm;
@@ -14,13 +15,13 @@ export class AddAlarmTopic extends ConversationTopic<StateContext<BotConversatio
         
         this.subTopics
             .set("titlePrompt", () => new Prompt<StateContext<BotConversationState, BotUserState>, string>()
-                .onPrompt((context, lastTurnReason) => {
+                .onPrompt(async (context, lastTurnReason) => {
    
                     if(lastTurnReason && lastTurnReason === 'titletoolong') {
-                        context.sendActivity(`Sorry, alarm titles must be less that 20 characters.`,
+                        await context.sendActivity(`Sorry, alarm titles must be less that 20 characters.`,
                             `Let's try again.`);
                     }
-    
+
                     return context.sendActivity(`What would you like to name your alarm?`);
                 })
                 .validator(new AlarmTitleValidator())
@@ -32,14 +33,14 @@ export class AddAlarmTopic extends ConversationTopic<StateContext<BotConversatio
     
                     return this.onReceiveActivity(context);
                 })
-                .onFailure((context, reason) => {                    
+                .onFailure(async (context, reason) => {                    
                     this.clearActiveTopic();
 
                     if(reason && reason === 'toomanyattempts') {
-                        context.sendActivity(`I'm sorry I'm having issues understanding you.`);
+                        await context.sendActivity(`I'm sorry I'm having issues understanding you.`);
                     }
     
-                    return this._onFailure(context, reason);
+                    return this._onFailure!(context, reason);
                 })
             )
             .set("timePrompt", () => new Prompt<StateContext<BotConversationState, BotUserState>, string>()
@@ -55,14 +56,14 @@ export class AddAlarmTopic extends ConversationTopic<StateContext<BotConversatio
     
                     return this.onReceiveActivity(context);
                 })
-                .onFailure((context, reason) => {
+                .onFailure(async (context, reason) => {
                     this.clearActiveTopic();
 
                     if(reason && reason === 'toomanyattempts') {
-                        return context.sendActivity(`I'm sorry I'm having issues understanding you.`);
+                        await context.sendActivity(`I'm sorry I'm having issues understanding you.`);
                     }
     
-                    return this._onFailure(context, reason);;
+                    return this._onFailure!(context, reason);;
                 })
             );
     };
@@ -70,7 +71,7 @@ export class AddAlarmTopic extends ConversationTopic<StateContext<BotConversatio
     public onReceiveActivity(context: StateContext<BotConversationState, BotUserState>) {
 
         if(this.hasActiveTopic) { 
-            return this.activeTopic.onReceiveActivity(context);
+            return this.activeTopic!.onReceiveActivity(context);
         }
 
         if (!this.state.alarm.title) {
@@ -83,7 +84,7 @@ export class AddAlarmTopic extends ConversationTopic<StateContext<BotConversatio
                 .onReceiveActivity(context);
         }
         
-        return this._onSuccess(context, this.state.alarm);
+        return this._onSuccess!(context, this.state.alarm);
     }
 }
 

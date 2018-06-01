@@ -27,7 +27,7 @@ export class RootTopic
                 .onSuccess((context, value) => {
                     this.clearActiveTopic();
                 
-                    context.userState.alarms.push({
+                    context.userState.alarms!.push({
                         title: value.title,
                         time: value.time
                     });
@@ -52,7 +52,7 @@ export class RootTopic
                         return context.sendActivity(`Ok, I won't delete alarm ${value.alarm.title}.`);
                     }
 
-                    context.userState.alarms.splice(value.alarmIndex, 1);
+                    context.userState.alarms!.splice(value.alarmIndex, 1);
 
                     return context.sendActivity(`Done. I've deleted alarm '${value.alarm.title}'.`);
                 })
@@ -76,7 +76,7 @@ export class RootTopic
             if (/show alarms/i.test(context.activity.text)) {
                 this.clearActiveTopic();
 
-                return showAlarms(context, context.userState.alarms);
+                return showAlarms(context, context.userState.alarms!);
             } else if (/add alarm/i.test(context.activity.text)) {
 
                 // Set the active topic and let the active topic handle this turn.
@@ -94,7 +94,7 @@ export class RootTopic
 
             // If there is an active topic, let it handle this turn.
             if (this.hasActiveTopic) {
-                return this.activeTopic.onReceiveActivity(context);
+                return this.activeTopic!.onReceiveActivity(context);
             }
 
             return this.showDefaultMessage(context);
